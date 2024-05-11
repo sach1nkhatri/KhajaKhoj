@@ -12,14 +12,14 @@
         android:layout_height="150dp"
         android:src="@drawable/sac"
         android:layout_marginTop="10dp"
-        android:layout_marginStart="130dp" />
+        android:layout_marginStart="150dp" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Name: Sachin Khatri"
         android:layout_marginTop="170dp"
-        android:layout_marginStart="110dp"
+        android:layout_marginStart="120dp"
         android:textSize="20sp"
         android:textStyle="bold"/>
     <TextView
@@ -27,7 +27,7 @@
         android:layout_height="wrap_content"
         android:text="Email: Sachin@gmail.com"
         android:layout_marginTop="200dp"
-        android:layout_marginStart="110dp"
+        android:layout_marginStart="120dp"
         android:textSize="20sp"
         android:textStyle="bold"/>
     <TextView
@@ -35,7 +35,7 @@
         android:layout_height="wrap_content"
         android:text="Phone: 9810392313"
         android:layout_marginTop="230dp"
-        android:layout_marginStart="110dp"
+        android:layout_marginStart="120dp"
         android:textSize="20sp"
         android:textStyle="bold"/>
 
