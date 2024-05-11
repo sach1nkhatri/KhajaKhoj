@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".HomeFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+<ImageView
+    android:layout_width="35dp"
+    android:layout_height="35dp"
+    android:layout_margin="10dp"
+    android:src="@drawable/menu_ico"/>
+
+    <TextView
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:text="@string/what_are_we_having_today"
+        android:layout_marginTop="50dp"
+        android:layout_marginStart="69dp"
+        android:textStyle="bold"
+        android:textColor="@color/red_KK"
+        android:textSize="30sp"/>
+
+    <SearchView
+        android:id="@+id/cuisineSearch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/rounded_corner"
+        android:inputType="text"
+        android:layout_marginTop="160dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"/>
+
+
+</FrameLayout>
