@@ -33,6 +33,8 @@ class LoginPage : AppCompatActivity() {
             val intent = Intent(this@LoginPage, Dashboard::class.java)
             startActivity(intent)
 
+            finish()
+
 
         }
 
