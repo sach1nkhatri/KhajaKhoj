@@ -2,6 +2,7 @@ package com.example.khajakhoj
 
 import android.app.Activity
 import android.os.Bundle
+import android.transition.Visibility
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -20,7 +21,7 @@ class Dashboard : AppCompatActivity() {
         setContentView(dashboardBinding.root)
 
         replaceFragment(HomeFragment())
-        dashboardBinding.buttonNavigationBar.setOnItemSelectedListener {
+        dashboardBinding.buttonNavigationView.setOnItemSelectedListener {
             when(it.itemId){
                 R.id.home -> replaceFragment(HomeFragment())
                 R.id.profile -> replaceFragment(ProfileFragment())
@@ -32,7 +33,7 @@ class Dashboard : AppCompatActivity() {
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right,0)
             insets
         }
     }
