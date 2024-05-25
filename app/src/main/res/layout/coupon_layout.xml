@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/codeCoupon"
+        android:layout_width="270dp"
+        android:layout_height="50dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/coupon_code_custom_bg"
+        android:text="CHIYAHUB20"
+        android:gravity="center"
+        android:textSize="20dp"
+        android:textAlignment="center"
+
+        tools:layout_editor_absoluteX="176dp"
+        tools:layout_editor_absoluteY="24dp" />
+
+    <TextView
+        android:id="@+id/discountCoupon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="for 20% off at Chiya Hub"
+        android:layout_gravity="center"
+        android:layout_marginBottom="15dp"
+        tools:layout_editor_absoluteX="152dp"
+        tools:layout_editor_absoluteY="63dp" />
+
+    <Button
+        android:id="@+id/buttonCoupon"
+        android:layout_width="153dp"
+        android:layout_height="30dp"
+        android:backgroundTint="#FF6060"
+        android:text="Use my coupon"
+        android:layout_gravity="center"
+        android:textSize="7dp"
+        android:layout_marginBottom="8dp"
+        tools:layout_editor_absoluteX="152dp"
+        tools:layout_editor_absoluteY="90dp" />
+
+    <EditText
+        android:id="@+id/lineCupon"
+        android:layout_width="340dp"
+        android:layout_height="48dp"
+        android:layout_gravity="center"
+        android:background="@drawable/custom_line" />
+
+
+</LinearLayout>
