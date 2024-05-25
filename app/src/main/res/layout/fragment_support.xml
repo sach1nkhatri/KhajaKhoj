@@ -8,6 +8,7 @@
 
     <ImageView
         android:id="@+id/background"
+<<<<<<< HEAD
         android:layout_width="592dp"
         android:layout_height="0dp"
         android:layout_marginBottom="7dp"
@@ -23,6 +24,25 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="37dp"
         android:layout_marginBottom="14dp"
+=======
+        android:layout_width="413dp"
+        android:layout_height="248dp"
+        android:layout_marginBottom="30dp"
+        android:adjustViewBounds="true"
+        android:scaleType="fitXY"
+        android:src="@drawable/support_image"
+        app:layout_constraintBottom_toTopOf="@+id/topic"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/topic"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="37dp"
+        android:layout_marginBottom="45dp"
+>>>>>>> cb71657 (About us and Support fragments completed)
         android:fontFamily="@font/dynalite"
         android:text="We are here to help"
         android:textColor="@color/black"
@@ -40,7 +60,11 @@
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+<<<<<<< HEAD
         app:layout_constraintTop_toBottomOf="@+id/about_us_note">
+=======
+        app:layout_constraintTop_toBottomOf="@+id/topic">
+>>>>>>> cb71657 (About us and Support fragments completed)
 
         <TextView
             android:layout_width="wrap_content"

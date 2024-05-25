@@ -13,6 +13,10 @@
         android:layout_marginBottom="10dp"
         android:adjustViewBounds="true"
         android:scaleType="fitXY"
+<<<<<<< HEAD
+=======
+        android:src="@drawable/about_us_image"
+>>>>>>> cb71657 (About us and Support fragments completed)
         app:layout_constraintBottom_toTopOf="@+id/about_us_note"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
