@@ -28,11 +28,25 @@ class RestaurantView : AppCompatActivity() {
     private fun getRestaurantList(): ArrayList<RestaurantData> {
         val restaurantList = ArrayList<RestaurantData>()
         restaurantList.add(RestaurantData(R.drawable.chiyahub, "Chiya Hub", "Multi Cuisine"))
-        restaurantList.add(RestaurantData(R.drawable.kk_logo, "Cafe", "Multi Cuisine"))
-        restaurantList.add(RestaurantData(R.drawable.burgerico, "Resort", "Multi Cuisine"))
-        restaurantList.add(RestaurantData(R.drawable.pizzaico, "Hotel", "Multi Cuisine"))
-        restaurantList.add(RestaurantData(R.drawable.nepali, "Motel", "Multi Cuisine"))
+        restaurantList.add(RestaurantData(R.drawable.kk_logo, "Cafe", "Nepali"))
+        restaurantList.add(RestaurantData(R.drawable.burgerico, "Resort", "Chinese"))
+        restaurantList.add(RestaurantData(R.drawable.pizzaico, "Hotel", "Thai"))
+        restaurantList.add(RestaurantData(R.drawable.nepali, "Motel", "Korean"))
         restaurantList.add(RestaurantData(R.drawable.indian, "Club", "Multi Cuisine"))
+        restaurantList.add(RestaurantData(R.drawable.indian, "Club", "Multi Cuisine"))
+        restaurantList.add(RestaurantData(R.drawable.indian, "Club", "Multi Cuisine"))
+        restaurantList.add(RestaurantData(R.drawable.indian, "Club", "Multi Cuisine"))
+        restaurantList.add(RestaurantData(R.drawable.indian, "Club", "Multi Cuisine"))
+        restaurantList.add(RestaurantData(R.drawable.indian, "Club", "Multi Cuisine"))
+        restaurantList.add(RestaurantData(R.drawable.indian, "Club", "Multi Cuisine"))
+        restaurantList.add(RestaurantData(R.drawable.indian, "Club", "Multi Cuisine"))
+        restaurantList.add(RestaurantData(R.drawable.indian, "Club", "Multi Cuisine"))
+        restaurantList.add(RestaurantData(R.drawable.indian, "Club", "Multi Cuisine"))
+        restaurantList.add(RestaurantData(R.drawable.indian, "Club", "Multi Cuisine"))
+        restaurantList.add(RestaurantData(R.drawable.indian, "Club", "Multi Cuisine"))
+        restaurantList.add(RestaurantData(R.drawable.indian, "Club", "Multi Cuisine"))
+        restaurantList.add(RestaurantData(R.drawable.indian, "Club", "Multi Cuisine"))
+
         // Add more restaurants as needed
         return restaurantList
     }

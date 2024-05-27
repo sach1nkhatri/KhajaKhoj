@@ -22,7 +22,10 @@ class Dashboard : AppCompatActivity() {
         dashboardBinding.buttonNavigationView.setOnItemSelectedListener {
             when(it.itemId){
                 R.id.home -> replaceFragment(HomeFragment())
-                R.id.profile -> replaceFragment(ProfileFragment())
+                R.id.profile -> {
+                    // Open the drawer instead of replacing fragment
+                    dashboardBinding.drawerLayout.openDrawer(GravityCompat.START)
+                }
                 R.id.settings -> replaceFragment(SettingsFragment())
                 else -> {}
             }
