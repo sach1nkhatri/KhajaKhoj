@@ -170,6 +170,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:layout_marginStart="10dp"
         android:layout_marginEnd="132dp"
         android:layout_marginBottom="130dp"
         android:clickable="true"
@@ -182,8 +183,8 @@
 
     <TextView
         android:id="@+id/textView7"
-        android:layout_width="0dp"
-        android:layout_height="19dp"
+        android:layout_width="125dp"
+        android:layout_height="20dp"
         android:layout_gravity="center"
         android:layout_marginStart="114dp"
         android:text="Already a member?"

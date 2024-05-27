@@ -15,7 +15,7 @@
         android:src="@drawable/login_bg"
         tools:ignore="MissingConstraints"
         tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="0dp" />
+        tools:layout_editor_absoluteY="16dp" />
 
     <EditText
         android:id="@+id/username_input"
@@ -72,9 +72,9 @@
     <TextView
         android:id="@+id/signup"
         android:layout_width="55dp"
-        android:layout_height="wrap_content"
+        android:layout_height="30dp"
         android:layout_marginEnd="112dp"
-        android:layout_marginBottom="80dp"
+        android:layout_marginBottom="68dp"
         android:importantForAutofill="no"
         android:text="@string/sign_up"
         android:textColor="@color/black"
@@ -117,11 +117,11 @@
         android:id="@+id/login_Btn"
         android:layout_width="77dp"
         android:layout_height="53dp"
-        android:layout_marginBottom="4dp"
+        android:layout_marginBottom="36dp"
         android:background="@drawable/login_btn_corner"
         android:contentDescription="@string/login"
         android:src="@drawable/login_arrow"
-        app:layout_constraintBottom_toTopOf="@+id/signup"
+        app:layout_constraintBottom_toTopOf="@+id/forgotpassword"
         app:layout_constraintStart_toEndOf="@+id/password_input" />
 
 

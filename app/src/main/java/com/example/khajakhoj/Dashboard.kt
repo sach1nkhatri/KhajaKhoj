@@ -1,5 +1,6 @@
 package com.example.khajakhoj
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
@@ -34,8 +35,25 @@ class Dashboard : AppCompatActivity() {
 
         // Set onClick listener for the slide menu button to open the drawer
         dashboardBinding.slideMenuBtn.setOnClickListener {
-            dashboardBinding.drawerLayout.openDrawer(GravityCompat.START)
+            dashboardBinding.drawerLayout.openDrawer(dashboardBinding.navigationView)
         }
+
+        dashboardBinding.navigationView.setNavigationItemSelectedListener {MenuItem->
+            when(MenuItem.itemId){
+                R.id.coupons ->{
+                    startActivity(Intent(this@Dashboard,CouponsActivity::class.java))
+                }
+                R.id.About_us ->{
+                    startActivity(Intent(this@Dashboard,AboutUsActivity::class.java))
+                }
+                R.id.support ->{
+                    startActivity(Intent(this@Dashboard,SupportActivity::class.java))
+                }
+            }
+            true
+        }
+
+
 
         // Apply window insets
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
