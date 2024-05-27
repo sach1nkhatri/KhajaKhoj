@@ -10,7 +10,11 @@
   <component name="VisualizationToolProject">
     <option name="state">
       <ProjectState>
-        <option name="scale" value="0.75" />
+<<<<<<< HEAD
+        <option name="scale" value="0.1854614257812499" />
+=======
+        <option name="scale" value="0.8501510620117188" />
+>>>>>>> cb71657 (About us and Support fragments completed)
       </ProjectState>
     </option>
   </component>

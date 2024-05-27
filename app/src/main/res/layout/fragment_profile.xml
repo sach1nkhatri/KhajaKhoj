@@ -2,7 +2,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:background="@drawable/gradient_bg"
+    android:background="@color/red_KK"
     android:layout_height="match_parent"
     tools:context=".ProfileFragment">
 
@@ -12,13 +12,14 @@
         android:layout_height="150dp"
         android:src="@drawable/sac"
         android:layout_marginTop="10dp"
-        android:layout_marginStart="150dp" />
+        android:layout_marginStart="140dp" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Name: Sachin Khatri"
         android:layout_marginTop="170dp"
+        android:textColor="@color/cream"
         android:layout_marginStart="120dp"
         android:textSize="20sp"
         android:textStyle="bold"/>
@@ -26,6 +27,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Email: Sachin@gmail.com"
+        android:textColor="@color/cream"
         android:layout_marginTop="200dp"
         android:layout_marginStart="120dp"
         android:textSize="20sp"
@@ -34,6 +36,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Phone: 9810392313"
+        android:textColor="@color/cream"
         android:layout_marginTop="230dp"
         android:layout_marginStart="120dp"
         android:textSize="20sp"

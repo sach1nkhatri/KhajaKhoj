@@ -2,5 +2,11 @@
 <resources>
     <style name="BottomNavigationNoTextAppearance">
         <item name="android:textColor">@android:color/transparent</item>
+
+    </style>
+    <style name="RestaurantImageCorner">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">10dp</item>
+        <item name="color">@color/red_KK</item>
     </style>
 </resources>

@@ -118,4 +118,14 @@
     <string name="attachment_summary_off">Only download attachments when manually requested</string>
     <string name="what_are_we_having_today">What Are We Having Today?</string>
     <string name="yumm_yumm">Yumm Yumm</string>
+    <string name="sachin_khatri">Sachin Khatri</string>
+    <string name="sachin_gmail_com">Sachin@gmail.com</string>
+    <string name="log_out">Log Out</string>
+    <string name="support">Support</string>
+    <string name="about_us">About us</string>
+    <string name="coupons">Coupons</string>
+    <string name="favourites">Favourites</string>
+    <string name="admin_login">Admin Login</string>
+    <string name="forgot_password">Forgot Password?</string>
+    <string name="login">login</string>
 </resources>
