@@ -41,7 +41,7 @@ class Dashboard : AppCompatActivity() {
         dashboardBinding.navigationView.setNavigationItemSelectedListener {MenuItem->
             when(MenuItem.itemId){
                 R.id.coupons ->{
-                    startActivity(Intent(this@Dashboard,CouponsActivity::class.java))
+                    startActivity(Intent(this@Dashboard,CouponActivity::class.java))
                 }
                 R.id.About_us ->{
                     startActivity(Intent(this@Dashboard,AboutUsActivity::class.java))

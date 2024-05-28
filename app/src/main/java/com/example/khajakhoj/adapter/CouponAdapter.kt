@@ -1,3 +1,6 @@
+package com.example.khajakhoj
+
+import Coupon
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -6,7 +9,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.khajakhoj.R
 
-class CouponAdapter(private val coupons: List<Coupon>) :
+class CouponAdapter(private val coupons: MutableList<Coupon>) :
     RecyclerView.Adapter<CouponAdapter.CouponViewHolder>() {
 
     // ViewHolder class
@@ -28,9 +31,12 @@ class CouponAdapter(private val coupons: List<Coupon>) :
         holder.discountTextView.text = "for ${coupon.discount}% off at ${coupon.restaurant}"
 
         holder.useCouponButton.setOnClickListener {
-            holder.useCouponButton.setText("Used")
+            holder.useCouponButton.text = "Used"
             CouponRepository.markCouponAsUsed(coupon.id)
-
+            // Remove the used coupon from the list and notify the adapter
+            coupons.removeAt(position)
+            notifyItemRemoved(position)
+            notifyItemRangeChanged(position, coupons.size)
         }
     }
 
