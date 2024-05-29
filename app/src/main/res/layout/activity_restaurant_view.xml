@@ -4,12 +4,23 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
+    android:background="@drawable/doodle30"
     android:layout_height="match_parent"
     tools:context=".Restaurant_view">
-    
+    <SearchView
+        android:id="@+id/cuisineSearch"
+        android:layout_width="match_parent"
+        android:layout_margin="30dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/rounded_corner"
+        android:inputType="text"/>
+
     <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/restaurantView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/restaurantView"/>
+        android:layout_marginTop="60dp"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="63dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

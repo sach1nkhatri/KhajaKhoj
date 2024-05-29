@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:background="@drawable/rounded_corner"
     android:layout_height="100dp"
+    android:layout_marginStart="15dp"
     android:layout_margin="8dp">
 
 

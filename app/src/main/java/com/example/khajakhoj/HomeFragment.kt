@@ -59,10 +59,10 @@ class HomeFragment : Fragment() {
             override fun run() {
                 currentIndex = (currentIndex + 1) % imageIds.size
                 imageSwitcher.setImageResource(imageIds[currentIndex])
-                handler.postDelayed(this, 3000) // Switch image every 3 seconds
+                handler.postDelayed(this, 5000) // Switch image every 3 seconds
             }
         }
-        handler.postDelayed(runnable, 3000) // Start the image switcher
+        handler.postDelayed(runnable, 5000) // Start the image switcher
 
         // Set click listener on image buttons
         binding.Nepali.setOnClickListener {
