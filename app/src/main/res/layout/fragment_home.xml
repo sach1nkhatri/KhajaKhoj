@@ -2,16 +2,14 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:background="@color/white"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/white"
     tools:context=".HomeFragment">
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-
-
 
         <TextView
             android:layout_width="250dp"
@@ -33,15 +31,15 @@
             android:layout_marginLeft="30dp"
             android:layout_marginRight="30dp"/>
 
-        <!-- Add ImageSwitcher below the SearchView -->
+        <!-- Add ImageSwitcher inside CardView -->
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="200dp"
             android:layout_marginTop="160dp"
             android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="8dp">
+            app:cardCornerRadius="20dp"
+            app:cardElevation="10dp"
+            android:layout_marginRight="30dp">
 
             <ImageSwitcher
                 android:id="@+id/imageSwitcher"
@@ -49,248 +47,71 @@
                 android:layout_height="match_parent"
                 android:inAnimation="@android:anim/fade_in"
                 android:outAnimation="@android:anim/fade_out"/>
-
         </androidx.cardview.widget.CardView>
-
-        <androidx.cardview.widget.CardView
-            android:id="@+id/Nepali"
-            android:layout_width="match_parent"
-            android:elevation="15dp"
-            android:layout_height="150dp"
-            android:layout_marginTop="450dp"
-            android:layout_marginStart="25dp"
-            android:layout_marginEnd="235dp"
-            app:cardCornerRadius="30dp"
-            android:layout_columnWeight="1"
-            android:layout_rowWeight="1">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:orientation="vertical"
-                android:gravity="center"
-                android:background="@color/red_KK"
-                android:layout_height="match_parent">
-
-                <ImageView
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
-                    android:src="@drawable/nepali"
-                    android:layout_gravity="center_horizontal"
-                    tools:ignore="ContentDescription" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Nepali"
-                    android:layout_gravity="center_horizontal"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/white"/>
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
-
-        <androidx.cardview.widget.CardView
-            android:id="@+id/Newari"
-            android:layout_width="match_parent"
-            android:elevation="15dp"
-            android:layout_height="150dp"
-            android:layout_marginTop="450dp"
-            android:layout_marginStart="240dp"
-            android:layout_marginEnd="25dp"
-            app:cardCornerRadius="30dp"
-            android:layout_columnWeight="1"
-            android:layout_rowWeight="1">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:orientation="vertical"
-                android:gravity="center"
-                android:background="@color/red_KK"
-                android:layout_height="match_parent">
-
-                <ImageView
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
-                    android:src="@drawable/newari"
-                    android:layout_gravity="center_horizontal"
-                    tools:ignore="ContentDescription" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="newari "
-                    android:layout_gravity="center_horizontal"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/white"/>
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
-
-        <androidx.cardview.widget.CardView
-            android:id="@+id/Italian"
-            android:layout_width="match_parent"
-            android:elevation="15dp"
-            android:layout_height="150dp"
-            android:layout_marginTop="640dp"
-            android:layout_marginStart="25dp"
-            android:layout_marginEnd="235dp"
-            app:cardCornerRadius="30dp"
-            android:layout_columnWeight="1"
-            android:layout_rowWeight="1">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:orientation="vertical"
-                android:gravity="center"
-                android:background="@color/red_KK"
-                android:layout_height="match_parent">
-
-                <ImageView
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
-                    android:src="@drawable/pizzaico"
-                    android:layout_gravity="center_horizontal"
-                    tools:ignore="ContentDescription" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Italian"
-                    android:layout_gravity="center_horizontal"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/white"/>
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
-
-        <androidx.cardview.widget.CardView
-            android:id="@+id/Americian"
-            android:layout_width="match_parent"
-            android:elevation="15dp"
-            android:layout_height="150dp"
-            android:layout_marginTop="640dp"
-            android:layout_marginStart="240dp"
-            android:layout_marginEnd="25dp"
-            app:cardCornerRadius="30dp"
-            android:layout_columnWeight="1"
-            android:layout_rowWeight="1">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:orientation="vertical"
-                android:gravity="center"
-                android:background="@color/red_KK"
-                android:layout_height="match_parent">
-
-                <ImageView
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
-                    android:src="@drawable/burgerico"
-                    android:layout_gravity="center_horizontal"
-                    tools:ignore="ContentDescription" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Americian"
-                    android:layout_gravity="center_horizontal"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/white"/>
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
-
-        <androidx.cardview.widget.CardView
-            android:id="@+id/Indian"
-            android:layout_width="match_parent"
-            android:elevation="15dp"
-            android:layout_height="150dp"
-            android:layout_marginTop="830dp"
-            android:layout_marginStart="25dp"
-            android:layout_marginEnd="235dp"
-            app:cardCornerRadius="30dp"
-            android:layout_columnWeight="1"
-            android:layout_rowWeight="1">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:orientation="vertical"
-                android:gravity="center"
-                android:background="@color/red_KK"
-                android:layout_height="match_parent">
-
-                <ImageView
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
-                    android:src="@drawable/indian"
-                    android:layout_gravity="center_horizontal"
-                    tools:ignore="ContentDescription" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Indian"
-                    android:layout_gravity="center_horizontal"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/white"/>
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
-
-        <androidx.cardview.widget.CardView
-            android:id="@+id/japanese"
-            android:layout_width="match_parent"
-            android:elevation="15dp"
-            android:layout_height="150dp"
-            android:layout_marginTop="830dp"
-            android:layout_marginStart="240dp"
-            android:layout_marginEnd="25dp"
-            app:cardCornerRadius="30dp"
-            android:layout_columnWeight="1"
-            android:layout_rowWeight="1">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:orientation="vertical"
-                android:gravity="center"
-                android:background="@color/red_KK"
-                android:layout_height="match_parent">
-
-                <ImageView
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
-                    android:src="@drawable/japanese"
-                    android:layout_gravity="center_horizontal"
-                    tools:ignore="ContentDescription" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Japanese"
-                    android:layout_gravity="center_horizontal"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/white"/>
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
-
-        <!--        <ImageView-->
-        <!--            android:layout_width="wrap_content"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:layout_marginTop="420dp"-->
-        <!--            -->
-        <!--            android:layout_marginStart="10dp"-->
-        <!--            android:src="@drawable/india"/>-->
-
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Choose From Cusines"
+            android:text="Choose From Cuisines"
             android:textColor="@color/red_KK"
             android:textSize="25sp"
             android:layout_marginTop="400dp"
-            android:layout_marginStart="25dp"
+            android:layout_marginStart="40dp"
             android:textStyle="bold"/>
+
+        <ImageButton
+            android:id="@+id/Nepali"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:src="@drawable/nepali"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="430dp"/>
+
+        <ImageButton
+            android:id="@+id/Newari"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:src="@drawable/nepali"
+            android:layout_marginStart="200dp"
+            android:layout_marginTop="430dp"/>
+
+        <ImageButton
+            android:id="@+id/Italian"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:src="@drawable/italian"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="645dp"/>
+
+        <ImageButton
+            android:id="@+id/American"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:src="@drawable/american"
+            android:layout_marginStart="200dp"
+            android:layout_marginTop="649dp"/>
+
+        <ImageButton
+            android:id="@+id/Indian"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:src="@drawable/indian"
+            android:layout_marginStart="23dp"
+            android:layout_marginTop="872dp"/>
+
+        <ImageButton
+            android:id="@+id/Japanese"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:src="@drawable/japanese"
+            android:layout_marginStart="218dp"
+            android:layout_marginTop="875dp"/>
+
     </FrameLayout>
 </ScrollView>

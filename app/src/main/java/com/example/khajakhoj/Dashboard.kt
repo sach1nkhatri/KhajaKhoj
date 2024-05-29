@@ -2,6 +2,7 @@ package com.example.khajakhoj
 
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.core.view.ViewCompat
@@ -16,6 +17,7 @@ class Dashboard : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         dashboardBinding = ActivityDashboardBinding.inflate(layoutInflater)
         setContentView(dashboardBinding.root)
 

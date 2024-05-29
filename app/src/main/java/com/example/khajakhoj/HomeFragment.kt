@@ -16,8 +16,7 @@ import com.example.khajakhoj.databinding.FragmentHomeBinding
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
 
-class
-HomeFragment : Fragment() {
+class HomeFragment : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
 
@@ -65,7 +64,7 @@ HomeFragment : Fragment() {
         }
         handler.postDelayed(runnable, 3000) // Start the image switcher
 
-        // Set click listener on card views
+        // Set click listener on image buttons
         binding.Nepali.setOnClickListener {
             val intent = Intent(activity, RestaurantView::class.java)
             intent.putExtra("cuisine", "Nepali")
@@ -84,9 +83,9 @@ HomeFragment : Fragment() {
             startActivity(intent)
         }
 
-        binding.Americian.setOnClickListener {
+        binding.American.setOnClickListener {
             val intent = Intent(activity, RestaurantView::class.java)
-            intent.putExtra("cuisine", "Americian")
+            intent.putExtra("cuisine", "American")
             startActivity(intent)
         }
 
@@ -96,7 +95,7 @@ HomeFragment : Fragment() {
             startActivity(intent)
         }
 
-        binding.japanese.setOnClickListener {
+        binding.Japanese.setOnClickListener {
             val intent = Intent(activity, RestaurantView::class.java)
             intent.putExtra("cuisine", "Japanese")
             startActivity(intent)
