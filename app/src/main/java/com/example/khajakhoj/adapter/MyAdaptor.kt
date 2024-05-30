@@ -1,10 +1,12 @@
-package com.example.khajakhoj
+package com.example.khajakhoj.adapter
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.khajakhoj.R
+import com.example.khajakhoj.RestaurantData
 import com.google.android.material.imageview.ShapeableImageView
 
 class MyAdapter(private val restaurantList: ArrayList<RestaurantData>) :
