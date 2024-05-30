@@ -13,6 +13,7 @@ class CouponActivity : AppCompatActivity() {
     private lateinit var binding: ActivityCouponsBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         binding = ActivityCouponsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
