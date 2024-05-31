@@ -1,10 +1,12 @@
 package com.example.khajakhoj
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AlertDialog
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -29,6 +31,17 @@ class ProfileFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_profile, container, false)
+//        val alertDialogBuilder = AlertDialog.Builder(this)
+//        alertDialogBuilder.setMessage("Logout of your account?")
+//        alertDialogBuilder.setPositiveButton("Yes") { _, _ ->
+//            startActivity(Intent(this, LoginPage::class.java))
+//            finish()
+//        }
+//        alertDialogBuilder.setNegativeButton("No", null)
+//        val alertDialog = alertDialogBuilder.create()
+////                    val backgroundDrawable = ContextCompat.getDrawable(this, R.drawable.custom_dialog_background)
+////                    alertDialog.window?.setBackgroundDrawable(backgroundDrawable)
+//        alertDialog.show()
     }
 
     companion object {
