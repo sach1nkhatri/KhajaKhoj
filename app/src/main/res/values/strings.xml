@@ -129,4 +129,6 @@
     <string name="forgot_password">Forgot Password?</string>
     <string name="login">login</string>
     <string name="choose_from_cuisines">Choose From Cuisines</string>
+    <string name="title_activity_res_detail_view">ResDetailView</string>
+    <string name="action_settings">Settings</string>
 </resources>
