@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SettingsActivity">
+
+    <LinearLayout
+        android:layout_width="370dp"
+        android:layout_height="623dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="46dp"
+        android:layout_marginEnd="22dp"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/imageView4"
+            android:layout_width="56dp"
+            android:layout_height="52dp"
+            android:layout_marginBottom="30dp"
+            app:srcCompat="@drawable/sandip_chhetri"
+            tools:layout_editor_absoluteX="31dp"
+            tools:layout_editor_absoluteY="25dp" />
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="25dp"
+            android:text="Settings"
+            android:textColor="#FF6060"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            tools:layout_editor_absoluteX="31dp"
+            tools:layout_editor_absoluteY="103dp" />
+
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:drawableStart="@drawable/account_setting_icon"
+            android:drawablePadding="30dp"
+            android:gravity="center"
+            android:text="Account"
+            android:textColor="#FF6060"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            tools:layout_editor_absoluteX="34dp"
+            tools:layout_editor_absoluteY="149dp" />
+
+        <Button
+            android:id="@+id/editProfileButton"
+            android:layout_width="233dp"
+            android:layout_height="35dp"
+            android:layout_margin="0dp"
+            android:background="@android:color/transparent"
+            android:gravity="center_vertical"
+            android:padding="0dp"
+            android:text="Edit Profile"
+            android:textAppearance="?android:attr/textAppearanceSmallInverse"
+            android:textColor="@color/black"
+            android:textSize="15sp"
+            tools:layout_editor_absoluteX="34dp"
+            tools:layout_editor_absoluteY="185dp" />
+
+        <Button
+            android:id="@+id/changePasswordButton"
+            android:layout_width="233dp"
+            android:layout_height="35dp"
+            android:layout_margin="0dp"
+            android:background="@android:color/transparent"
+            android:gravity="center_vertical"
+            android:padding="0dp"
+            android:text="Change Password"
+            android:textAppearance="?android:attr/textAppearanceSmallInverse"
+            android:textColor="@color/black"
+            android:textSize="15sp"
+            tools:layout_editor_absoluteX="34dp"
+            tools:layout_editor_absoluteY="224dp" />
+
+        <Button
+            android:id="@+id/privacyButton"
+            android:layout_width="233dp"
+            android:layout_height="35dp"
+            android:layout_margin="0dp"
+            android:background="@android:color/transparent"
+            android:gravity="center_vertical"
+            android:padding="0dp"
+            android:text="Privacy"
+            android:textAppearance="?android:attr/textAppearanceSmallInverse"
+            android:textColor="@color/black"
+            android:textSize="15sp"
+            tools:layout_editor_absoluteX="34dp"
+            tools:layout_editor_absoluteY="261dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:drawableStart="@drawable/notification_icon2"
+            android:drawablePadding="30dp"
+            android:gravity="center"
+            android:text="Notification"
+            android:textColor="#FF6060"
+            android:textSize="20sp"
+            tools:layout_editor_absoluteX="31dp"
+            tools:layout_editor_absoluteY="315dp" />
+
+        <Switch
+            android:id="@+id/updatesSwitch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="Updates"
+            tools:layout_editor_absoluteX="31dp"
+            tools:layout_editor_absoluteY="397dp" />
+
+
+        <Switch
+            android:id="@+id/darkMode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="Dark Mode"
+            tools:layout_editor_absoluteX="31dp"
+            tools:layout_editor_absoluteY="475dp" />
+
+
+        <TextView
+            android:id="@+id/textView12"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:drawableStart="@drawable/others_icon"
+            android:drawablePadding="30dp"
+            android:gravity="center"
+            android:text="Other"
+            android:textColor="#FF6060"
+            android:textSize="20sp"
+            tools:layout_editor_absoluteX="31dp"
+            tools:layout_editor_absoluteY="439dp" />
+
+        <Switch
+            android:id="@+id/notificationSwitch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="Notification"
+            android:textSize="15sp"
+            tools:layout_editor_absoluteX="31dp"
+            tools:layout_editor_absoluteY="358dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="32dp"
+            android:layout_marginTop="10dp"
+            tools:layout_editor_absoluteX="34dp"
+            tools:layout_editor_absoluteY="517dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginRight="200dp"
+                android:gravity="center"
+                android:text="Language"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/languageOption"
+                android:layout_width="95dp"
+                android:layout_height="25dp"
+                android:background="@drawable/setting_custom_box"
+                android:gravity="center"
+                android:text="English"
+                android:textColor="#999999" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="27dp"
+            android:layout_marginTop="10dp"
+            tools:layout_editor_absoluteX="34dp"
+            tools:layout_editor_absoluteY="557dp">
+
+            <TextView
+                android:layout_width="66dp"
+                android:layout_height="match_parent"
+                android:layout_marginRight="200dp"
+                android:gravity="center_vertical"
+                android:text="Region"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/regionOption"
+                android:layout_width="92dp"
+                android:layout_height="25dp"
+                android:background="@drawable/setting_custom_box"
+                android:gravity="center"
+                android:text="Pakistan"
+
+                android:textColor="#999999" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

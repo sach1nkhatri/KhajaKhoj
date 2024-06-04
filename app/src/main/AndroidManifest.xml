@@ -15,9 +15,14 @@
         <activity
             android:name=".ResDetailView"
             android:exported="true" />
-
         <activity
-            android:name=".CouponsActivity"
+            android:name=".ProfileActivity"
+            android:exported="false" />
+        <activity
+            android:name=".SettingsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".CouponActivity"
             android:exported="false" />
         <activity
             android:name=".AboutUsActivity"
