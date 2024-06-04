@@ -3,7 +3,9 @@ package com.example.khajakhoj
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -11,6 +13,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import com.example.khajakhoj.databinding.ActivityDashboardBinding
+import com.example.khajakhoj.utils.Utils
 
 class Dashboard : AppCompatActivity() {
     private lateinit var dashboardBinding: ActivityDashboardBinding
@@ -50,6 +53,9 @@ class Dashboard : AppCompatActivity() {
                 }
                 R.id.support ->{
                     startActivity(Intent(this@Dashboard,SupportActivity::class.java))
+                }
+                R.id.Log_Out ->{
+                    Utils.logOut(this)
                 }
             }
             true
