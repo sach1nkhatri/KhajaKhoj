@@ -2,6 +2,7 @@ package com.example.khajakhoj
 
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.core.view.ViewCompat
@@ -13,9 +14,9 @@ import com.example.khajakhoj.databinding.ActivityDashboardBinding
 
 class Dashboard : AppCompatActivity() {
     private lateinit var dashboardBinding: ActivityDashboardBinding
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         dashboardBinding = ActivityDashboardBinding.inflate(layoutInflater)
         setContentView(dashboardBinding.root)
 
@@ -41,7 +42,7 @@ class Dashboard : AppCompatActivity() {
         dashboardBinding.navigationView.setNavigationItemSelectedListener {MenuItem->
             when(MenuItem.itemId){
                 R.id.coupons ->{
-                    startActivity(Intent(this@Dashboard,CouponsActivity::class.java))
+                    startActivity(Intent(this@Dashboard,CouponActivity::class.java))
                 }
                 R.id.About_us ->{
                     startActivity(Intent(this@Dashboard,AboutUsActivity::class.java))

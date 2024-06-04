@@ -6,4 +6,10 @@
     </style>
 
     <style name="Theme.KhajaKhoj" parent="Base.Theme.KhajaKhoj" />
+    <style name="Theme.KhajaKhoj.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+    <style name="Theme.KhajaKhoj.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+    <style name="Theme.KhajaKhoj.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 </resources>

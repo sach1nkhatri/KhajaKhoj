@@ -1,9 +1,9 @@
 data class Coupon(
-    val id: String,
-    val code: String,
-    val discount: Int,
-    val restaurant: String,
-    val expirationDate: String,
+    val id: Int=0,
+    val code: String="",
+    val discount: Int=0,
+    val restaurant: String="",
+    val expirationDate: String="",
     var isUsed: Boolean = false
 ) {
 }
