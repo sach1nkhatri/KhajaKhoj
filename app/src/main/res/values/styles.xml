@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--suppress ALL -->
 <resources>
     <style name="BottomNavigationNoTextAppearance">
         <item name="android:textColor">@android:color/transparent</item>
@@ -9,4 +10,6 @@
         <item name="cornerSize">10dp</item>
         <item name="color">@color/red_KK</item>
     </style>
+
+
 </resources>
