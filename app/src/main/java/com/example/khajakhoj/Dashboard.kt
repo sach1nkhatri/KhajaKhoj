@@ -25,10 +25,11 @@ class Dashboard : AppCompatActivity() {
             when(it.itemId){
                 R.id.home -> replaceFragment(HomeFragment())
                 R.id.profile -> {
-                    // Open the drawer instead of replacing fragment
-                    dashboardBinding.drawerLayout.openDrawer(GravityCompat.START)
+                    startActivity(Intent(this@Dashboard,ProfileActivity::class.java))
+
                 }
-                R.id.settings -> replaceFragment(SettingsFragment())
+                R.id.settings -> startActivity(Intent(this@Dashboard,SettingsActivity::class.java))
+
                 else -> {}
             }
             true
