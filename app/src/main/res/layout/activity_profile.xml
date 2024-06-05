@@ -108,7 +108,7 @@
                 android:text="Your Favourites"
                 android:textAllCaps="false"
                 android:textAppearance="?attr/textAppearanceButton"
-                android:textColor="@color/black"
+                android:textColor="?attr/colorPrimary"
                 android:textSize="15sp" />
         </LinearLayout>
 
@@ -137,7 +137,7 @@
                 android:text="Tell Your Friends"
                 android:textAllCaps="false"
                 android:textAppearance="?attr/textAppearanceButton"
-                android:textColor="@color/black"
+                android:textColor="?attr/colorPrimary"
                 android:textSize="15sp"
                 android:gravity="center_vertical"/>
         </LinearLayout>
@@ -170,7 +170,7 @@
                 android:text="Promotions"
                 android:textAllCaps="false"
                 android:textAppearance="?attr/textAppearanceButton"
-                android:textColor="@color/black"
+                android:textColor="?attr/colorPrimary"
                 android:textSize="15sp"
                 android:gravity="center_vertical"/>
         </LinearLayout>
@@ -200,7 +200,7 @@
                 android:text="Settings"
                 android:textAllCaps="false"
                 android:textAppearance="?attr/textAppearanceButton"
-                android:textColor="@color/black"
+                android:textColor="?attr/colorPrimary"
                 android:textSize="15sp"
                 android:gravity="center_vertical"/>
         </LinearLayout>
@@ -231,7 +231,7 @@
                 android:text="Log Out"
                 android:textAllCaps="false"
                 android:textAppearance="?attr/textAppearanceButton"
-                android:textColor="@color/black"
+                android:textColor="?attr/colorPrimary"
                 android:textSize="15sp"
                 android:gravity="center_vertical"/>
         </LinearLayout>

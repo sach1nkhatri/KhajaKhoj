@@ -9,6 +9,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.khajakhoj.databinding.ActivitySignUpBinding
 import com.example.khajakhoj.model.User
+import com.example.khajakhoj.utils.Utils
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
@@ -42,6 +43,11 @@ class SignUpActivity : AppCompatActivity() {
             startActivity(Intent(this@SignUpActivity, LoginPage::class.java))
             finish()
         }
+
+        binding.termsTextView.setOnClickListener(){
+            Utils.showTermsAndConditions(this)
+        }
+
     }
 
     private fun validateAndSignUp(
