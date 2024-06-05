@@ -57,6 +57,7 @@ class SignUpActivity : AppCompatActivity() {
             return
         }
 
+
         if (password != confirmPassword) {
             Toast.makeText(this, "Passwords do not match", Toast.LENGTH_SHORT).show()
             return
