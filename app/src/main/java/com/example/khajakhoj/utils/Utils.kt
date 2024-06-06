@@ -24,7 +24,7 @@ object Utils {
             context.startActivity(intent)
         }
         alertDialogBuilder.setNegativeButton("No") { dialog, _ ->
-            dialog.dismiss() // Dismiss the dialog if user selects "No"
+            dialog.dismiss()
         }
         val alertDialog = alertDialogBuilder.create()
         val backgroundDrawable =
@@ -193,5 +193,15 @@ object Utils {
         dialog.setContentView(R.layout.change_password_dialog)
         dialog.window?.setBackgroundDrawableResource(R.drawable.custom_dialog_background)
         dialog.show()
+    }
+
+    fun showForgotPasswordDialog(context: Context){
+        val dialog = Dialog(context)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setCancelable(true)
+        dialog.setContentView(R.layout.forgot_password_dialog)
+        dialog.window?.setBackgroundDrawableResource(R.drawable.custom_dialog_background)
+        dialog.show()
+
     }
 }

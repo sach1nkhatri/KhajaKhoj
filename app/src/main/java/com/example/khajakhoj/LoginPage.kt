@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.khajakhoj.databinding.ActivityLoginPageBinding
+import com.example.khajakhoj.utils.Utils
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
@@ -43,6 +44,10 @@ class LoginPage : AppCompatActivity() {
         }
         binding.signup.setOnClickListener(){
             startActivity(Intent(this@LoginPage,SignUpActivity::class.java))
+        }
+
+        binding.forgotpassword.setOnClickListener(){
+            Utils.showForgotPasswordDialog(this)
         }
     }
 
