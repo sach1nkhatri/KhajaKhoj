@@ -20,7 +20,7 @@ class ProfileActivity : AppCompatActivity() {
             startActivity(Intent(this@ProfileActivity,SettingsActivity::class.java))
         }
         binding.logOutProfile.setOnClickListener(){
-            Utils.logOut(this)
+            Utils.logOut(this@ProfileActivity)
         }
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())

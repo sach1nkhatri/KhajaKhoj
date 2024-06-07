@@ -53,7 +53,7 @@
             android:textStyle="bold" />
 
         <LinearLayout
-            android:id="@+id/contact_info_layout"
+            android:id="@+id/contactInfoLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
@@ -70,7 +70,7 @@
                 android:src="@drawable/phone_icon" />
 
             <TextView
-                android:id="@+id/contact_info"
+                android:id="@+id/contactInfo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
