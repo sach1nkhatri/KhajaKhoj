@@ -9,6 +9,8 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.startActivity
+import androidx.security.crypto.EncryptedSharedPreferences
+import androidx.security.crypto.MasterKeys
 import com.example.khajakhoj.Dashboard
 import com.example.khajakhoj.LoginPage
 import com.example.khajakhoj.R
@@ -19,6 +21,28 @@ object Utils {
         alertDialogBuilder.setTitle("Logout")
         alertDialogBuilder.setMessage("Do you want to log out?")
         alertDialogBuilder.setPositiveButton("Yes") { _, _ ->
+            // Clear the EncryptedSharedPreferences
+            val encryptedSharedPreferences = EncryptedSharedPreferences.create(
+                "MyEncryptedPrefs",
+                MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC),
+                context,
+                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+            )
+
+            with(encryptedSharedPreferences.edit()) {
+                clear()
+                apply()
+            }
+
+            // Clear the regular SharedPreferences
+            val sharedPreferences = context.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+            with(sharedPreferences.edit()) {
+                clear()
+                apply()
+            }
+
+            // Start the LoginPage activity and clear the task stack
             val intent = Intent(context, LoginPage::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
             context.startActivity(intent)
@@ -26,12 +50,14 @@ object Utils {
         alertDialogBuilder.setNegativeButton("No") { dialog, _ ->
             dialog.dismiss()
         }
+
         val alertDialog = alertDialogBuilder.create()
         val backgroundDrawable =
             ContextCompat.getDrawable(context, R.drawable.custom_dialog_background)
         alertDialog.window?.setBackgroundDrawable(backgroundDrawable)
         alertDialog.show()
     }
+
 
     fun showTermsAndConditions(context: Context) {
         val termsMessage = """
