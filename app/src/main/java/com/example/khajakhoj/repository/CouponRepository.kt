@@ -1,3 +1,5 @@
+import com.example.khajakhoj.model.Coupon
+
 object CouponRepository {
     private val coupons: MutableList<Coupon> = mutableListOf(
         Coupon(1, "CODE123", 10,"ChiyaHub" ,"2024-06-02",false),

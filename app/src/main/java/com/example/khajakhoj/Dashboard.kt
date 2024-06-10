@@ -17,6 +17,7 @@ import com.example.khajakhoj.utils.Utils
 
 class Dashboard : AppCompatActivity() {
     private lateinit var dashboardBinding: ActivityDashboardBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -60,9 +61,6 @@ class Dashboard : AppCompatActivity() {
             }
             true
         }
-
-
-
         // Apply window insets
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())

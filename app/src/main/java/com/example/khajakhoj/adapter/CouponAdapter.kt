@@ -1,13 +1,13 @@
 package com.example.khajakhoj
 
-import Coupon
+import CouponRepository
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.khajakhoj.R
+import com.example.khajakhoj.model.Coupon
 
 class CouponAdapter(private val coupons: MutableList<Coupon>) :
     RecyclerView.Adapter<CouponAdapter.CouponViewHolder>() {

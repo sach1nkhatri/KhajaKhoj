@@ -56,4 +56,9 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
+    implementation ("com.googlecode.libphonenumber:libphonenumber:8.13.11")
+    implementation("androidx.security:security-crypto:1.1.0-alpha06")
+
+
+
 }
