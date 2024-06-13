@@ -5,7 +5,7 @@ data class User(
     val fullName: String = "",
     val email: String = "",
     val phoneNumber: String = "",
-    val address: String = "Lazimpat",
+    val address: String = "",
     val profilePictureUrl: String = "",
     val bookmarkedRestaurants: List<String> = emptyList(),
     val reviews: List<String> = emptyList(),

@@ -56,7 +56,7 @@ class ProfileActivity : AppCompatActivity() {
         binding.nameTextViewOnProfile.text = fullName
         binding.addressTextViewOnProfile.text = address
 
-        val formattedDate = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date(createdAt))
+        val formattedDate = SimpleDateFormat("yyyy", Locale.getDefault()).format(Date(createdAt))
         binding.dateTextViewOnProfile.text = formattedDate
     }
 }
