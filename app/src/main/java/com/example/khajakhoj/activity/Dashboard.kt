@@ -1,17 +1,16 @@
-package com.example.khajakhoj
+package com.example.khajakhoj.activity
 
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
-import androidx.core.view.GravityCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
+import com.example.khajakhoj.HomeFragment
+import com.example.khajakhoj.R
 import com.example.khajakhoj.databinding.ActivityDashboardBinding
 import com.example.khajakhoj.utils.Utils
 
@@ -29,10 +28,10 @@ class Dashboard : AppCompatActivity() {
             when(it.itemId){
                 R.id.home -> replaceFragment(HomeFragment())
                 R.id.profile -> {
-                    startActivity(Intent(this@Dashboard,ProfileActivity::class.java))
+                    startActivity(Intent(this@Dashboard, ProfileActivity::class.java))
 
                 }
-                R.id.settings -> startActivity(Intent(this@Dashboard,SettingsActivity::class.java))
+                R.id.settings -> startActivity(Intent(this@Dashboard, SettingsActivity::class.java))
 
                 else -> {}
             }
@@ -47,13 +46,13 @@ class Dashboard : AppCompatActivity() {
         dashboardBinding.navigationView.setNavigationItemSelectedListener {MenuItem->
             when(MenuItem.itemId){
                 R.id.coupons ->{
-                    startActivity(Intent(this@Dashboard,CouponActivity::class.java))
+                    startActivity(Intent(this@Dashboard, CouponActivity::class.java))
                 }
                 R.id.About_us ->{
-                    startActivity(Intent(this@Dashboard,AboutUsActivity::class.java))
+                    startActivity(Intent(this@Dashboard, AboutUsActivity::class.java))
                 }
                 R.id.support ->{
-                    startActivity(Intent(this@Dashboard,SupportActivity::class.java))
+                    startActivity(Intent(this@Dashboard, SupportActivity::class.java))
                 }
                 R.id.Log_Out ->{
                     Utils.logOut(this)

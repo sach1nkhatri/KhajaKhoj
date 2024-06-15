@@ -1,12 +1,11 @@
-package com.example.khajakhoj
+package com.example.khajakhoj.activity
 
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.khajakhoj.CouponAdapter
 import com.example.khajakhoj.databinding.ActivityCouponsBinding
 
 class CouponActivity : AppCompatActivity() {

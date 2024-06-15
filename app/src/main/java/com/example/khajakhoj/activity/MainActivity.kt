@@ -1,16 +1,18 @@
-package com.example.khajakhoj
+package com.example.khajakhoj.activity
 
+import CredentialManager
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.widget.ProgressBar
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-
+import com.example.khajakhoj.R
 
 class MainActivity : AppCompatActivity() {
     private lateinit var progressBar: ProgressBar
     private var progressStatus = 0
+    private lateinit var credentialManager: CredentialManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -20,6 +22,8 @@ class MainActivity : AppCompatActivity() {
 
         // Initialize progress bar
         progressBar = findViewById(R.id.progressBar)
+
+        credentialManager = CredentialManager(this)
 
         // Start updating progress after a delay
         Handler().postDelayed({
@@ -38,11 +42,27 @@ class MainActivity : AppCompatActivity() {
                 progressStatus++
                 progressBar.progress = progressStatus
             }
-            // When progress reaches 100%, start the next activity
-            val intent = Intent(this@MainActivity, LoginPage::class.java)
-            startActivity(intent)
-            finish()
+            // When progress reaches 100%, determine where to navigate
+            if (credentialManager.isLoggedIn()) {
+                // User is logged in, navigate to dashboard directly
+                navigateToDashboard()
+            } else {
+                // User is not logged in, navigate to login page
+                navigateToLogin()
+            }
         }
         thread.start()
+    }
+
+    private fun navigateToDashboard() {
+        val intent = Intent(this@MainActivity, Dashboard::class.java)
+        startActivity(intent)
+        finish()
+    }
+
+    private fun navigateToLogin() {
+        val intent = Intent(this@MainActivity, LoginPage::class.java)
+        startActivity(intent)
+        finish()
     }
 }

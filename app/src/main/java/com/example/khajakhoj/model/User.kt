@@ -13,4 +13,4 @@ data class User(
     val claimedCoupons: List<Coupon> = emptyList(),
     val createdAt: Long = 0L,
     val updatedAt: Long = 0L
-) {}
+)

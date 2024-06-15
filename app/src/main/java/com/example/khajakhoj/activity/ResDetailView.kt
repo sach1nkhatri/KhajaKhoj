@@ -1,4 +1,4 @@
-package com.example.khajakhoj
+package com.example.khajakhoj.activity
 
 import android.os.Bundle
 import android.os.Handler
@@ -10,6 +10,7 @@ import android.widget.ImageView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
+import com.example.khajakhoj.R
 
 class ResDetailView : AppCompatActivity() {
 

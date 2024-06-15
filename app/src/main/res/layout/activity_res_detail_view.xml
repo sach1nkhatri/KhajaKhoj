@@ -6,7 +6,7 @@
     android:background="@drawable/doodle30"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ResDetailView">
+    tools:context=".activity.ResDetailView">
 
     <LinearLayout
         android:layout_width="match_parent"

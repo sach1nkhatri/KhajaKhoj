@@ -31,6 +31,7 @@ interface UserRepository {
     suspend fun sendPasswordResetEmail(email: String) : Result<Unit>
     // sends a password reset email to the user with the given email
 
+
 //    suspend fun getUserProfile(uid: String): Result<User>
     // gets the user profile with the given uid
 
@@ -45,7 +46,5 @@ interface UserRepository {
 //        profilePictureUrl: String,
 //        phoneNumber: String
 //    through this method i want to be able to update either of the user attributes
-
-
 }
 

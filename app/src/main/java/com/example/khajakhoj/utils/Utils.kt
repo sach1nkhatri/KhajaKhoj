@@ -1,5 +1,6 @@
 package com.example.khajakhoj.utils
 
+import CredentialManager
 import android.app.Dialog
 import android.content.Context
 import android.content.Intent
@@ -13,8 +14,8 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.startActivity
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
-import com.example.khajakhoj.Dashboard
-import com.example.khajakhoj.LoginPage
+import com.example.khajakhoj.activity.Dashboard
+import com.example.khajakhoj.activity.LoginPage
 import com.example.khajakhoj.R
 
 object Utils {
@@ -26,8 +27,8 @@ object Utils {
 
             // Clear the Encrypted and Shared Preferences
             val credentialManager = CredentialManager(context)
-            credentialManager.removeEncryptedCredentials()
-            credentialManager.clearSharedCredentials()
+            credentialManager.clearUserCredentials()
+            credentialManager.clearLoginState()
 
             // Start the LoginPage activity and clear the task stack
             val intent = Intent(context, LoginPage::class.java)

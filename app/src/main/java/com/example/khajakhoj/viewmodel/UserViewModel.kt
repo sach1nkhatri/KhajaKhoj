@@ -1,21 +1,28 @@
 package com.example.khajakhoj.viewmodel
 
+import CredentialManager
+import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.khajakhoj.repository.UserRepository
+import com.example.khajakhoj.activity.LoginPage
+import com.example.khajakhoj.model.User
 import com.example.khajakhoj.repository.UserRepositoryImpl
+//import com.example.khajakhoj.utils.CredentialManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
-import com.google.firebase.events.Event
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.database.FirebaseDatabase
 import com.google.i18n.phonenumbers.PhoneNumberUtil
-import com.google.rpc.context.AttributeContext
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 
-class UserViewModel(private val repository: UserRepository = UserRepositoryImpl()) : ViewModel() {
+class UserViewModel : ViewModel() {
+//    private val credentialManager: CredentialManager = CredentialManager(context = LoginPage())
+    private val repository: UserRepositoryImpl = UserRepositoryImpl()
+    private val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
+    private val firebaseDatabase: FirebaseDatabase = FirebaseDatabase.getInstance()
 
     private val _userResponse = MutableLiveData<Result<Unit>>()
     val userResponse: LiveData<Result<Unit>> = _userResponse
@@ -69,32 +76,27 @@ class UserViewModel(private val repository: UserRepository = UserRepositoryImpl(
         password: String,
         confirmPassword: String
     ): Boolean {
-        if (fullName.isEmpty() || email.isEmpty() || phoneNumber.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
-            _userResponse.value = Result.failure(Exception("Please fill in all fields"))
-            return false
+        when {
+            fullName.isBlank() -> return setError("Please fill in all fields")
+            email.isBlank() -> return setError("Please fill in all fields")
+            phoneNumber.isBlank() -> return setError("Please fill in all fields")
+            password.isBlank() -> return setError("Please fill in all fields")
+            confirmPassword.isBlank() -> return setError("Please fill in all fields")
+            !isValidEmail(email) -> return setError("Invalid email address")
+            !validatePhoneNumber(phoneNumber) -> return setError("Invalid phone number")
+            password.length < 6 -> return setError("Password must be at least 6 characters")
+            password != confirmPassword -> return setError("Passwords do not match")
+            else -> return true
         }
+    }
 
-        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            _userResponse.value = Result.failure(Exception("Invalid email address"))
-            return false
-        }
+    private fun setError(message: String): Boolean {
+        _userResponse.value = Result.failure(Exception(message))
+        return false
+    }
 
-        if (!validatePhoneNumber(phoneNumber)) {
-            _userResponse.value = Result.failure(Exception("Invalid phone number"))
-            return false
-        }
-
-        if (password.length < 6) {
-            _userResponse.value =
-                Result.failure(Exception("Password must be at least 6 characters"))
-            return false
-        }
-
-        if (password != confirmPassword) {
-            _userResponse.value = Result.failure(Exception("Passwords do not match"))
-            return false
-        }
-        return true
+    private fun isValidEmail(email: String): Boolean {
+        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
     }
 
     private fun validatePhoneNumber(phoneNumber: String): Boolean {
@@ -108,18 +110,43 @@ class UserViewModel(private val repository: UserRepository = UserRepositoryImpl(
     }
 
     fun signIn(email: String, password: String) {
+//        enablePersistence()  // Enable persistence before sign-in
         viewModelScope.launch {
             try {
                 val signInResult = repository.signInUserWithEmailAndPassword(email, password)
+                if (signInResult.isSuccess) {
+                    saveUserCredentials(firebaseAuth.currentUser)
+                    _userResponse.value = Result.success(Unit)
+                }
                 _userResponse.value = signInResult
             } catch (e: FirebaseAuthInvalidUserException) {
-                _userResponse.value = Result.failure(Exception("No account with this email"))
+                _userResponse.value = Result.failure(NoAccountException())
             } catch (e: FirebaseAuthInvalidCredentialsException) {
-                _userResponse.value = Result.failure(Exception("Invalid password"))
+                _userResponse.value = Result.failure(InvalidPasswordException())
             } catch (e: Exception) {
-                _userResponse.value = Result.failure(e)
+                _userResponse.value = Result.failure(UnknownErrorException())
             }
         }
+    }
+
+    private fun saveUserCredentials(currentUser: FirebaseUser?) {
+        currentUser?.let {
+            val user = User(
+                fullName = it.displayName ?: "",
+                email = it.email ?: "",
+                address = "" // Add logic to retrieve address if needed
+            )
+//            credentialManager.saveSharedCredentials(user)
+        }
+    }
+
+    class NoAccountException : Throwable("No account with this email")
+    class InvalidPasswordException : Throwable("Invalid password")
+    class UnknownErrorException : Throwable("Unknown error")
+
+
+    private fun enablePersistence() {
+        firebaseDatabase.setPersistenceEnabled(true)
     }
 
     private val _passwordResetResult = MutableLiveData<Result<Unit>>()
@@ -127,7 +154,13 @@ class UserViewModel(private val repository: UserRepository = UserRepositoryImpl(
 
     fun sendPasswordResetEmail(email: String) {
         viewModelScope.launch {
-            _passwordResetResult.value = repository.sendPasswordResetEmail(email)
+            val emailExists = repository.checkIfEmailExists(email)
+            if (emailExists) {
+                _passwordResetResult.value = repository.sendPasswordResetEmail(email)
+            } else {
+                _passwordResetResult.value =
+                    Result.failure(Error("Email address not found or invalid"))
+            }
         }
     }
 }

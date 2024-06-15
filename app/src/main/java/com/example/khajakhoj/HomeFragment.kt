@@ -11,6 +11,7 @@ import android.widget.ImageSwitcher
 import android.widget.ImageView
 import android.widget.ViewSwitcher
 import androidx.fragment.app.Fragment
+import com.example.khajakhoj.activity.RestaurantView
 import com.example.khajakhoj.databinding.FragmentHomeBinding
 
 private const val ARG_PARAM1 = "param1"
@@ -27,13 +28,6 @@ class HomeFragment : Fragment() {
     private lateinit var handler: Handler
     private lateinit var runnable: Runnable
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

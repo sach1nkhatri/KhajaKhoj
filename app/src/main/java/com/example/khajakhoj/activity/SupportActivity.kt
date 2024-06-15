@@ -1,10 +1,9 @@
-package com.example.khajakhoj
+package com.example.khajakhoj.activity
 
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import com.example.khajakhoj.databinding.ActivitySupportBinding
-
 
 class SupportActivity : AppCompatActivity() {
     private lateinit var supportBinding: ActivitySupportBinding

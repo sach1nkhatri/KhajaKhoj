@@ -3,16 +3,21 @@ package com.example.khajakhoj.repository
 import com.example.khajakhoj.model.Coupon
 import com.example.khajakhoj.model.User
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.database.FirebaseDatabase
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 
 class UserRepositoryImpl : UserRepository {
-    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
-    private val database: FirebaseDatabase = FirebaseDatabase.getInstance()
+
+    private val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
+    private val database = FirebaseDatabase.getInstance().reference
 
     override suspend fun checkIfEmailExists(email: String): Boolean {
+        val database = FirebaseDatabase.getInstance().reference
         return try {
-            val query = database.getReference("users").orderByChild("email").equalTo(email).get().await()
+            val query = database.child("users").orderByChild("email").equalTo(email).get().await()
             query.exists()
         } catch (e: Exception) {
             false
@@ -21,10 +26,10 @@ class UserRepositoryImpl : UserRepository {
 
     override suspend fun signUpUserWithEmailAndPassword(email: String, password: String): Boolean {
         return try {
-            auth.createUserWithEmailAndPassword(email, password).await()
-            true // Signup successful
+            val authResult = firebaseAuth.createUserWithEmailAndPassword(email, password).await()
+            authResult.user != null
         } catch (e: Exception) {
-            false // Signup failed
+            false
         }
     }
 
@@ -42,21 +47,21 @@ class UserRepositoryImpl : UserRepository {
         updatedAt: Long
     ): Result<Unit> {
         return try {
-            val user = hashMapOf(
-                "uid" to uid,
-                "fullName" to fullName,
-                "email" to email,
-                "phoneNumber" to phoneNumber,
-                "address" to address,
-                "bookmarkedRestaurants" to bookmarkedRestaurants,
-                "reviews" to reviews,
-                "rating" to rating,
-                "claimedCoupons" to claimedCoupons,
-                "createdAt" to createdAt,
-                "updatedAt" to updatedAt
+            val user = User(
+                uid = uid,
+                fullName = fullName,
+                email = email,
+                phoneNumber = phoneNumber,
+                address = address,
+                bookmarkedRestaurants = bookmarkedRestaurants,
+                reviews = reviews,
+                rating = rating,
+                claimedCoupons = claimedCoupons,
+                createdAt = createdAt,
+                updatedAt = updatedAt
             )
 
-            database.getReference("users").child(uid).setValue(user).await()
+            database.child("users").child(uid).setValue(user).await()
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
@@ -65,29 +70,22 @@ class UserRepositoryImpl : UserRepository {
 
     override suspend fun signInUserWithEmailAndPassword(email: String, password: String): Result<Unit> {
         return try {
-            auth.signInWithEmailAndPassword(email, password).await()
+            firebaseAuth.signInWithEmailAndPassword(email, password).await()
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
 
-    override suspend fun sendPasswordResetEmail(email: String): Result<Unit> {
-        return try {
-            auth.sendPasswordResetEmail(email).await()
+    override suspend fun sendPasswordResetEmail(email: String): Result<Unit> = withContext(Dispatchers.IO) {
+        try {
+            firebaseAuth.sendPasswordResetEmail(email).await()
             Result.success(Unit)
         } catch (e: Exception) {
-            Result.failure(e)
+            when (e) {
+                is FirebaseAuthInvalidUserException -> Result.failure(Error("Email address not found or invalid"))
+                else -> Result.failure(e)
+            }
         }
     }
-//
-//    override suspend fun updateProfilePicture(uid: String, profilePictureUrl: String): Result<Unit> {
-//        return try {
-//            database.getReference("users").child(uid).child("profilePictureUrl")
-//                .setValue(profilePictureUrl).await()
-//            Result.success(Unit)
-//        } catch (e: Exception) {
-//            Result.failure(e)
-//        }
-//    }
 }
