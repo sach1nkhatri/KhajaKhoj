@@ -1,12 +1,9 @@
 package com.example.khajakhoj.viewmodel
 
-import CredentialManager
-import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.khajakhoj.activity.LoginPage
 import com.example.khajakhoj.model.User
 import com.example.khajakhoj.repository.UserRepositoryImpl
 //import com.example.khajakhoj.utils.CredentialManager

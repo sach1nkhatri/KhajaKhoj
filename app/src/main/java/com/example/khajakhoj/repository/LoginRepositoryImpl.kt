@@ -3,7 +3,6 @@ package com.example.khajakhoj.repository
 import CredentialManager
 import android.content.Context
 import android.util.Log
-import androidx.compose.ui.util.trace
 import com.example.khajakhoj.model.User
 import com.example.khajakhoj.utils.Result
 import com.google.firebase.auth.FirebaseAuth
