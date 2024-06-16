@@ -20,7 +20,7 @@ class ProfileActivity : AppCompatActivity() {
         binding = ActivityProfileBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        displayUserData()
+//        displayUserData()
 
         binding.settingButtonProfile.setOnClickListener {
             startActivity(Intent(this@ProfileActivity, SettingsActivity::class.java))
@@ -29,31 +29,30 @@ class ProfileActivity : AppCompatActivity() {
 
         binding.logOutProfile.setOnClickListener {
             Utils.logOut(this@ProfileActivity)
-//            credentialManager.clearUserCredentials() // Clear user credentials on logout
-            redirectToLoginPage()
+//            redirectToLoginPage()
         }
     }
 
-    private fun displayUserData() {
-        val userCredentials = credentialManager.getSavedCredentials()
+//    private fun displayUserData() {
+//        val userCredentials = credentialManager.getSavedCredentials()
 
-        val fullName = userCredentials?.fullName ?: "N/A"
-        val address = userCredentials?.address ?: "N/A"
-        val createdAt = userCredentials?.createdAt ?: 0L
+//        val fullName = userCredentials?.fullName ?: "N/A"
+//        val address = userCredentials?.address ?: "N/A"
+//        val createdAt = userCredentials?.createdAt ?: 0L
 
-        // Update the UI with the fetched data
-        binding.nameTextViewOnProfile.text = fullName
-        binding.addressTextViewOnProfile.text = address
-
-        if (createdAt != 0L) {
-            val formattedDate = SimpleDateFormat("yyyy", Locale.getDefault()).format(Date(createdAt))
-            binding.dateTextViewOnProfile.text = formattedDate
-        } else {
-            binding.dateTextViewOnProfile.text = "N/A"
-        }
-
-        Log.d("ProfileActivity", "Displayed user credentials: FullName=$fullName, Address=$address, CreatedAt=$createdAt")
-    }
+//        // Update the UI with the fetched data
+//        binding.nameTextViewOnProfile.text = fullName
+//        binding.addressTextViewOnProfile.text = address
+//
+//        if (createdAt != 0L) {
+//            val formattedDate = SimpleDateFormat("yyyy", Locale.getDefault()).format(Date(createdAt))
+//            binding.dateTextViewOnProfile.text = formattedDate
+//        } else {
+//            binding.dateTextViewOnProfile.text = "N/A"
+//        }
+//
+//        Log.d("ProfileActivity", "Displayed user credentials: FullName=$fullName, Address=$address, CreatedAt=$createdAt")
+//    }
 
     private fun redirectToLoginPage() {
         startActivity(Intent(this, LoginPage::class.java).apply {

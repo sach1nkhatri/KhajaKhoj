@@ -27,8 +27,7 @@ object Utils {
 
             // Clear the Encrypted and Shared Preferences
             val credentialManager = CredentialManager(context)
-            credentialManager.clearUserCredentials()
-            credentialManager.clearLoginState()
+            credentialManager.saveLoginState(false)
 
             // Start the LoginPage activity and clear the task stack
             val intent = Intent(context, LoginPage::class.java)

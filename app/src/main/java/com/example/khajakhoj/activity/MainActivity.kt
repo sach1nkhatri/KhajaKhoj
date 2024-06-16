@@ -4,6 +4,7 @@ import CredentialManager
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
+import android.util.Log
 import android.widget.ProgressBar
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -44,10 +45,15 @@ class MainActivity : AppCompatActivity() {
             }
             // When progress reaches 100%, determine where to navigate
             if (credentialManager.isLoggedIn()) {
-                // User is logged in, navigate to dashboard directly
+                Log.d("Main Activity", "isLoggedIn: true")
+                Log.d("Main Activity", "isLoggedIn: true")
+                Log.d("Main Activity", "isLoggedIn: true")
+                Log.d("Main Activity", "isLoggedIn: true")
+                Log.d("Main Activity", "isLoggedIn: true")
+                Log.d("Main Activity", "isLoggedIn: true")
+                Log.d("Main Activity", "isLoggedIn: true")
                 navigateToDashboard()
             } else {
-                // User is not logged in, navigate to login page
                 navigateToLogin()
             }
         }

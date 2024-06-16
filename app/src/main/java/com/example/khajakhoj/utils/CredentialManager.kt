@@ -5,51 +5,32 @@ import com.example.khajakhoj.model.User
 
 class CredentialManager(private val context: Context) {
 
-    private val sharedPreferences: SharedPreferences by lazy {
-        context.getSharedPreferences("user_credentials", Context.MODE_PRIVATE)
-    }
-
     private val authSharedPreferences: SharedPreferences by lazy {
         context.getSharedPreferences("auth_state", Context.MODE_PRIVATE)
     }
 
-    fun saveUserCredentials(user: User) {
-        with(sharedPreferences.edit()) {
-            putString("uid", user.uid)
-            putString("fullName", user.fullName)
-            putString("email", user.email)
-            putString("phoneNumber", user.phoneNumber)
-            putString("address", user.address)
-            apply()
-        }
-        saveLoginState(true)
-        Log.d("CredentialManager", "User credentials saved: $user")
-    }
-
+    // Saves the login state: true for login, false for logout
     fun saveLoginState(isLoggedIn: Boolean) {
         with(authSharedPreferences.edit()) {
             putBoolean("isLoggedIn", isLoggedIn)
             apply()
         }
-        Log.d("CredentialManager", "Login state saved: $isLoggedIn")
+        Log.d("CredentialManager", "saveLoginState: Login state saved: $isLoggedIn")
     }
 
-    fun clearUserCredentials() {
-        sharedPreferences.edit().clear().apply()
-        Log.d("CredentialManager", "User credentials cleared")
-    }
-
-    fun clearLoginState() {
-        authSharedPreferences.edit().clear().apply()
-        Log.d("CredentialManager", "Login state cleared")
+    // Checks the login state and returns true if logged in, false otherwise
+    fun isLoggedIn(): Boolean {
+        val loggedIn = authSharedPreferences.getBoolean("isLoggedIn", false)
+        Log.d("CredentialManager", "isLoggedIn: Login state retrieved: $loggedIn")
+        return loggedIn
     }
 
     fun getSavedCredentials(): User? {
-        val uid = sharedPreferences.getString("uid", null)
-        val fullName = sharedPreferences.getString("fullName", null)
-        val email = sharedPreferences.getString("email", null)
-        val phoneNumber = sharedPreferences.getString("phoneNumber", null)
-        val address = sharedPreferences.getString("address", null)
+        val uid = "uid879"
+        val fullName = "John Milton Dhami"
+        val email = "john.c.calhoun@examplepetstore.com"
+        val phoneNumber = "0712345678"
+        val address = "123 Main St, Anytown, USA"
 
         val savedUser = if (uid != null && fullName != null && email != null && phoneNumber != null && address != null) {
             User(uid, fullName, email, phoneNumber, address)
@@ -59,11 +40,5 @@ class CredentialManager(private val context: Context) {
 
         Log.d("CredentialManager", "Retrieved saved credentials: $savedUser")
         return savedUser
-    }
-
-    fun isLoggedIn(): Boolean {
-        val loggedIn = authSharedPreferences.getBoolean("isLoggedIn", false)
-        Log.d("CredentialManager", "Login state retrieved: $loggedIn")
-        return loggedIn
     }
 }

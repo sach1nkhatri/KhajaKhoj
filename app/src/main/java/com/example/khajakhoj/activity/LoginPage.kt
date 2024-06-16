@@ -6,13 +6,13 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import com.example.khajakhoj.databinding.ActivityLoginPageBinding
 import com.example.khajakhoj.utils.Result
 import com.example.khajakhoj.utils.Utils.showForgotPasswordDialog
 import com.example.khajakhoj.viewmodel.LoginViewModel
 
 class LoginPage : AppCompatActivity() {
+
     private lateinit var binding: ActivityLoginPageBinding
     private val viewModel: LoginViewModel by viewModels()
 
@@ -65,7 +65,7 @@ class LoginPage : AppCompatActivity() {
                 }
 
                 is Result.Loading -> {
-                    // Optionally handle loading state, e.g., show progress indicator
+                    // Optionally show a progress indicator
                 }
             }
         })
@@ -89,9 +89,14 @@ class LoginPage : AppCompatActivity() {
                 }
 
                 is Result.Loading -> {
-                    // Optionally handle loading state, e.g., show progress indicator
+                    // Optionally show a progress indicator
                 }
             }
+        })
+
+        // Observe toast messages from the view model
+        viewModel.toastMessage.observe(this, Observer { message ->
+            Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
         })
     }
 
