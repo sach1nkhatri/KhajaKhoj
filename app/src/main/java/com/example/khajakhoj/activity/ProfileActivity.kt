@@ -33,31 +33,33 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     private fun displayUserData() {
-        val userCredentials = credentialManager.getSavedCredentials()
+        val userCredentials = credentialManager.getUser()
 
-        val fullName = userCredentials?.fullName
-        val address = userCredentials?.address
-        val createdAt =userCredentials?.createdAt // Provide a default value of 0L if createdAt is null
-        Log.d("ProfileActivity", "CreatedAt=$createdAt")
+        if (userCredentials != null) {
+            val fullName = userCredentials.fullName
+            val address = userCredentials.address
+            val createdAt = userCredentials.createdAt // Default value if createdAt is null is not needed here since it is a non-nullable long
+            Log.d("ProfileActivity", "CreatedAt=$createdAt")
 
-        // Update the UI with the fetched data
-        binding.nameTextViewOnProfile.text = fullName
-        binding.addressTextViewOnProfile.text = address
+            // Update the UI with the fetched data
+            binding.nameTextViewOnProfile.text = fullName
+            binding.addressTextViewOnProfile.text = address
 
-        if (createdAt != 0L) {
-            val formattedDate =
-                SimpleDateFormat("yyyy", Locale.getDefault()).format(createdAt?.let { Date(it) })
+            val formattedDate = if (createdAt != 0L) {
+                SimpleDateFormat("yyyy", Locale.getDefault()).format(Date(createdAt))
+            } else {
+                "N/A"
+            }
             binding.dateTextViewOnProfile.text = formattedDate
+
+            Log.d("ProfileActivity", "Displayed user credentials: FullName=$fullName, Address=$address, CreatedAt=$createdAt")
         } else {
+            Log.d("ProfileActivity", "User credentials not found")
+            binding.nameTextViewOnProfile.text = "N/A"
+            binding.addressTextViewOnProfile.text = "N/A"
             binding.dateTextViewOnProfile.text = "N/A"
         }
-
-        Log.d(
-            "ProfileActivity",
-            "Displayed user credentials: FullName=$fullName, Address=$address, CreatedAt=$createdAt"
-        )
     }
-
 
     private fun redirectToLoginPage() {
         startActivity(Intent(this, LoginPage::class.java).apply {

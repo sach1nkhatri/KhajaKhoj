@@ -54,7 +54,8 @@ class SignUpViewModel : ViewModel() {
                             email,
                             phoneNumber,
                             address,
-                            profilePicture = "",  // Set default empty string for profilePicture
+                            profilePictureUrl = "",
+                            // Set default empty string for profilePicture
                             bookmarkedRestaurants = emptyList(),  // Set default empty list for bookmarked restaurants
                             claimedCoupons = emptyList(),  // Set default empty list for claimed coupons
                             createdAt = System.currentTimeMillis(),  // Set created time

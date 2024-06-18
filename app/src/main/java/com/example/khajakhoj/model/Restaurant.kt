@@ -4,7 +4,7 @@ data class Restaurant(
     val id: String = "",
     val name: String = "",
     val address: String = "",
-    val cuisineTypes: List<String> = emptyList(), // Updated property name for consistency
+    val cuisineTypes: List<String> = emptyList(),
     val openTime: String = "",
     val closeTime: String = "",
     val contactNumber: String = "",
@@ -14,6 +14,6 @@ data class Restaurant(
     val rating: Int = 0,
     val reviews: List<Review> = emptyList(),
     val menuItems: List<MenuItem> = emptyList(),
-    val coupons: List<Coupon> = emptyList(),  // what is this Coupon here
+    val coupons: List<Coupon> = emptyList(),
     val location: Location = Location()
 )

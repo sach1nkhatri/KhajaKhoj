@@ -47,9 +47,9 @@ class SignUpRepositoryImpl : SignUpRepository {
         uid: String,
         fullName: String,
         email: String,
-        phone: String,
+        phoneNumber: String,
         address: String,
-        profilePicture: String,
+        profilePictureUrl: String,
         bookmarkedRestaurants: List<String>,
         reviews: List<String>,
         rating: Map<String, Double>,
@@ -63,9 +63,9 @@ class SignUpRepositoryImpl : SignUpRepository {
                 uid = uid,
                 fullName = fullName,
                 email = email,
-                phoneNumber = phone,
+                phoneNumber = phoneNumber,
                 address = address,
-                profilePictureUrl = profilePicture,
+                profilePictureUrl = profilePictureUrl,
                 bookmarkedRestaurants = bookmarkedRestaurants,
                 reviews = reviews,
                 rating = rating,
@@ -75,6 +75,7 @@ class SignUpRepositoryImpl : SignUpRepository {
             )
             databaseReference.getReference("users").child(uid).setValue(user).await()
             Log.d("SignUpRepositoryImpl", "User saved in Realtime Database successfully")
+            Log.d("SignUpRepositoryImpl", "Profile Picture Url : $profilePictureUrl")
             Result.success(Unit)
         } catch (e: Exception) {
             Log.e("SignUpRepositoryImpl", "Error saving user in Realtime Database", e)

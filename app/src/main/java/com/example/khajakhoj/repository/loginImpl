@@ -14,6 +14,7 @@ class LoginRepositoryImpl(private val context: Context) : LoginRepository {
 
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
     private val databaseReference = FirebaseDatabase.getInstance()
+    private var currentUser: FirebaseUser? = null
     private val credentialManager = CredentialManager(context)
 
     override suspend fun checkEmailExists(email: String): Boolean {
@@ -31,21 +32,36 @@ class LoginRepositoryImpl(private val context: Context) : LoginRepository {
         }
     }
 
-    override suspend fun loginUserWithEmailPassword(
-        email: String,
-        password: String
-    ): Result<Boolean> {
+    override suspend fun loginUserWithEmailPassword(email: String, password: String): Result<Boolean> {
         return try {
             Log.d("LoginRepositoryImpl", "Logging in with email: $email")
-            auth.signInWithEmailAndPassword(email, password).await()
-            Log.d("LoginRepositoryImpl", "Login successful")
-            Result.Success(true)
+            val authResult = auth.signInWithEmailAndPassword(email, password).await()
+            currentUser = authResult.user
+            currentUser?.let {
+                val user = it.toUser()
+                Log.d("LoginRepositoryImpl", "Login successful")
+                if (user != null) {
+                    Log.d("LoginRepositoryImpl", "Saving Login State")
+                    credentialManager.saveLoginState(true)
+                    if(credentialManager.isLoggedIn()) {
+                        Log.d("LoginRepositoryImpl", "isLoggedIn: true")
+                        Log.d("LoginRepositoryImpl", "isLoggedIn: true")
+                        Log.d("LoginRepositoryImpl", "isLoggedIn: true")
+                        Log.d("LoginRepositoryImpl", "isLoggedIn: true")
+                        Log.d("LoginRepositoryImpl", "isLoggedIn: true")
+                        Log.d("LoginRepositoryImpl", "isLoggedIn: true")
+                    }
+                }
+                Result.Success(true)
+            } ?: run {
+                Log.e("LoginRepositoryImpl", "User not found after login")
+                Result.Failure(Exception("User not found"))
+            }
         } catch (e: Exception) {
             Log.e("LoginRepositoryImpl", "Error logging in", e)
             Result.Failure(e)
         }
     }
-
 
     override suspend fun sendPasswordResetEmail(email: String): Result<Boolean> {
         return try {
@@ -59,10 +75,10 @@ class LoginRepositoryImpl(private val context: Context) : LoginRepository {
         }
     }
 
-    fun getCurrentUser(): User? {
-        val currentUser = auth.currentUser
-        return currentUser.toUser()
-        Log.d("LoginRepositoryImpl", "Get Current user: $currentUser")
+    override fun getCurrentUser(): User? {
+        val user = credentialManager.getSavedCredentials() ?: currentUser.toUser()
+        Log.d("LoginRepositoryImpl", "Getting current user: ${user?.email}")
+        return user
     }
 
     private fun FirebaseUser?.toUser(): User? {

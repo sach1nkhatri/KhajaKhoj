@@ -8,5 +8,5 @@ interface LoginRepository {
     suspend fun checkEmailExists(email: String): Boolean
     suspend fun loginUserWithEmailPassword(email: String, password: String): Result<Boolean>
     suspend fun sendPasswordResetEmail(email: String): Result<Boolean>
-    fun getCurrentUser(): User?
+//    fun getCurrentUser(): User?
 }

@@ -7,5 +7,4 @@ data class Coupon(
     val restaurant: String="",
     val expirationDate: String="",
     var isUsed: Boolean = false
-) {
-}
+)

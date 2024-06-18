@@ -1,7 +1,6 @@
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
-import com.example.khajakhoj.model.Coupon
 import com.example.khajakhoj.model.User
 
 class CredentialManager(private val context: Context) {
@@ -9,9 +8,6 @@ class CredentialManager(private val context: Context) {
     private val authSharedPreferences: SharedPreferences by lazy {
         context.getSharedPreferences("auth_state", Context.MODE_PRIVATE)
     }
-
-    val coupon1 = Coupon(1, "CODE123", 10, "ChiyaHub", "2024-06-02", false)
-    val coupon2 = Coupon(2, "SAVE50", 50, "Himalayan Java Outlets", "2024-06-15", false)
 
     // Saves the login state: true for login, false for logout
     fun saveLoginState(isLoggedIn: Boolean) {
@@ -29,21 +25,41 @@ class CredentialManager(private val context: Context) {
         return loggedIn
     }
 
-    fun getSavedCredentials(): User {
-        val uid = "uid879"
-        val fullName = "John Milton Dhami"
-        val email = "john.c.calhoun@examplepetstore.com"
-        val phoneNumber = "0712345678"
-        val address = "123 Main St, Anytown, USA"
-        val profilePictureUrl = "https://example.com/profile_picture.jpg"
-        val bookmarkedRestaurants = listOf("restaurant1", "restaurant2")
-        val reviews = listOf("review1", "review2")
-        val rating = mapOf("restaurant1" to 4.5, "restaurant2" to 3.8)
-        val claimedCoupons = listOf(coupon1, coupon2)
-        val createdAt = 1718557256026L
-        val updatedAt = 0L
+    // Saves the user data
+    fun saveUser(user: User) {
+        with(authSharedPreferences.edit()) {
+            putString("uid", user.uid)
+            putString("fullName", user.fullName)
+            putString("email", user.email)
+            putString("phoneNumber", user.phoneNumber)
+            putString("address", user.address)
+            putString("profilePictureUrl", user.profilePictureUrl)
+            putStringSet("bookmarkedRestaurants", user.bookmarkedRestaurants.toSet())
+            putStringSet("reviews", user.reviews.toSet())
+            // For maps and complex objects, you'd need a different approach (e.g., JSON or custom serialization)
+            // Skipping `rating` and `claimedCoupons` for simplicity in this example
+            putLong("createdAt", user.createdAt)
+            putLong("updatedAt", user.updatedAt)
+            apply()
+        }
+        Log.d("CredentialManager", "saveUser: User data saved")
+    }
 
-        val savedUser = User(
+    // Retrieves the user data
+    fun getUser(): User? {
+        val uid = authSharedPreferences.getString("uid", "") ?: return null
+        val fullName = authSharedPreferences.getString("fullName", "") ?: return null
+        val email = authSharedPreferences.getString("email", "") ?: return null
+        val phoneNumber = authSharedPreferences.getString("phoneNumber", "") ?: return null
+        val address = authSharedPreferences.getString("address", "") ?: return null
+        val profilePictureUrl = authSharedPreferences.getString("profilePictureUrl", "") ?: return null
+        val bookmarkedRestaurants = authSharedPreferences.getStringSet("bookmarkedRestaurants", emptySet())?.toList() ?: emptyList()
+        val reviews = authSharedPreferences.getStringSet("reviews", emptySet())?.toList() ?: emptyList()
+        // For maps and complex objects, you'd need a different approach (e.g., JSON or custom serialization)
+        val createdAt = authSharedPreferences.getLong("createdAt", 0L)
+        val updatedAt = authSharedPreferences.getLong("updatedAt", 0L)
+
+        return User(
             uid,
             fullName,
             email,
@@ -52,14 +68,30 @@ class CredentialManager(private val context: Context) {
             profilePictureUrl,
             bookmarkedRestaurants,
             reviews,
-            rating,
-            claimedCoupons,
+            emptyMap(), // Placeholder for rating
+            emptyList(), // Placeholder for claimedCoupons
             createdAt,
             updatedAt
         )
-
-        Log.d("CredentialManager", "Retrieved saved credentials: $savedUser")
-        return savedUser
     }
 
+    // Clears the user data
+    fun clearUser() {
+        with(authSharedPreferences.edit()) {
+            remove("uid")
+            remove("fullName")
+            remove("email")
+            remove("phoneNumber")
+            remove("address")
+            remove("profilePictureUrl")
+            remove("bookmarkedRestaurants")
+            remove("reviews")
+            // Skipping `rating` and `claimedCoupons` for simplicity in this example
+            remove("createdAt")
+            remove("updatedAt")
+            apply()
+        }
+        Log.d("CredentialManager", "clearUser: User data cleared")
+    }
 }
+

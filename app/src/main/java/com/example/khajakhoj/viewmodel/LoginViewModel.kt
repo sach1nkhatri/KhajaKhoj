@@ -33,13 +33,13 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             val result = repository.loginUserWithEmailPassword(email, password)
             if (result is Result.Success && result.data) {
-                val user = repository.getCurrentUser()
-                Log.d("LoginViewModel", "User signed in successfully: ${user?.uid}")
-                Log.d("LoginViewModel", "User signed in successfully: ${user?.fullName}")
-                Log.d("LoginViewModel", "User signed in successfully: ${user?.email}")
-                Log.d("LoginViewModel", "User signed in successfully: ${user?.phoneNumber}")
-                Log.d("LoginViewModel", "User signed in successfully: ${user?.address}")
-                _currentUser.postValue(user)
+//                val user = repository.getCurrentUser()
+//                Log.d("LoginViewModel", "User signed in successfully: ${user?.uid}")
+//                Log.d("LoginViewModel", "User signed in successfully: ${user?.fullName}")
+//                Log.d("LoginViewModel", "User signed in successfully: ${user?.email}")
+//                Log.d("LoginViewModel", "User signed in successfully: ${user?.phoneNumber}")
+//                Log.d("LoginViewModel", "User signed in successfully: ${user?.address}")
+//                _currentUser.postValue(user)
             } else {
                 Log.e("LoginViewModel", "Sign-in failed for email: $email")
             }
@@ -69,10 +69,5 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
                 Log.d("LoginViewModel", "Email not found: $email")
             }
         }
-    }
-
-    fun getCurrentUser() {
-        Log.d("LoginViewModel", "Getting current user")
-        _currentUser.postValue(repository.getCurrentUser())
     }
 }
