@@ -7,9 +7,9 @@ data class User(
     val phoneNumber: String,
     val address: String,
     val profilePictureUrl: String,
-    val bookmarkedRestaurants: List<String> = emptyList(),
-    val reviews: List<String> = emptyList(),
-    val rating: Map<String, Double> = emptyMap(),
-    val claimedCoupons: List<Coupon> = emptyList(),
-    val createdAt: Long = 0L,
+    val bookmarkedRestaurants: Map<String, Boolean> = emptyMap(),
+    val reviews: Map<String, Boolean> = emptyMap(),
+    val ratings: Map<String, Double> = emptyMap(),
+    val claimedCoupons: Map<String, Boolean> = emptyMap(),
+    val createdAt: Long = 0L
 )

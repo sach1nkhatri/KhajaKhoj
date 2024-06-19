@@ -106,12 +106,10 @@ class LoginPage : AppCompatActivity() {
                 binding.usernameInput.error = "Please enter your email"
                 false
             }
-
             password.isEmpty() -> {
                 binding.passwordInput.error = "Please enter your password"
                 false
             }
-
             else -> true
         }
     }

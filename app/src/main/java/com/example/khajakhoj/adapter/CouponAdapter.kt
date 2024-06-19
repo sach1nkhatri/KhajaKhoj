@@ -28,11 +28,11 @@ class CouponAdapter(private val coupons: MutableList<Coupon>) :
         val coupon = coupons[position]
 
         holder.couponCodeTextView.text = coupon.code
-        holder.discountTextView.text = "for ${coupon.discount}% off at ${coupon.restaurant}"
+//        holder.discountTextView.text = "for ${coupon.discount}% off at ${coupon.restaurant}"
 
         holder.useCouponButton.setOnClickListener {
             holder.useCouponButton.text = "Used"
-            CouponRepository.markCouponAsUsed(coupon.id)
+//            CouponRepository.markCouponAsUsed(coupon.id)
             // Remove the used coupon from the list and notify the adapter
             coupons.removeAt(position)
             notifyItemRemoved(position)

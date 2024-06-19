@@ -1,10 +1,11 @@
-package com.example.khajakhoj
+package com.example.khajakhoj.testActivity
 
 import android.os.Bundle
 import android.util.Log
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.example.khajakhoj.R
 import com.example.khajakhoj.model.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot

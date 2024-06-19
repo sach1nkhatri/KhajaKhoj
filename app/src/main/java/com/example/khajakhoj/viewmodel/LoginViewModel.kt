@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.khajakhoj.model.User
 import com.example.khajakhoj.repository.LoginRepository
@@ -12,9 +13,9 @@ import com.example.khajakhoj.repository.LoginRepositoryImpl
 import com.example.khajakhoj.utils.Result
 import kotlinx.coroutines.launch
 
-class LoginViewModel(application: Application) : AndroidViewModel(application) {
+class LoginViewModel : ViewModel() {
 
-    private val repository: LoginRepository = LoginRepositoryImpl(application)
+    private val repository: LoginRepository = LoginRepositoryImpl()
 
     private val _loginResult = MutableLiveData<Result<Boolean>>()
     val loginResult: LiveData<Result<Boolean>> = _loginResult

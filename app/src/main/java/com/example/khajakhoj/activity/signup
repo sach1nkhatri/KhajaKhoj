@@ -14,11 +14,10 @@ import com.example.khajakhoj.databinding.ActivitySignUpBinding
 import com.example.khajakhoj.utils.LocationUtils
 import com.example.khajakhoj.utils.Utils
 import com.example.khajakhoj.viewmodel.SignUpViewModel
-import com.example.khajakhoj.viewmodel.UserViewModel
 
 class SignUpActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySignUpBinding
-    private val viewModel: UserViewModel by viewModels()
+    private val viewModel: SignUpViewModel by viewModels()
 
     private lateinit var locationUtils: LocationUtils
     private var isSignUpInProgress = false

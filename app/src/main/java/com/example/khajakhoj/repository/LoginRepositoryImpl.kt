@@ -10,11 +10,10 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.coroutines.tasks.await
 
-class LoginRepositoryImpl(private val context: Context) : LoginRepository {
+class LoginRepositoryImpl() : LoginRepository {
 
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
     private val databaseReference = FirebaseDatabase.getInstance()
-    private val credentialManager = CredentialManager(context)
 
     override suspend fun checkEmailExists(email: String): Boolean {
         return try {
@@ -59,30 +58,30 @@ class LoginRepositoryImpl(private val context: Context) : LoginRepository {
         }
     }
 
-    fun getCurrentUser(): User? {
+    fun getCurrentUser(): FirebaseUser? {
         val currentUser = auth.currentUser
-        return currentUser.toUser()
+        return currentUser
+//        return currentUser.toUser()
         Log.d("LoginRepositoryImpl", "Get Current user: $currentUser")
     }
 
-    private fun FirebaseUser?.toUser(): User? {
-        return this?.let { firebaseUser ->
-            User(
-                uid = firebaseUser.uid,
-                fullName = firebaseUser.displayName ?: "",
-                email = firebaseUser.email ?: "",
-                phoneNumber = firebaseUser.phoneNumber ?: "",
-                address = "",
-                profilePictureUrl = firebaseUser.photoUrl?.toString() ?: "",
-                bookmarkedRestaurants = emptyList(),
-                reviews = emptyList(),
-                rating = emptyMap(),
-                claimedCoupons = emptyList(),
-                createdAt = firebaseUser.metadata?.creationTimestamp ?: 0L,
-                updatedAt = firebaseUser.metadata?.lastSignInTimestamp ?: 0L,
-            ).also {
-                Log.d("LoginRepositoryImpl", "Converted FirebaseUser to User: ${it.email}")
-            }
-        }
-    }
+//    private fun FirebaseUser?.toUser(): User? {
+//        return this?.let { firebaseUser ->
+//            User(
+//                uid = firebaseUser.uid,
+//                fullName = firebaseUser.displayName ?: "",
+//                email = firebaseUser.email ?: "",
+//                phoneNumber = firebaseUser.phoneNumber ?: "",
+//                address = "",
+//                profilePictureUrl = firebaseUser.photoUrl?.toString() ?: "",
+//                bookmarkedRestaurants = emptyList(),
+//                reviews = emptyList(),
+//                rating = emptyMap(),
+//                claimedCoupons = emptyList(),
+//                createdAt = firebaseUser.metadata?.creationTimestamp ?: 0L,
+//            ).also {
+//                Log.d("LoginRepositoryImpl", "Converted FirebaseUser to User: ${it.email}")
+//            }
+//        }
+//    }
 }

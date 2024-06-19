@@ -18,9 +18,9 @@ class CouponActivity : AppCompatActivity() {
 
         val recyclerView: RecyclerView = binding.cuponRecyclerView
         recyclerView.layoutManager = LinearLayoutManager(this)
-        val coupons = CouponRepository.getAvailableCoupons().toMutableList()
-        val adapter = CouponAdapter(coupons)
-        recyclerView.adapter = adapter
+//        val coupons = CouponRepository.getAvailableCoupons().toMutableList()
+//        val adapter = CouponAdapter(coupons)
+//        recyclerView.adapter = adapter
 
     }
 }

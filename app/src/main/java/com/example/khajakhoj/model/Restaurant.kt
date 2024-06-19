@@ -12,8 +12,8 @@ data class Restaurant(
     val carParking: Boolean = false,
     var wifi: Boolean = false,
     val rating: Int = 0,
-    val reviews: List<Review> = emptyList(),
-    val menuItems: List<MenuItem> = emptyList(),
-    val coupons: List<Coupon> = emptyList(),
+    val reviews: Map<String, Boolean> = emptyMap(),
+    val menuItems: Map<String, Boolean> = emptyMap(),
+    val coupons: Map<String, Boolean> = emptyMap(),
     val location: Location = Location()
 )
