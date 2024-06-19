@@ -98,11 +98,25 @@ class UserViewModel : ViewModel() {
             val result = repository.loginUserWithEmailPassword(email, password)
             if (result.isSuccess) {
 
+
             }
 
         }
 
     }
+
+    // for displaying data in ProfileActivity
+    private val _currentUser = MutableLiveData<User?>()
+    val currentUser: LiveData<User?> = _currentUser
+
+    init {
+        viewModelScope.launch {
+            val user = repository.getCurrentUser()
+            _currentUser.value = user
+        }
+    }
+    // for displaying data in ProfileActivity
+
 
     private fun validateSignUpInput(
         fullName: String,

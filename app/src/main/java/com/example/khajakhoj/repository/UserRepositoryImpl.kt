@@ -99,7 +99,7 @@ class UserRepositoryImpl : UserRepository {
         }
     }
 
-    suspend fun getCurrentUser(): User? {
+    override suspend fun getCurrentUser(): User? {
         val firebaseUser = firebaseAuth.currentUser ?: return null
 
         val uid = firebaseUser.uid

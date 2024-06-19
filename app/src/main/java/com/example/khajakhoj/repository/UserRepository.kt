@@ -8,6 +8,7 @@ interface UserRepository {
     suspend fun loginUserWithEmailPassword(email: String, password: String): Result<Boolean>
     suspend fun sendPasswordResetEmail(email: String): Result<Boolean>
     suspend fun checkEmailExists(email: String): Boolean
+    suspend fun getCurrentUser() : User?
 
 }
 

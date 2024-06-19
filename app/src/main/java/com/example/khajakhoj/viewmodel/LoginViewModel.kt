@@ -26,9 +26,6 @@ class LoginViewModel : ViewModel() {
     private val _toastMessage = MutableLiveData<String>()
     val toastMessage: LiveData<String> = _toastMessage
 
-    private val _currentUser = MutableLiveData<User?>()
-    val currentUser: LiveData<User?> = _currentUser
-
     fun signInUser(email: String, password: String) {
         Log.d("LoginViewModel", "Attempting to sign in user with email: $email")
         viewModelScope.launch {
@@ -47,6 +44,18 @@ class LoginViewModel : ViewModel() {
             _loginResult.postValue(result)
         }
     }
+
+    // for displaying data in ProfileActivity
+    private val _currentUser = MutableLiveData<User?>()
+    val currentUser: LiveData<User?> = _currentUser
+
+    init {
+        viewModelScope.launch {
+            val user = repository.getCurrentUser()
+            _currentUser.value = user
+        }
+    }
+    // for displaying data in ProfileActivity
 
     fun sendPasswordResetEmail(email: String) {
         Log.d("LoginViewModel", "Attempting to send password reset email to: $email")
@@ -71,4 +80,6 @@ class LoginViewModel : ViewModel() {
             }
         }
     }
+
+
 }

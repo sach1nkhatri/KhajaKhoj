@@ -1,12 +1,9 @@
 package com.example.khajakhoj.repository
 
-import CredentialManager
-import android.content.Context
 import android.util.Log
 import com.example.khajakhoj.model.User
 import com.example.khajakhoj.utils.Result
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.coroutines.tasks.await
 
@@ -58,30 +55,42 @@ class LoginRepositoryImpl() : LoginRepository {
         }
     }
 
-    fun getCurrentUser(): FirebaseUser? {
-        val currentUser = auth.currentUser
-        return currentUser
-//        return currentUser.toUser()
-        Log.d("LoginRepositoryImpl", "Get Current user: $currentUser")
-    }
+    override suspend fun getCurrentUser(): User? {
+        val firebaseUser = auth.currentUser ?: return null
 
-//    private fun FirebaseUser?.toUser(): User? {
-//        return this?.let { firebaseUser ->
-//            User(
-//                uid = firebaseUser.uid,
-//                fullName = firebaseUser.displayName ?: "",
-//                email = firebaseUser.email ?: "",
-//                phoneNumber = firebaseUser.phoneNumber ?: "",
-//                address = "",
-//                profilePictureUrl = firebaseUser.photoUrl?.toString() ?: "",
-//                bookmarkedRestaurants = emptyList(),
-//                reviews = emptyList(),
-//                rating = emptyMap(),
-//                claimedCoupons = emptyList(),
-//                createdAt = firebaseUser.metadata?.creationTimestamp ?: 0L,
-//            ).also {
-//                Log.d("LoginRepositoryImpl", "Converted FirebaseUser to User: ${it.email}")
-//            }
-//        }
-//    }
+        val uid = firebaseUser.uid
+
+        // Retrieve user data from Realtime Database
+        val userSnapshot = try {
+            val userReference = databaseReference.getReference("users").child(uid).get().await()
+            userReference.value as? HashMap<String, Any?>
+        } catch (e: Exception) {
+            Log.e("UserRepository", "Error retrieving user data for uid: $uid", e)
+            null
+        }
+
+        // Check if user data retrieved successfully
+        if (userSnapshot == null) {
+            Log.w("UserRepository", "User data not found for uid: $uid")
+            return null
+        }
+
+        // Extract user data from snapshot
+        val fullName = userSnapshot["fullName"] as? String ?: ""
+        val email = firebaseUser.email ?: "" // Use email from FirebaseUser
+        val phoneNumber = userSnapshot["phoneNumber"] as? String ?: ""
+        val address = userSnapshot["address"] as? String ?: ""
+        val profilePictureUrl = userSnapshot["profilePictureUrl"] as? String ?: ""
+
+        // Create a custom User object with fetched data
+        return User(
+            uid = uid,
+            email = email,
+            fullName = fullName,
+            phoneNumber = phoneNumber,
+            address = address,
+            profilePictureUrl = profilePictureUrl
+            // ... other fields as needed (bookmarkedRestaurants, reviews, etc.)
+        )
+    }
 }
