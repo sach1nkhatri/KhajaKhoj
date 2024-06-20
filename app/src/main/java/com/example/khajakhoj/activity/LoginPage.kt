@@ -11,11 +11,12 @@ import com.example.khajakhoj.databinding.ActivityLoginPageBinding
 import com.example.khajakhoj.utils.Result
 import com.example.khajakhoj.utils.Utils.showForgotPasswordDialog
 import com.example.khajakhoj.viewmodel.LoginViewModel
+import com.example.khajakhoj.viewmodel.UserViewModel
 
 class LoginPage : AppCompatActivity() {
 
     private lateinit var binding: ActivityLoginPageBinding
-    private val viewModel: LoginViewModel by viewModels()
+    private val viewModel: UserViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,7 +33,7 @@ class LoginPage : AppCompatActivity() {
             val email = binding.usernameInput.text.toString().trim()
             val password = binding.passwordInput.text.toString().trim()
             if (validateInput(email, password)) {
-                viewModel.signInUser(email, password)
+                viewModel.loginUser(email, password)
             }
         }
 
@@ -48,50 +49,28 @@ class LoginPage : AppCompatActivity() {
         }
     }
 
+    val TAG = "Login Activity"
+
     private fun observeViewModel() {
-        viewModel.loginResult.observe(this, Observer { result ->
-            when (result) {
-                is Result.Success -> {
-                    Toast.makeText(this, "Login successful!", Toast.LENGTH_SHORT).show()
-                    startActivity(Intent(this, Dashboard::class.java))
-                    finish()
-                }
-
-                is Result.Failure -> {
-                    Toast.makeText(
-                        this,
-                        result.exception.message ?: "Unknown error occurred",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-
-                is Result.Loading -> {
-                    // Optionally show a progress indicator
-                }
+        viewModel.loginResult.observe(this, Observer { loginResult ->
+            if (loginResult.isSuccess) {
+                // Login successful
+                Log.d(TAG, "Sign-in successful from Activity")
+                // Handle successful login, e.g., navigate to another activity
+                startActivity(Intent(this, Dashboard::class.java))
+            } else {
+                // Login failed
+                Log.e(TAG, "Sign-in failed from Activity")
+                // Handle login failure, e.g., display an error message
+                Toast.makeText(this, "Login failed!", Toast.LENGTH_SHORT).show()
             }
         })
 
-        viewModel.resetPasswordResult.observe(this, Observer { result ->
-            when (result) {
-                is Result.Success -> {
-                    Toast.makeText(
-                        this,
-                        "Password reset email sent successfully",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-
-                is Result.Failure -> {
-                    Toast.makeText(
-                        this,
-                        result.exception.message ?: "Unknown error occurred",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-
-                is Result.Loading -> {
-                    // Optionally show a progress indicator
-                }
+        viewModel.resetPasswordResult.observe(this, Observer { resetResult ->
+            if (resetResult.isSuccess) {
+                // Password reset email sent successfully (likely handled in toast message)
+            } else {
+                // Handle any errors during password reset (already handled most likely)
             }
         })
 

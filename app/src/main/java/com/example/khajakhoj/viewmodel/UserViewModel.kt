@@ -1,23 +1,16 @@
 package com.example.khajakhoj.viewmodel
 
+//import com.example.khajakhoj.utils.CredentialManager
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.khajakhoj.model.User
-import com.example.khajakhoj.repository.SignUpRepository
-import com.example.khajakhoj.repository.SignUpRepositoryImpl
 import com.example.khajakhoj.repository.UserRepository
 import com.example.khajakhoj.repository.UserRepositoryImpl
 import com.example.khajakhoj.utils.ValidationUtils
-//import com.example.khajakhoj.utils.CredentialManager
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
-import com.google.firebase.auth.FirebaseAuthInvalidUserException
-import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.database.FirebaseDatabase
-import com.google.i18n.phonenumbers.PhoneNumberUtil
 import kotlinx.coroutines.launch
 
 class UserViewModel : ViewModel() {
@@ -26,6 +19,15 @@ class UserViewModel : ViewModel() {
 
     private val _signUpResult = MutableLiveData<Result<Boolean>>()
     val signUpResult: LiveData<Result<Boolean>> get() = _signUpResult
+
+    private val _loginResult = MutableLiveData<Result<Boolean>>()
+    val loginResult: LiveData<Result<Boolean>> get() = _loginResult
+
+    private val _resetPasswordResult = MutableLiveData<Result<Boolean>>()
+    val resetPasswordResult: LiveData<Result<Boolean>> = _resetPasswordResult
+
+    private val _toastMessage = MutableLiveData<String>()
+    val toastMessage: LiveData<String> = _toastMessage
 
     companion object{
         private val TAG = "UserViewModel"
@@ -97,12 +99,12 @@ class UserViewModel : ViewModel() {
         viewModelScope.launch {
             val result = repository.loginUserWithEmailPassword(email, password)
             if (result.isSuccess) {
-
-
+                Log.d(TAG, "Sign-in successful")
+            } else {
+                Log.e("LoginViewModel", "Sign-in failed for email: $email")
             }
-
+            _loginResult.postValue(result)
         }
-
     }
 
     // for displaying data in ProfileActivity
@@ -116,6 +118,31 @@ class UserViewModel : ViewModel() {
         }
     }
     // for displaying data in ProfileActivity
+
+
+    fun sendPasswordResetEmail(email: String) {
+        Log.d("LoginViewModel", "Attempting to send password reset email to: $email")
+        viewModelScope.launch {
+            val emailExists = repository.checkEmailExists(email)
+            if (emailExists) {
+                try {
+                    val result = repository.sendPasswordResetEmail(email)
+                    _resetPasswordResult.postValue(result)
+                    // Success: Show toast using view model communication
+                    _toastMessage.postValue("Password reset instructions sent!")
+                    Log.d("LoginViewModel", "Password reset email sent to: $email")
+                } catch (e: Exception) {
+                    // Handle any exceptions during password reset
+                    _toastMessage.postValue("Error sending password reset email: ${e.message}")
+                    Log.e("LoginViewModel", "Error sending password reset email to: $email", e)
+                }
+            } else {
+                // Email not found: Show toast using view model communication
+                _toastMessage.postValue("Email not found. Please check the address.")
+                Log.d("LoginViewModel", "Email not found: $email")
+            }
+        }
+    }
 
 
     private fun validateSignUpInput(

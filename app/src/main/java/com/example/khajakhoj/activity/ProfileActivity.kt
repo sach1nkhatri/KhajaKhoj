@@ -18,7 +18,7 @@ import java.util.Locale
 class ProfileActivity : AppCompatActivity() {
     private val viewModel: LoginViewModel by viewModels()
     private lateinit var binding: ActivityProfileBinding
-    private val credentialManager: CredentialManager by lazy { CredentialManager(context = this) }
+//    private val credentialManager: CredentialManager by lazy { CredentialManager(context = this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
