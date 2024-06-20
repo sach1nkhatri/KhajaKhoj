@@ -11,7 +11,9 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import com.example.khajakhoj.HomeFragment
 import com.example.khajakhoj.R
+import com.example.khajakhoj.fragments.SettingsFragment
 import com.example.khajakhoj.databinding.ActivityDashboardBinding
+import com.example.khajakhoj.fragments.ProfileFragment
 import com.example.khajakhoj.utils.Utils
 
 class Dashboard : AppCompatActivity() {
@@ -27,11 +29,8 @@ class Dashboard : AppCompatActivity() {
         dashboardBinding.buttonNavigationView.setOnItemSelectedListener {
             when(it.itemId){
                 R.id.home -> replaceFragment(HomeFragment())
-                R.id.profile -> {
-                    startActivity(Intent(this@Dashboard, ProfileActivity::class.java))
-
-                }
-                R.id.settings -> startActivity(Intent(this@Dashboard, SettingsActivity::class.java))
+                R.id.profile -> replaceFragment(ProfileFragment())
+                R.id.settings -> replaceFragment(SettingsFragment())
 
                 else -> {}
             }
