@@ -1,10 +1,9 @@
-package com.example.khajakhoj
+package com.example.khajakhoj.activity
 
-import android.app.Activity
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.Fragment
+import com.example.khajakhoj.R
 
 class AboutUsActivity : AppCompatActivity() {
 

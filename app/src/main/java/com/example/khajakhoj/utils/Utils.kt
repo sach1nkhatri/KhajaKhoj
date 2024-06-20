@@ -1,18 +1,21 @@
 package com.example.khajakhoj.utils
 
+import CredentialManager
 import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.text.Html
 import android.view.Window
+import android.widget.Button
+import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.startActivity
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
-import com.example.khajakhoj.Dashboard
-import com.example.khajakhoj.LoginPage
+import com.example.khajakhoj.activity.Dashboard
+import com.example.khajakhoj.activity.LoginPage
 import com.example.khajakhoj.R
 
 object Utils {
@@ -21,26 +24,10 @@ object Utils {
         alertDialogBuilder.setTitle("Logout")
         alertDialogBuilder.setMessage("Do you want to log out?")
         alertDialogBuilder.setPositiveButton("Yes") { _, _ ->
-            // Clear the EncryptedSharedPreferences
-            val encryptedSharedPreferences = EncryptedSharedPreferences.create(
-                "MyEncryptedPrefs",
-                MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC),
-                context,
-                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-            )
 
-            with(encryptedSharedPreferences.edit()) {
-                clear()
-                apply()
-            }
-
-            // Clear the regular SharedPreferences
-            val sharedPreferences = context.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-            with(sharedPreferences.edit()) {
-                clear()
-                apply()
-            }
+            // Clear the Encrypted and Shared Preferences
+            val credentialManager = CredentialManager(context)
+            credentialManager.saveLoginState(false)
 
             // Start the LoginPage activity and clear the task stack
             val intent = Intent(context, LoginPage::class.java)
@@ -221,13 +208,26 @@ object Utils {
         dialog.show()
     }
 
-    fun showForgotPasswordDialog(context: Context){
+    fun showForgotPasswordDialog(context: Context, onEmailSubmitted: (String) -> Unit) {
         val dialog = Dialog(context)
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         dialog.setCancelable(true)
         dialog.setContentView(R.layout.forgot_password_dialog)
         dialog.window?.setBackgroundDrawableResource(R.drawable.custom_dialog_background)
-        dialog.show()
 
+        val emailInput = dialog.findViewById<EditText>(R.id.forgotPasswordEmailInput)
+        val submitButton = dialog.findViewById<Button>(R.id.forgotPasswordSubmit)
+
+        submitButton.setOnClickListener {
+            val email = emailInput.text.toString().trim()
+            if (email.isNotEmpty()) {
+                onEmailSubmitted(email)
+                dialog.dismiss()
+            } else {
+                emailInput.error = "Please enter your email"
+            }
+        }
+
+        dialog.show()
     }
 }

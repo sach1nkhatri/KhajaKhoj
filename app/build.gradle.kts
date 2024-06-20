@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
     alias(libs.plugins.googleGmsGoogleServices)
+    kotlin("plugin.serialization") version "1.8.22" // Use the latest version
+
 }
 
 android {
@@ -52,13 +54,23 @@ dependencies {
     implementation(libs.androidx.preference)
     implementation(libs.firebase.auth)
     implementation(libs.firebase.database)
+    implementation(libs.firebase.firestore.ktx)
+    implementation(libs.play.services.location)
+    implementation(libs.androidx.ui.text.android)
+    implementation(libs.androidx.ui.desktop)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
     implementation ("com.googlecode.libphonenumber:libphonenumber:8.13.11")
+    implementation ("com.squareup.picasso:picasso:2.71828")
     implementation("androidx.security:security-crypto:1.1.0-alpha06")
-
-
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
+    implementation ("com.google.android.gms:play-services-safetynet:18.1.0")
+//15
+    implementation ("androidx.lifecycle:lifecycle-livedata-ktx:2.8.2") // or the latest version
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.2") // or the latest version
+    implementation ("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0") // Check for the latest version
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1") // Use the latest version
 
 }

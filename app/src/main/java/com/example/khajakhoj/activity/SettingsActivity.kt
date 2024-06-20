@@ -1,18 +1,11 @@
-package com.example.khajakhoj
+package com.example.khajakhoj.activity
 
-import android.app.Dialog
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.view.Gravity
-import android.view.Window
-import android.widget.Switch
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import com.example.khajakhoj.databinding.ActivityCouponsBinding
 import com.example.khajakhoj.databinding.ActivitySettingsBinding
 import com.example.khajakhoj.utils.Utils
 
@@ -58,7 +51,7 @@ class SettingsActivity : AppCompatActivity() {
             Utils.showPasswordChangeDialog(this)
         }
         binding.settingImageView.setOnClickListener(){
-            startActivity(Intent(this@SettingsActivity,ProfileActivity::class.java))
+            startActivity(Intent(this@SettingsActivity, ProfileActivity::class.java))
         }
 
         }

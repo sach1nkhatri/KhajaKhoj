@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:background="@drawable/doodle30"
     android:layout_height="match_parent"
-    tools:context=".Restaurant_view">
+    tools:context=".activity.Restaurant_view">
     <SearchView
         android:id="@+id/cuisineSearch"
         android:layout_width="match_parent"
