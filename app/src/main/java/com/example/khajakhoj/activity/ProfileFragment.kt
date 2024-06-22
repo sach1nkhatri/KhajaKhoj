@@ -1,36 +1,27 @@
-package com.example.khajakhoj.activity
+package com.example.khajakhoj.fragment
 
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import com.example.khajakhoj.activity.LoginPage
+import com.example.khajakhoj.activity.SettingsActivity
 import com.example.khajakhoj.databinding.ActivityProfileBinding
+import com.example.khajakhoj.databinding.FragmentProfileBinding
+import com.example.khajakhoj.utils.Utils
 import com.example.khajakhoj.viewmodel.UserViewModel
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [ProfileFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class ProfileFragment : Fragment() {
     private val viewModel: UserViewModel by viewModels()
     private lateinit var binding: ActivityProfileBinding
-//    private val credentialManager: CredentialManager by lazy { CredentialManager(context = requireContext()) }
-
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-
-        }
-    }
+    private var logoutDialog: androidx.appcompat.app.AlertDialog? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -38,8 +29,58 @@ class ProfileFragment : Fragment() {
     ): View? {
         binding = ActivityProfileBinding.inflate(inflater, container, false)
 
+        // Set up button click listener to navigate to SettingsActivity
+        binding.settingButtonProfile.setOnClickListener {
+            startActivity(Intent(requireContext(), SettingsActivity::class.java))
+        }
+
+        // Set up button click listener to log out and redirect to the login page
+        binding.logOutProfile.setOnClickListener {
+            Utils.logOut(requireContext()) {
+                // Callback for when logout is confirmed
+                redirectToLoginPage()
+            }.also {
+                // Store reference to the dialog
+                logoutDialog = it
+            }
+        }
+
+        // Observe the current user data from ViewModel
+        viewModel.currentUser.observe(viewLifecycleOwner) { user ->
+            if (user != null) {
+                Log.d("Profile Fragment", "User user: $user")
+                Log.d("Profile Fragment", "uid: ${user.uid}")
+                Log.d("Profile Fragment", "email: ${user.email}")
+                Log.d("Profile Fragment", "fullName: ${user.fullName}")
+                Log.d("Profile Fragment", "address: ${user.address}")
+                Log.d("Profile Fragment", "createdAt: ${user.createdAt}")
+
+                val fullName = user.fullName
+                val address = user.address
+                val createdAt = user.createdAt
+//                val createdAt = 1719029919881L // Assuming this is your timestamp in milliseconds
+
+                binding.nameTextViewOnProfile.text = fullName
+                binding.addressTextViewOnProfile.text = address
+
+                val formattedDate =
+                    SimpleDateFormat("yyyy", Locale.getDefault()).format(Date(createdAt))
+                binding.dateTextViewOnProfile.text = formattedDate
+
+
+            } else {
+                Log.d("UserViewModel", "User not logged in")
+            }
+        }
+
         return binding.root
     }
 
-
+    // Redirect to the login page and clear the fragment stack
+    private fun redirectToLoginPage() {
+        startActivity(Intent(requireContext(), LoginPage::class.java).apply {
+            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+        })
+        requireActivity().finish()
+    }
 }
