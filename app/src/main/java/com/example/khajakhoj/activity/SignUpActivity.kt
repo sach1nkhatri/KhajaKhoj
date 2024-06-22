@@ -13,7 +13,6 @@ import androidx.lifecycle.Observer
 import com.example.khajakhoj.databinding.ActivitySignUpBinding
 import com.example.khajakhoj.utils.LocationUtils
 import com.example.khajakhoj.utils.Utils
-import com.example.khajakhoj.viewmodel.SignUpViewModel
 import com.example.khajakhoj.viewmodel.UserViewModel
 
 class SignUpActivity : AppCompatActivity() {

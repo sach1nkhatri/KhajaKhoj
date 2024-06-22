@@ -3,19 +3,20 @@ package com.example.khajakhoj.activity
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
-import com.example.khajakhoj.HomeFragment
 import com.example.khajakhoj.R
 import com.example.khajakhoj.databinding.ActivityDashboardBinding
 import com.example.khajakhoj.utils.Utils
 
 class Dashboard : AppCompatActivity() {
     private lateinit var dashboardBinding: ActivityDashboardBinding
+    private var logoutDialog: AlertDialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,7 +56,13 @@ class Dashboard : AppCompatActivity() {
                     startActivity(Intent(this@Dashboard, SupportActivity::class.java))
                 }
                 R.id.Log_Out ->{
-                    Utils.logOut(this)
+                    Utils.logOut(this) {
+                        // Callback for when logout is confirmed
+                        redirectToLoginPage()
+                    }.also {
+                        // Store reference to the dialog
+                        logoutDialog = it
+                    }
                 }
             }
             true
@@ -73,5 +80,12 @@ class Dashboard : AppCompatActivity() {
         val fragmentTransaction: FragmentTransaction = fragmentManager.beginTransaction()
         fragmentTransaction.replace(R.id.frameLayout, fragment)
         fragmentTransaction.commit()
+    }
+
+    private fun redirectToLoginPage() {
+        startActivity(Intent(this, LoginPage::class.java).apply {
+            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+        })
+        finish()
     }
 }

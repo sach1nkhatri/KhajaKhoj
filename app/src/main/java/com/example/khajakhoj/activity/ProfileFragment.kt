@@ -1,17 +1,13 @@
 package com.example.khajakhoj.activity
 
-import CredentialManager
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.viewModels
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import com.example.khajakhoj.R
 import com.example.khajakhoj.databinding.ActivityProfileBinding
-import com.example.khajakhoj.databinding.FragmentHomeBinding
-import com.example.khajakhoj.viewmodel.LoginViewModel
+import com.example.khajakhoj.viewmodel.UserViewModel
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -24,9 +20,9 @@ private const val ARG_PARAM2 = "param2"
  * create an instance of this fragment.
  */
 class ProfileFragment : Fragment() {
-    private val viewModel: LoginViewModel by viewModels()
+    private val viewModel: UserViewModel by viewModels()
     private lateinit var binding: ActivityProfileBinding
-    private val credentialManager: CredentialManager by lazy { CredentialManager(context = requireContext()) }
+//    private val credentialManager: CredentialManager by lazy { CredentialManager(context = requireContext()) }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
