@@ -11,5 +11,5 @@ data class User(
     val reviews: Map<String, Boolean> = emptyMap(),
     val ratings: Map<String, Double> = emptyMap(),
     val claimedCoupons: Map<String, Boolean> = emptyMap(),
-    val createdAt: Long = 0L
+    val createdAt: Long
 )

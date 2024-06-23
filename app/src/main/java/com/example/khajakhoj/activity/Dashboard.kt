@@ -2,22 +2,27 @@ package com.example.khajakhoj.activity
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
+import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
-import com.example.khajakhoj.HomeFragment
 import com.example.khajakhoj.R
 import com.example.khajakhoj.fragments.SettingsFragment
 import com.example.khajakhoj.databinding.ActivityDashboardBinding
-import com.example.khajakhoj.fragments.ProfileFragment
 import com.example.khajakhoj.utils.Utils
+import com.example.khajakhoj.viewmodel.UserViewModel
 
 class Dashboard : AppCompatActivity() {
     private lateinit var dashboardBinding: ActivityDashboardBinding
+    private val viewModel: UserViewModel by viewModels()
+    private var logoutDialog: AlertDialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,7 +47,25 @@ class Dashboard : AppCompatActivity() {
             dashboardBinding.drawerLayout.openDrawer(dashboardBinding.navigationView)
         }
 
+        viewModel.currentUser.observe(this) { user ->
+            if (user != null) {
+                Log.d("Profile Fragment", "User user: $user")
+                Log.d("Profile Fragment", "email: ${user.email}")
+                Log.d("Profile Fragment", "fullName: ${user.fullName}")
+
+                val fullName = user.fullName
+                val email = user.email
+
+                updateDrawerHeader(fullName, email)
+
+
+            } else {
+                Log.d("UserViewModel", "User not logged in")
+            }
+        }
+
         dashboardBinding.navigationView.setNavigationItemSelectedListener {MenuItem->
+
             when(MenuItem.itemId){
                 R.id.coupons ->{
                     startActivity(Intent(this@Dashboard, CouponActivity::class.java))
@@ -54,7 +77,13 @@ class Dashboard : AppCompatActivity() {
                     startActivity(Intent(this@Dashboard, SupportActivity::class.java))
                 }
                 R.id.Log_Out ->{
-                    Utils.logOut(this)
+                    Utils.logOut(this) {
+                        // Callback for when logout is confirmed
+                        redirectToLoginPage()
+                    }.also {
+                        // Store reference to the dialog
+                        logoutDialog = it
+                    }
                 }
             }
             true
@@ -67,10 +96,27 @@ class Dashboard : AppCompatActivity() {
         }
     }
 
+    private fun updateDrawerHeader(fullName: String, email: String) {
+        // Update drawer header
+        val headerView = dashboardBinding.navigationView.getHeaderView(0)
+        val nameTextView = headerView.findViewById<TextView>(R.id.fullNameUser)
+        val emailTextView = headerView.findViewById<TextView>(R.id.emailUser)
+
+        nameTextView.text = fullName
+        emailTextView.text = email
+    }
+
     private fun replaceFragment(fragment: Fragment) {
         val fragmentManager: FragmentManager = supportFragmentManager
         val fragmentTransaction: FragmentTransaction = fragmentManager.beginTransaction()
         fragmentTransaction.replace(R.id.frameLayout, fragment)
         fragmentTransaction.commit()
+    }
+
+    private fun redirectToLoginPage() {
+        startActivity(Intent(this, LoginPage::class.java).apply {
+            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+        })
+        finish()
     }
 }

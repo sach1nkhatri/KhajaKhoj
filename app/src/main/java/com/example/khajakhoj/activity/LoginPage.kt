@@ -1,5 +1,6 @@
 package com.example.khajakhoj.activity
 
+import CredentialManager
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -8,9 +9,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import com.example.khajakhoj.databinding.ActivityLoginPageBinding
-import com.example.khajakhoj.utils.Result
 import com.example.khajakhoj.utils.Utils.showForgotPasswordDialog
-import com.example.khajakhoj.viewmodel.LoginViewModel
 import com.example.khajakhoj.viewmodel.UserViewModel
 
 class LoginPage : AppCompatActivity() {
@@ -56,6 +55,8 @@ class LoginPage : AppCompatActivity() {
             if (loginResult.isSuccess) {
                 // Login successful
                 Log.d(TAG, "Sign-in successful from Activity")
+                val credentialManager = CredentialManager(this)
+                credentialManager.saveLoginState(true)
                 // Handle successful login, e.g., navigate to another activity
                 startActivity(Intent(this, Dashboard::class.java))
             } else {
