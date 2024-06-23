@@ -1,4 +1,4 @@
-package com.example.khajakhoj.activity
+package com.example.khajakhoj.fragments
 
 import android.content.Intent
 import android.os.Bundle
@@ -8,10 +8,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import com.example.khajakhoj.R
 import com.example.khajakhoj.activity.LoginPage
 import com.example.khajakhoj.activity.SettingsActivity
 import com.example.khajakhoj.databinding.ActivityProfileBinding
-import com.example.khajakhoj.databinding.FragmentProfileBinding
 import com.example.khajakhoj.utils.Utils
 import com.example.khajakhoj.viewmodel.UserViewModel
 import java.text.SimpleDateFormat
@@ -31,7 +31,10 @@ class ProfileFragment : Fragment() {
 
         // Set up button click listener to navigate to SettingsActivity
         binding.settingButtonProfile.setOnClickListener {
-            startActivity(Intent(requireContext(), SettingsActivity::class.java))
+            val fragmentTransaction = requireActivity().supportFragmentManager.beginTransaction()
+            fragmentTransaction.replace(R.id.frameLayout, SettingsFragment())
+            fragmentTransaction.addToBackStack(null)
+            fragmentTransaction.commit()
         }
 
         // Set up button click listener to log out and redirect to the login page

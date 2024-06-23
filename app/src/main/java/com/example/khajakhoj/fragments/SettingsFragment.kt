@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import com.example.khajakhoj.R
+import com.example.khajakhoj.activity.Dashboard
 import com.example.khajakhoj.activity.ProfileActivity
 import com.example.khajakhoj.databinding.ActivitySettingsBinding
 import com.example.khajakhoj.utils.Utils
@@ -69,7 +70,10 @@ class SettingsFragment : Fragment() {
         }
 
         binding.settingImageView.setOnClickListener {
-            startActivity(Intent(requireContext(), ProfileActivity::class.java))
+            val fragmentTransaction = requireActivity().supportFragmentManager.beginTransaction()
+            fragmentTransaction.replace(R.id.frameLayout, ProfileFragment())
+            fragmentTransaction.addToBackStack(null)
+            fragmentTransaction.commit()
         }
     }
 
