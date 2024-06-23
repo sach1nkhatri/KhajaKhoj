@@ -19,31 +19,29 @@ import com.example.khajakhoj.activity.LoginPage
 import com.example.khajakhoj.R
 
 object Utils {
-    fun logOut(context: Context) {
+    fun logOut(context: Context, onLogoutConfirmed: () -> Unit): AlertDialog {
         val alertDialogBuilder = AlertDialog.Builder(context)
         alertDialogBuilder.setTitle("Logout")
         alertDialogBuilder.setMessage("Do you want to log out?")
         alertDialogBuilder.setPositiveButton("Yes") { _, _ ->
-
-            // Clear the Encrypted and Shared Preferences
+            // Perform logout actions
             val credentialManager = CredentialManager(context)
             credentialManager.saveLoginState(false)
 
-            // Start the LoginPage activity and clear the task stack
-            val intent = Intent(context, LoginPage::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-            context.startActivity(intent)
+            // Invoke the callback to handle redirection
+            onLogoutConfirmed()
         }
         alertDialogBuilder.setNegativeButton("No") { dialog, _ ->
             dialog.dismiss()
         }
 
         val alertDialog = alertDialogBuilder.create()
-        val backgroundDrawable =
-            ContextCompat.getDrawable(context, R.drawable.custom_dialog_background)
+        val backgroundDrawable = ContextCompat.getDrawable(context, R.drawable.custom_dialog_background)
         alertDialog.window?.setBackgroundDrawable(backgroundDrawable)
         alertDialog.show()
+        return alertDialog
     }
+
 
 
     fun showTermsAndConditions(context: Context) {

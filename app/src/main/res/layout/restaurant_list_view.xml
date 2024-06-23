@@ -76,13 +76,13 @@
         android:textColor="@color/cream"
         android:textSize="15sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/textView"
+        app:layout_constraintBottom_toTopOf="@+id/restaurantAddress"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.641"
         app:layout_constraintStart_toEndOf="@+id/RestaurantName" />
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/restaurantAddress"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="12dp"
@@ -96,6 +96,7 @@
         app:layout_constraintStart_toEndOf="@+id/ResturantDistance" />
 
     <TextView
+        android:id="@+id/restaurantRating"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="12dp"
@@ -106,7 +107,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.442"
-        app:layout_constraintStart_toEndOf="@+id/textView" />
+        app:layout_constraintStart_toEndOf="@+id/restaurantAddress" />
 
     <View
         android:layout_width="match_parent"

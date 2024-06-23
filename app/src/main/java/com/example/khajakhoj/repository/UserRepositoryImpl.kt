@@ -125,6 +125,7 @@ class UserRepositoryImpl : UserRepository {
         val phoneNumber = userSnapshot["phoneNumber"] as? String ?: ""
         val address = userSnapshot["address"] as? String ?: ""
         val profilePictureUrl = userSnapshot["profilePictureUrl"] as? String ?: ""
+        val createdAt = userSnapshot["createdAt"] as? Long ?: 0
 
         // Create a custom User object with fetched data
         return User(
@@ -133,8 +134,8 @@ class UserRepositoryImpl : UserRepository {
             fullName = fullName,
             phoneNumber = phoneNumber,
             address = address,
-            profilePictureUrl = profilePictureUrl
-            // ... other fields as needed (bookmarkedRestaurants, reviews, etc.)
+            profilePictureUrl = profilePictureUrl,
+            createdAt = createdAt
         )
     }
 
