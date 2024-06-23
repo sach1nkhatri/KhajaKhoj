@@ -69,8 +69,11 @@ class ResDetailView : AppCompatActivity() {
             val restaurantCuisineTextView: TextView = binding.ResturantCuisineDetail
             restaurantCuisineTextView.text = restaurant.cuisineType
 
-            val restaurantAddressTextView: TextView = binding.RestaurantAddress
-            restaurantAddressTextView.text = restaurant.address
+            val restaurantAddressTextView1: TextView = binding.RestaurantAddress
+            restaurantAddressTextView1.text = restaurant.address
+
+            val restaurantAddressTextView2: TextView = binding.address
+            restaurantAddressTextView2.text = restaurant.address
 
             val restaurantPhoneTextView: TextView = binding.restaurantPhone
             restaurantPhoneTextView.text = restaurant.contactNumber
@@ -80,32 +83,24 @@ class ResDetailView : AppCompatActivity() {
 
             val twoWheelerParkingAvailability: ImageView = binding.twoWheelerParking
             if(restaurant.bikeParking){
-                Log.d("Bike","true")
-
                 twoWheelerParkingAvailability.setImageResource(R.drawable.availabegreenicon)
             }
             else{
-                Log.d("Bike","false")
-
                 twoWheelerParkingAvailability.setImageResource(R.drawable.wrongicon)
             }
 
             val fourWheelerParkingAvailability: ImageView = binding.twoWheelerParking
                     if(restaurant.carParking){
-                        Log.d("Car","true")
                         fourWheelerParkingAvailability.setImageResource(R.drawable.availabegreenicon)
                     }
                     else{
-                        Log.d("Car","false")
                         fourWheelerParkingAvailability.setImageResource(R.drawable.wrongicon)
                     }
             val wifiAvailability: ImageView = binding.wifi
                     if(restaurant.wifi){
-                        Log.d("wifi","true")
                         wifiAvailability.setImageResource(R.drawable.availabegreenicon)
                     }
                     else{
-                        Log.d("wifi","true")
                         wifiAvailability.setImageResource(R.drawable.wrongicon)
                     }
 
