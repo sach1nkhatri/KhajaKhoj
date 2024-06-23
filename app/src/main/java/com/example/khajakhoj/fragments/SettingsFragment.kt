@@ -9,6 +9,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentTransaction
+import com.example.khajakhoj.R
 import com.example.khajakhoj.activity.ProfileActivity
 import com.example.khajakhoj.databinding.ActivitySettingsBinding
 import com.example.khajakhoj.utils.Utils
@@ -69,7 +72,5 @@ class SettingsFragment : Fragment() {
             startActivity(Intent(requireContext(), ProfileActivity::class.java))
         }
     }
-
-
 
 }
