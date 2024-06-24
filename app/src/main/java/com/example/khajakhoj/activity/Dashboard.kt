@@ -16,6 +16,7 @@ import androidx.fragment.app.FragmentTransaction
 import com.example.khajakhoj.R
 import com.example.khajakhoj.fragments.SettingsFragment
 import com.example.khajakhoj.databinding.ActivityDashboardBinding
+import com.example.khajakhoj.fragments.ProfileFragment
 import com.example.khajakhoj.utils.Utils
 import com.example.khajakhoj.viewmodel.UserViewModel
 

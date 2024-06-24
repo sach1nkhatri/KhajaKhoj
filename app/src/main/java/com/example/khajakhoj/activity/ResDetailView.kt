@@ -3,19 +3,24 @@ package com.example.khajakhoj.activity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.widget.ImageSwitcher
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import com.example.khajakhoj.R
+import com.example.khajakhoj.databinding.ActivityResDetailViewBinding
+import com.example.khajakhoj.model.Restaurant
 
 class ResDetailView : AppCompatActivity() {
 
     private lateinit var imageSwitcher: ImageSwitcher
     private lateinit var gestureDetector: GestureDetector
+    private lateinit var binding:ActivityResDetailViewBinding
     private val imageIds = listOf(R.drawable.ad3, R.drawable.ad2, R.drawable.ad4)
     private var currentIndex = 0
     private lateinit var handler: Handler
@@ -24,7 +29,8 @@ class ResDetailView : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_res_detail_view)
+        binding = ActivityResDetailViewBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         // Initialize ImageSwitcher
         imageSwitcher = findViewById(R.id.imageSwitcher)
@@ -54,7 +60,63 @@ class ResDetailView : AppCompatActivity() {
             }
         }
         handler.postDelayed(runnable, 5000) // Start the image switcher
+
+        val restaurant = intent.getParcelableExtra<Restaurant>("restaurant")
+        if (restaurant != null) {
+            val restaurantNameTextView: TextView = binding.RestaurantName
+            restaurantNameTextView.text = restaurant.name
+
+            val restaurantCuisineTextView: TextView = binding.ResturantCuisineDetail
+            restaurantCuisineTextView.text = restaurant.cuisineType
+
+            val restaurantAddressTextView1: TextView = binding.RestaurantAddress
+            restaurantAddressTextView1.text = restaurant.address
+
+            val restaurantAddressTextView2: TextView = binding.address
+            restaurantAddressTextView2.text = restaurant.address
+
+            val restaurantPhoneTextView: TextView = binding.restaurantPhone
+            restaurantPhoneTextView.text = restaurant.contactNumber
+
+            val restaurantTimingTextView: TextView = binding.timing
+            restaurantTimingTextView.text = "${restaurant.openTime} - ${restaurant.closeTime}"
+
+            val twoWheelerParkingAvailability: ImageView = binding.twoWheelerParking
+            if(restaurant.bikeParking){
+                twoWheelerParkingAvailability.setImageResource(R.drawable.availabegreenicon)
+            }
+            else{
+                twoWheelerParkingAvailability.setImageResource(R.drawable.wrongicon)
+            }
+
+            val fourWheelerParkingAvailability: ImageView = binding.twoWheelerParking
+                    if(restaurant.carParking){
+                        fourWheelerParkingAvailability.setImageResource(R.drawable.availabegreenicon)
+                    }
+                    else{
+                        fourWheelerParkingAvailability.setImageResource(R.drawable.wrongicon)
+                    }
+            val wifiAvailability: ImageView = binding.wifi
+                    if(restaurant.wifi){
+                        wifiAvailability.setImageResource(R.drawable.availabegreenicon)
+                    }
+                    else{
+                        wifiAvailability.setImageResource(R.drawable.wrongicon)
+                    }
+
+
+
+
+
+
+
+
+
+        }
+
+
     }
+
 
     private inner class SwipeGestureListener : GestureDetector.SimpleOnGestureListener() {
         private val SWIPE_THRESHOLD = 100
