@@ -1,6 +1,5 @@
 package com.example.khajakhoj
 
-import CouponRepository
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,8 +8,11 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.khajakhoj.model.Coupon
 
-class CouponAdapter(private val coupons: MutableList<Coupon>) :
-    RecyclerView.Adapter<CouponAdapter.CouponViewHolder>() {
+class CouponAdapter(
+    private val coupons: MutableList<Coupon>,
+    private val currentUserUid: String,
+    private val redeemCouponCallback: (String) -> Unit
+) : RecyclerView.Adapter<CouponAdapter.CouponViewHolder>() {
 
     // ViewHolder class
     class CouponViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -20,7 +22,8 @@ class CouponAdapter(private val coupons: MutableList<Coupon>) :
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CouponViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.coupon_layout, parent, false)
+        val view = LayoutInflater.from(parent.context)
+            .inflate(R.layout.coupon_layout, parent, false)
         return CouponViewHolder(view)
     }
 
@@ -28,19 +31,30 @@ class CouponAdapter(private val coupons: MutableList<Coupon>) :
         val coupon = coupons[position]
 
         holder.couponCodeTextView.text = coupon.code
-//        holder.discountTextView.text = "for ${coupon.discount}% off at ${coupon.restaurant}"
+        holder.discountTextView.text =
+            "for ${coupon.discountPercentage}% off at ${coupon.restaurantName}, ${coupon.location}"
 
-        holder.useCouponButton.setOnClickListener {
+        val isRedeemedByCurrentUser = coupon.redeemedBy.containsKey(currentUserUid)
+
+        if (isRedeemedByCurrentUser) {
             holder.useCouponButton.text = "Used"
-//            CouponRepository.markCouponAsUsed(coupon.id)
-            // Remove the used coupon from the list and notify the adapter
-            coupons.removeAt(position)
-            notifyItemRemoved(position)
-            notifyItemRangeChanged(position, coupons.size)
+            holder.useCouponButton.isEnabled = false // Disable button if already used
+        } else {
+            holder.useCouponButton.text = "Use Coupon"
+            holder.useCouponButton.isEnabled = true
+            holder.useCouponButton.setOnClickListener {
+                redeemCouponCallback(coupon.id)
+                notifyItemChanged(position)
+            }
         }
     }
 
     override fun getItemCount(): Int {
         return coupons.size
+    }
+    fun updateCoupons(updatedCoupons: List<Coupon>) {
+        coupons.clear()
+        coupons.addAll(updatedCoupons)
+        notifyDataSetChanged()
     }
 }
