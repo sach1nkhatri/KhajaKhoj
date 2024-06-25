@@ -9,18 +9,24 @@ import android.view.MotionEvent
 import android.widget.ImageSwitcher
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.example.khajakhoj.R
 import com.example.khajakhoj.databinding.ActivityResDetailViewBinding
 import com.example.khajakhoj.model.Restaurant
+import com.example.khajakhoj.viewmodel.RestaurantViewModel
+import com.squareup.picasso.Picasso
 
 class ResDetailView : AppCompatActivity() {
 
+    private lateinit var viewModel: RestaurantViewModel
     private lateinit var imageSwitcher: ImageSwitcher
     private lateinit var gestureDetector: GestureDetector
-    private lateinit var binding:ActivityResDetailViewBinding
+    private lateinit var binding: ActivityResDetailViewBinding
     private val imageIds = listOf(R.drawable.ad3, R.drawable.ad2, R.drawable.ad4)
     private var currentIndex = 0
     private lateinit var handler: Handler
@@ -31,6 +37,7 @@ class ResDetailView : AppCompatActivity() {
         enableEdgeToEdge()
         binding = ActivityResDetailViewBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        viewModel = ViewModelProvider(this).get(RestaurantViewModel::class.java)
 
         // Initialize ImageSwitcher
         imageSwitcher = findViewById(R.id.imageSwitcher)
@@ -62,61 +69,57 @@ class ResDetailView : AppCompatActivity() {
         handler.postDelayed(runnable, 5000) // Start the image switcher
 
         val restaurant = intent.getParcelableExtra<Restaurant>("restaurant")
-        if (restaurant != null) {
-            val restaurantNameTextView: TextView = binding.RestaurantName
-            restaurantNameTextView.text = restaurant.name
 
-            val restaurantCuisineTextView: TextView = binding.ResturantCuisineDetail
-            restaurantCuisineTextView.text = restaurant.cuisineType
-
-            val restaurantAddressTextView1: TextView = binding.RestaurantAddress
-            restaurantAddressTextView1.text = restaurant.address
-
-            val restaurantAddressTextView2: TextView = binding.address
-            restaurantAddressTextView2.text = restaurant.address
-
-            val restaurantPhoneTextView: TextView = binding.restaurantPhone
-            restaurantPhoneTextView.text = restaurant.contactNumber
-
-            val restaurantTimingTextView: TextView = binding.timing
-            restaurantTimingTextView.text = "${restaurant.openTime} - ${restaurant.closeTime}"
-
-            val twoWheelerParkingAvailability: ImageView = binding.twoWheelerParking
-            if(restaurant.bikeParking){
-                twoWheelerParkingAvailability.setImageResource(R.drawable.availabegreenicon)
+        binding.bookmarkBtn.setOnClickListener {
+            if (restaurant != null) {
+                viewModel.bookmarkRestaurant(restaurant)
+                observeBookmarkResult()
             }
-            else{
-                twoWheelerParkingAvailability.setImageResource(R.drawable.wrongicon)
-            }
-
-            val fourWheelerParkingAvailability: ImageView = binding.twoWheelerParking
-                    if(restaurant.carParking){
-                        fourWheelerParkingAvailability.setImageResource(R.drawable.availabegreenicon)
-                    }
-                    else{
-                        fourWheelerParkingAvailability.setImageResource(R.drawable.wrongicon)
-                    }
-            val wifiAvailability: ImageView = binding.wifi
-                    if(restaurant.wifi){
-                        wifiAvailability.setImageResource(R.drawable.availabegreenicon)
-                    }
-                    else{
-                        wifiAvailability.setImageResource(R.drawable.wrongicon)
-                    }
-
-
-
-
-
-
-
-
-
         }
 
+        Log.d("Restaurant", restaurant.toString())
+        // Update UI with restaurant details
+        restaurant?.let {
+            binding.RestaurantName.text = it.name
+            binding.ResturantCuisineDetail.text = it.cuisineType
+            binding.RestaurantAddress.text = it.address
+            binding.address.text = it.address
+            binding.restaurantPhone.text = it.contactNumber
+            binding.timing.text = "${it.openTime} - ${it.closeTime}"
 
+            // Uncomment the following line if using an image loading library like Picasso or Glide
+            // Picasso.get().load(it.restaurantLogoUrl).into(binding.restuarantImageLogo)
+
+            if (it.bikeParking) {
+                binding.twoWheelerParking.setImageResource(R.drawable.availabegreenicon)
+            } else {
+                binding.twoWheelerParking.setImageResource(R.drawable.wrongicon)
+            }
+
+            if (it.carParking) {
+                binding.fourWheelerParking.setImageResource(R.drawable.availabegreenicon)
+            } else {
+                binding.fourWheelerParking.setImageResource(R.drawable.wrongicon)
+            }
+
+            if (it.wifi) {
+                binding.wifi.setImageResource(R.drawable.availabegreenicon)
+            } else {
+                binding.wifi.setImageResource(R.drawable.wrongicon)
+            }
+        }
     }
 
+    private fun observeBookmarkResult() {
+        viewModel.bookmarkResult.observe(this, Observer { result ->
+            val (success, message) = result
+            if (success) {
+                Toast.makeText(this, "Bookmark added successfully!", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, "Failed to add bookmark: $message", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
 
     private inner class SwipeGestureListener : GestureDetector.SimpleOnGestureListener() {
         private val SWIPE_THRESHOLD = 100
@@ -133,7 +136,10 @@ class ResDetailView : AppCompatActivity() {
             val diffX = e2.x - e1.x
             val diffY = e2.y - e1.y
 
-            return if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > SWIPE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
+            return if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > SWIPE_THRESHOLD && Math.abs(
+                    velocityX
+                ) > SWIPE_VELOCITY_THRESHOLD
+            ) {
                 if (diffX > 0) {
                     onSwipeRight()
                 } else {

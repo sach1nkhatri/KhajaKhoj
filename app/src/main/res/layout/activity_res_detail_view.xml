@@ -41,7 +41,7 @@
             app:cardElevation="10dp">
 
             <ImageView
-                android:id="@+id/restuarantImageDetail"
+                android:id="@+id/restuarantImageLogo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/chiyahub"
@@ -74,13 +74,13 @@
                 android:layout_height="wrap_content"
                 android:text="Ganeshowr, Marga"/>
 
-
             <ImageView
+                android:id="@+id/bookmarkBtn"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
-                android:layout_margin="23dp"
                 android:layout_gravity="end|top"
-                android:src="@drawable/favourite"/>
+                android:layout_margin="23dp"
+                android:src="@drawable/favourite" />
 
             <TextView
                 android:layout_width="80dp"
