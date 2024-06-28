@@ -15,9 +15,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.khajakhoj.R
+import com.example.khajakhoj.adapter.ReviewAdapter
 import com.example.khajakhoj.databinding.ActivityResDetailViewBinding
 import com.example.khajakhoj.model.Restaurant
+import com.example.khajakhoj.model.Review
 import com.example.khajakhoj.viewmodel.RestaurantViewModel
 import com.squareup.picasso.Picasso
 
@@ -108,6 +111,18 @@ class ResDetailView : AppCompatActivity() {
                 binding.wifi.setImageResource(R.drawable.wrongicon)
             }
         }
+
+        val reviews = listOf(
+            Review("User1", "I recently dined at Bistro Delights, and it was a fantastic experience. The ambiance is cozy and welcoming, perfect for a relaxing meal", "2024-06-27"),
+            Review("User2", "I enjoyed going this place.I tried the grilled salmon, which was cooked to perfection—crispy on the outside and tender on the inside. The accompanying vegetables were fresh and flavorful. The staff was attentive and friendly, ensuring that we had everything we needed. For dessert, the chocolate lava cake was a decadent treat that I highly recommend. Overall, Bistro Delights offers delicious food, great service, and a pleasant atmosphere. I will definitely be returning!", "2024-06-26"),
+            Review("User3", "Could use some improvements.", "2024-06-25")
+        )
+
+        val reviewPagerAdapter = ReviewAdapter(reviews)
+        binding.reviewsViewPager.adapter = reviewPagerAdapter
+        binding.springDotsIndicator.attachTo(binding.reviewsViewPager)
+
+
     }
 
     private fun observeBookmarkResult() {
