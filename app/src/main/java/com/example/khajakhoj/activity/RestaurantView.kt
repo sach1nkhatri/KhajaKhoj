@@ -1,7 +1,7 @@
 package com.example.khajakhoj.activity
 
 import android.os.Bundle
-import android.util.Log
+import android.widget.SearchView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -13,11 +13,6 @@ import com.example.khajakhoj.R
 import com.example.khajakhoj.adapter.RestaurantAdapter
 import com.example.khajakhoj.model.Restaurant
 import com.example.khajakhoj.viewmodel.RestaurantViewModel
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
 
 class RestaurantView : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
@@ -38,6 +33,8 @@ class RestaurantView : AppCompatActivity() {
 
         val cuisineType = intent.getStringExtra("CUISINE_TYPE")
         cuisineType?.let { fetchRestaurants(it) }
+
+        setupSearchView()
     }
 
     private fun fetchRestaurants(cuisineType: String) {
@@ -53,5 +50,30 @@ class RestaurantView : AppCompatActivity() {
                 Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
             }
         })
+    }
+
+    private fun setupSearchView() {
+        val searchView = findViewById<SearchView>(R.id.cuisineSearch)
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                newText?.let { searchQuery ->
+                    filterRestaurants(searchQuery)
+                }
+                return true
+            }
+        })
+    }
+
+    private fun filterRestaurants(query: String) {
+        val filteredList = viewModel.restaurantList.value?.filter { restaurant ->
+            restaurant.name.toLowerCase().contains(query.toLowerCase()) ||
+                    restaurant.cuisineType.toLowerCase().contains(query.toLowerCase()) ||
+                    restaurant.address.toLowerCase().contains(query.toLowerCase())
+        }
+        restaurantAdapter.updateRestaurantList(filteredList ?: emptyList())
     }
 }

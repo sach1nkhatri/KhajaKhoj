@@ -4,21 +4,23 @@ import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Filter
+import android.widget.Filterable
 import android.widget.TextView
-import androidx.constraintlayout.widget.ConstraintSet
-import androidx.constraintlayout.widget.ConstraintSet.Layout
 import androidx.recyclerview.widget.RecyclerView
 import com.example.khajakhoj.R
 import com.example.khajakhoj.activity.ResDetailView
-import com.example.khajakhoj.activity.RestaurantView
 import com.example.khajakhoj.model.Restaurant
 import com.google.android.material.imageview.ShapeableImageView
 import com.squareup.picasso.Picasso
+import java.util.*
 
 class RestaurantAdapter(private var restaurantList: List<Restaurant>) :
-    RecyclerView.Adapter<RestaurantAdapter.RestaurantViewHolder>() {
+    RecyclerView.Adapter<RestaurantAdapter.RestaurantViewHolder>(), Filterable {
 
-    class RestaurantViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    private var filteredList: List<Restaurant> = restaurantList
+
+    inner class RestaurantViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val restaurantImage: ShapeableImageView = itemView.findViewById(R.id.restuarantImage)
         val restaurantName: TextView = itemView.findViewById(R.id.RestaurantName)
         val restaurantCuisine: TextView = itemView.findViewById(R.id.ResturantCuisine)
@@ -36,7 +38,7 @@ class RestaurantAdapter(private var restaurantList: List<Restaurant>) :
     }
 
     override fun onBindViewHolder(holder: RestaurantViewHolder, position: Int) {
-        val restaurant = restaurantList[position]
+        val restaurant = filteredList[position]
 
         Picasso.get().load(restaurant.restaurantLogoUrl).into(holder.restaurantImage)
         holder.restaurantName.text = restaurant.name
@@ -51,19 +53,42 @@ class RestaurantAdapter(private var restaurantList: List<Restaurant>) :
             val intent = Intent(context, ResDetailView::class.java)
             intent.putExtra("restaurant", restaurant)
             context.startActivity(intent)
-
-
         }
     }
 
     override fun getItemCount(): Int {
-        return restaurantList.size
+        return filteredList.size
     }
 
     fun updateRestaurantList(newRestaurantList: List<Restaurant>) {
         restaurantList = newRestaurantList
+        filteredList = newRestaurantList
         notifyDataSetChanged()
     }
-}
 
+    override fun getFilter(): Filter {
+        return object : Filter() {
+            override fun performFiltering(constraint: CharSequence?): FilterResults {
+                val query = constraint?.toString()?.lowercase(Locale.ROOT)
+                val results = FilterResults()
+                results.values = if (query.isNullOrEmpty()) {
+                    restaurantList
+                } else {
+                    restaurantList.filter {
+                        it.name.lowercase(Locale.ROOT).contains(query) ||
+                                it.cuisineType.lowercase(Locale.ROOT).contains(query) ||
+                                it.address.lowercase(Locale.ROOT).contains(query)
+                    }
+                }
+                return results
+            }
+
+            @Suppress("UNCHECKED_CAST")
+            override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
+                filteredList = results?.values as List<Restaurant>
+                notifyDataSetChanged()
+            }
+        }
+    }
+}
 

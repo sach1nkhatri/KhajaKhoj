@@ -70,14 +70,12 @@
         android:id="@+id/ResturantTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="62dp"
-        android:layout_marginTop="39dp"
-        android:layout_marginEnd="28dp"
+        android:layout_marginStart="31dp"
+        android:layout_marginTop="40dp"
         android:text="10am to 10pm"
         android:textColor="@color/cream"
         android:textSize="15sp"
         android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/ResturantCuisine"
         app:layout_constraintTop_toBottomOf="@+id/view" />
 
@@ -100,18 +98,14 @@
         android:id="@+id/restaurantRating"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="23dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="28dp"
-        android:layout_marginBottom="12dp"
+        android:layout_marginStart="26dp"
+        android:layout_marginTop="67dp"
         android:text="4.5*"
         android:textColor="@color/cream"
         android:textSize="15sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/restaurantAddress"
-        app:layout_constraintTop_toBottomOf="@+id/ResturantTime" />
+        app:layout_constraintTop_toBottomOf="@+id/view" />
 
     <View
         android:id="@+id/view"
