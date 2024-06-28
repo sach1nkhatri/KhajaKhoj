@@ -38,14 +38,21 @@ class RestaurantAdapter(private var restaurantList: List<Restaurant>) :
     }
 
     override fun onBindViewHolder(holder: RestaurantViewHolder, position: Int) {
-        val restaurant = filteredList[position]
+        val restaurant = restaurantList[position]
 
         Picasso.get().load(restaurant.restaurantLogoUrl).into(holder.restaurantImage)
         holder.restaurantName.text = restaurant.name
         holder.restaurantCuisine.text = restaurant.cuisineType
         holder.restaurantDistance.text = "0.5 km" // Replace with actual distance calculation if needed
         holder.restaurantTime.text = "${restaurant.openTime} - ${restaurant.closeTime}"
-        holder.restaurantAddress.text = restaurant.address
+
+        // Limit address to 16 characters
+        if (restaurant.address.length > 16) {
+            holder.restaurantAddress.text = restaurant.address.substring(0, 16) + "..."
+        } else {
+            holder.restaurantAddress.text = restaurant.address
+        }
+
         holder.restaurantRating.text = restaurant.rating.toString()
 
         holder.restaurantMain.setOnClickListener {
@@ -55,6 +62,7 @@ class RestaurantAdapter(private var restaurantList: List<Restaurant>) :
             context.startActivity(intent)
         }
     }
+
 
     override fun getItemCount(): Int {
         return filteredList.size

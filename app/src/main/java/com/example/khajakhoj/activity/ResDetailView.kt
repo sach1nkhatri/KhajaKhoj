@@ -64,7 +64,11 @@ class ResDetailView : AppCompatActivity() {
         val restaurant = intent.getParcelableExtra<Restaurant>("restaurant")
         if (restaurant != null) {
             val restaurantNameTextView: TextView = binding.RestaurantName
-            restaurantNameTextView.text = restaurant.name
+            restaurantNameTextView.text = if (restaurant.name.length > 15) {
+                "${restaurant.name.substring(0, 15)}..."
+            } else {
+                restaurant.name
+            }
 
             val restaurantCuisineTextView: TextView = binding.ResturantCuisineDetail
             restaurantCuisineTextView.text = restaurant.cuisineType
@@ -73,7 +77,11 @@ class ResDetailView : AppCompatActivity() {
             restaurantAddressTextView1.text = restaurant.address
 
             val restaurantAddressTextView2: TextView = binding.address
-            restaurantAddressTextView2.text = restaurant.address
+            if (restaurant.address.length > 13) {
+                restaurantAddressTextView2.text = "${restaurant.address.substring(0, 13)}..."
+            } else {
+                restaurantAddressTextView2.text = restaurant.address
+            }
 
             val restaurantPhoneTextView: TextView = binding.restaurantPhone
             restaurantPhoneTextView.text = restaurant.contactNumber
@@ -82,40 +90,28 @@ class ResDetailView : AppCompatActivity() {
             restaurantTimingTextView.text = "${restaurant.openTime} - ${restaurant.closeTime}"
 
             val twoWheelerParkingAvailability: ImageView = binding.twoWheelerParking
-            if(restaurant.bikeParking){
+            if (restaurant.bikeParking) {
                 twoWheelerParkingAvailability.setImageResource(R.drawable.availabegreenicon)
-            }
-            else{
+            } else {
                 twoWheelerParkingAvailability.setImageResource(R.drawable.wrongicon)
             }
 
-            val fourWheelerParkingAvailability: ImageView = binding.twoWheelerParking
-                    if(restaurant.carParking){
-                        fourWheelerParkingAvailability.setImageResource(R.drawable.availabegreenicon)
-                    }
-                    else{
-                        fourWheelerParkingAvailability.setImageResource(R.drawable.wrongicon)
-                    }
+            val fourWheelerParkingAvailability: ImageView = binding.fourWheelerParking
+            if (restaurant.carParking) {
+                fourWheelerParkingAvailability.setImageResource(R.drawable.availabegreenicon)
+            } else {
+                fourWheelerParkingAvailability.setImageResource(R.drawable.wrongicon)
+            }
+
             val wifiAvailability: ImageView = binding.wifi
-                    if(restaurant.wifi){
-                        wifiAvailability.setImageResource(R.drawable.availabegreenicon)
-                    }
-                    else{
-                        wifiAvailability.setImageResource(R.drawable.wrongicon)
-                    }
-
-
-
-
-
-
-
-
-
+            if (restaurant.wifi) {
+                wifiAvailability.setImageResource(R.drawable.availabegreenicon)
+            } else {
+                wifiAvailability.setImageResource(R.drawable.wrongicon)
+            }
         }
-
-
     }
+
 
 
     private inner class SwipeGestureListener : GestureDetector.SimpleOnGestureListener() {
