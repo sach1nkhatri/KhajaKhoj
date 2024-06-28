@@ -76,9 +76,9 @@
 
 
             <ImageView
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_margin="23dp"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_margin="15dp"
                 android:layout_gravity="end|top"
                 android:src="@drawable/favourite"/>
 
