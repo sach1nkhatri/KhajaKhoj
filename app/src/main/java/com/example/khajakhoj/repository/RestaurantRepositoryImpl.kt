@@ -70,6 +70,7 @@ class RestaurantRepositoryImpl : RestaurantRepository {
             "rating" to restaurant.rating,
             "location" to restaurant.location,
             "restaurantLogoUrl" to restaurant.restaurantLogoUrl,
+            "restaurantId" to restaurant.id,
             "userId" to currentUser.uid
         )
 
@@ -108,4 +109,60 @@ class RestaurantRepositoryImpl : RestaurantRepository {
                 }
             })
     }
+
+    override fun unBookmarkRestaurant(restaurantId: String, callback: (Boolean, String?) -> Unit) {
+        val currentUser = auth.currentUser
+        if (currentUser == null) {
+            callback(false, "User not authenticated")
+            return
+        }
+
+        bookmarksRef.orderByChild("userId").equalTo(currentUser.uid)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val bookmarkToRemove = snapshot.children.firstOrNull {
+                        it.child("restaurantId").value == restaurantId
+                    }
+
+                    if (bookmarkToRemove != null) {
+                        bookmarkToRemove.ref.removeValue()
+                            .addOnSuccessListener {
+                                callback(true, null)
+                            }
+                            .addOnFailureListener { exception ->
+                                callback(false, exception.message)
+                            }
+                    } else {
+                        callback(false, "Restaurant not found in bookmarks")
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    callback(false, error.message)
+                }
+            })
+    }
+
+    override fun isRestaurantBookmarked(restaurantId: String, callback: (Boolean) -> Unit) {
+        val currentUser = auth.currentUser
+        if (currentUser == null) {
+            callback(false)
+            return
+        }
+
+        bookmarksRef.orderByChild("userId").equalTo(currentUser.uid)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val isBookmarked = snapshot.children.any {
+                        it.child("restaurantId").value == restaurantId
+                    }
+                    callback(isBookmarked)
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    callback(false)
+                }
+            })
+    }
+
 }

@@ -8,7 +8,6 @@ import android.view.GestureDetector
 import android.view.MotionEvent
 import android.widget.ImageSwitcher
 import android.widget.ImageView
-import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -39,73 +38,58 @@ class ResDetailView : AppCompatActivity() {
         setContentView(binding.root)
         viewModel = ViewModelProvider(this).get(RestaurantViewModel::class.java)
 
-        // Initialize ImageSwitcher
-        imageSwitcher = findViewById(R.id.imageSwitcher)
-        imageSwitcher.setFactory {
-            val imageView = ImageView(this)
-            imageView.scaleType = ImageView.ScaleType.CENTER_CROP
-            imageView
-        }
-
-        // Initial image
-        imageSwitcher.setImageResource(imageIds[currentIndex])
-
-        // Setup gesture detection for swipe
-        gestureDetector = GestureDetector(this, SwipeGestureListener())
-
-        // Set OnTouchListener for swipe gestures on the CardView
-        val cardView: CardView = findViewById(R.id.ResPhotos)
-        cardView.setOnTouchListener { _, event -> gestureDetector.onTouchEvent(event) }
-
-        // Setup handler to switch images
-        handler = Handler(Looper.getMainLooper())
-        runnable = object : Runnable {
-            override fun run() {
-                currentIndex = (currentIndex + 1) % imageIds.size
-                imageSwitcher.setImageResource(imageIds[currentIndex])
-                handler.postDelayed(this, 5000) // Switch image every 5 seconds
-            }
-        }
-        handler.postDelayed(runnable, 5000) // Start the image switcher
+        setupViews()
+        setupImageSwitcher()
+        setupGestureDetection()
+        setupImageSwitchHandler()
 
         val restaurant = intent.getParcelableExtra<Restaurant>("restaurant")
+        restaurant?.let {
+            updateUI(it)
+            checkBookmarkStatus(it.id)
+        }
 
         binding.bookmarkBtn.setOnClickListener {
-            if (restaurant != null) {
-                viewModel.bookmarkRestaurant(restaurant)
+            restaurant?.let {
+                viewModel.bookmarkRestaurant(it)
                 observeBookmarkResult()
             }
         }
 
-        Log.d("Restaurant", restaurant.toString())
-        // Update UI with restaurant details
-        restaurant?.let {
-            binding.RestaurantName.text = it.name
-            binding.ResturantCuisineDetail.text = it.cuisineType
-            binding.RestaurantAddress.text = it.address
-            binding.address.text = it.address
-            binding.restaurantPhone.text = it.contactNumber
-            binding.timing.text = "${it.openTime} - ${it.closeTime}"
-
-            // Uncomment the following line if using an image loading library like Picasso or Glide
-            // Picasso.get().load(it.restaurantLogoUrl).into(binding.restuarantImageLogo)
-
-            if (it.bikeParking) {
-                binding.twoWheelerParking.setImageResource(R.drawable.availabegreenicon)
-            } else {
-                binding.twoWheelerParking.setImageResource(R.drawable.wrongicon)
+        binding.unBookmarkBtn.setOnClickListener {
+            restaurant?.let {
+                viewModel.unBookmarkRestaurant(it.id)
+                observeUnBookmarkResult()
             }
+        }
 
-            if (it.carParking) {
-                binding.fourWheelerParking.setImageResource(R.drawable.availabegreenicon)
-            } else {
-                binding.fourWheelerParking.setImageResource(R.drawable.wrongicon)
-            }
+    }
 
-            if (it.wifi) {
-                binding.wifi.setImageResource(R.drawable.availabegreenicon)
+    private fun updateUI(restaurant: Restaurant) {
+        with(binding) {
+            RestaurantName.text = restaurant.name
+            ResturantCuisineDetail.text = restaurant.cuisineType
+            RestaurantAddress.text = restaurant.address
+            address.text = restaurant.address
+            restaurantPhone.text = restaurant.contactNumber
+            timing.text = "${restaurant.openTime} - ${restaurant.closeTime}"
+
+            twoWheelerParking.setImageResource(if (restaurant.bikeParking) R.drawable.availabegreenicon else R.drawable.wrongicon)
+            fourWheelerParking.setImageResource(if (restaurant.carParking) R.drawable.availabegreenicon else R.drawable.wrongicon)
+            wifi.setImageResource(if (restaurant.wifi) R.drawable.availabegreenicon else R.drawable.wrongicon)
+        }
+    }
+
+    private fun checkBookmarkStatus(restaurantId: String) {
+        viewModel.isRestaurantBookmarked(restaurantId) { isBookmarked ->
+            if (isBookmarked) {
+                binding.bookmarkBtn.setImageResource(R.drawable.favourites)
+                binding.unBookmarkBtn.isEnabled = true
+                binding.bookmarkBtn.isEnabled = false
             } else {
-                binding.wifi.setImageResource(R.drawable.wrongicon)
+                binding.bookmarkBtn.setImageResource(R.drawable.favourite)
+                binding.bookmarkBtn.isEnabled = true
+                binding.unBookmarkBtn.isEnabled = false
             }
         }
     }
@@ -115,10 +99,57 @@ class ResDetailView : AppCompatActivity() {
             val (success, message) = result
             if (success) {
                 Toast.makeText(this, "Bookmark added successfully!", Toast.LENGTH_SHORT).show()
+                binding.bookmarkBtn.setImageResource(R.drawable.favourites)
+                binding.unBookmarkBtn.isEnabled = true
+                binding.bookmarkBtn.isEnabled = false
             } else {
                 Toast.makeText(this, "Failed to add bookmark: $message", Toast.LENGTH_SHORT).show()
             }
         })
+    }
+
+    private fun observeUnBookmarkResult() {
+        viewModel.unBookmarkResult.observe(this, Observer { result ->
+            result.onSuccess {
+                Toast.makeText(this, "Unbookmarked successfully", Toast.LENGTH_SHORT).show()
+                binding.bookmarkBtn.setImageResource(R.drawable.favourite)
+                binding.bookmarkBtn.isEnabled = true
+                binding.unBookmarkBtn.isEnabled = false
+            }.onFailure {
+                Toast.makeText(this, "Unbookmark failed: ${it.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    private fun setupViews() {
+        // Initialize other views if needed
+    }
+
+    private fun setupImageSwitcher() {
+        imageSwitcher = binding.imageSwitcher
+        imageSwitcher.setFactory {
+            val imageView = ImageView(this)
+            imageView.scaleType = ImageView.ScaleType.CENTER_CROP
+            imageView
+        }
+    }
+
+    private fun setupGestureDetection() {
+        gestureDetector = GestureDetector(this, SwipeGestureListener())
+        val cardView: CardView = binding.ResPhotos
+        cardView.setOnTouchListener { _, event -> gestureDetector.onTouchEvent(event) }
+    }
+
+    private fun setupImageSwitchHandler() {
+        handler = Handler(Looper.getMainLooper())
+        runnable = object : Runnable {
+            override fun run() {
+                currentIndex = (currentIndex + 1) % imageIds.size
+                imageSwitcher.setImageResource(imageIds[currentIndex])
+                handler.postDelayed(this, 5000) // Switch image every 5 seconds
+            }
+        }
+        handler.postDelayed(runnable, 5000) // Start the image switcher
     }
 
     private inner class SwipeGestureListener : GestureDetector.SimpleOnGestureListener() {
@@ -131,7 +162,7 @@ class ResDetailView : AppCompatActivity() {
             velocityX: Float,
             velocityY: Float
         ): Boolean {
-            if (e1 == null || e2 == null) return false
+            if (e1 == null) return false
 
             val diffX = e2.x - e1.x
             val diffY = e2.y - e1.y
@@ -153,20 +184,12 @@ class ResDetailView : AppCompatActivity() {
     }
 
     private fun onSwipeLeft() {
-        if (currentIndex < imageIds.size - 1) {
-            currentIndex++
-        } else {
-            currentIndex = 0
-        }
+        currentIndex = (currentIndex + 1) % imageIds.size
         imageSwitcher.setImageResource(imageIds[currentIndex])
     }
 
     private fun onSwipeRight() {
-        if (currentIndex > 0) {
-            currentIndex--
-        } else {
-            currentIndex = imageIds.size - 1
-        }
+        currentIndex = (currentIndex - 1 + imageIds.size) % imageIds.size
         imageSwitcher.setImageResource(imageIds[currentIndex])
     }
 
