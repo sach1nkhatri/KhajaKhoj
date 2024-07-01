@@ -30,6 +30,7 @@ class ResDetailView : AppCompatActivity() {
     private var currentIndex = 0
     private lateinit var handler: Handler
     private lateinit var runnable: Runnable
+    private var isBookmarked = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,22 +45,32 @@ class ResDetailView : AppCompatActivity() {
         setupImageSwitchHandler()
 
         val restaurant = intent.getParcelableExtra<Restaurant>("restaurant")
+
         restaurant?.let {
             updateUI(it)
-            checkBookmarkStatus(it.id)
+            updateBookmarkButton() // Update button state based on isBookmarked
+            if (!isBookmarked) {
+                checkBookmarkStatus(it.id) // Check bookmark status only if not already bookmarked
+            }
         }
 
         binding.bookmarkBtn.setOnClickListener {
             restaurant?.let {
-                viewModel.bookmarkRestaurant(it)
-                observeBookmarkResult()
-            }
-        }
-
-        binding.unBookmarkBtn.setOnClickListener {
-            restaurant?.let {
-                viewModel.unBookmarkRestaurant(it.id)
-                observeUnBookmarkResult()
+                if (isBookmarked) {
+                    viewModel.unBookmarkRestaurant(it.id)
+                    Log.d("RestaurantViewModel", "Unbookmarked restaurant with ID: ${it.id}")
+                    Log.d("RestaurantViewModel", "Unbookmarked restaurant with ID: ${it.id}")
+                    Log.d("RestaurantViewModel", "Unbookmarked restaurant with ID: ${it.id}")
+                    Log.d("RestaurantViewModel", "Unbookmarked restaurant with ID: ${it.id}")
+                    observeUnBookmarkResult()
+                } else {
+                    viewModel.bookmarkRestaurant(it)
+                    Log.d("RestaurantViewModel", "Bookmarked restaurant with ID: ${it.id}")
+                    Log.d("RestaurantViewModel", "Bookmarked restaurant with ID: ${it.id}")
+                    Log.d("RestaurantViewModel", "Bookmarked restaurant with ID: ${it.id}")
+                    Log.d("RestaurantViewModel", "Bookmarked restaurant with ID: ${it.id}")
+                    observeBookmarkResult()
+                }
             }
         }
 
@@ -82,15 +93,16 @@ class ResDetailView : AppCompatActivity() {
 
     private fun checkBookmarkStatus(restaurantId: String) {
         viewModel.isRestaurantBookmarked(restaurantId) { isBookmarked ->
-            if (isBookmarked) {
-                binding.bookmarkBtn.setImageResource(R.drawable.favourites)
-                binding.unBookmarkBtn.isEnabled = true
-                binding.bookmarkBtn.isEnabled = false
-            } else {
-                binding.bookmarkBtn.setImageResource(R.drawable.favourite)
-                binding.bookmarkBtn.isEnabled = true
-                binding.unBookmarkBtn.isEnabled = false
-            }
+            this.isBookmarked = isBookmarked
+            updateBookmarkButton()
+        }
+    }
+
+    private fun updateBookmarkButton() {
+        if (isBookmarked) {
+            binding.bookmarkBtn.setImageResource(R.drawable.favourites)
+        } else {
+            binding.bookmarkBtn.setImageResource(R.drawable.favourite)
         }
     }
 
@@ -99,9 +111,8 @@ class ResDetailView : AppCompatActivity() {
             val (success, message) = result
             if (success) {
                 Toast.makeText(this, "Bookmark added successfully!", Toast.LENGTH_SHORT).show()
-                binding.bookmarkBtn.setImageResource(R.drawable.favourites)
-                binding.unBookmarkBtn.isEnabled = true
-                binding.bookmarkBtn.isEnabled = false
+                isBookmarked = true
+                updateBookmarkButton()
             } else {
                 Toast.makeText(this, "Failed to add bookmark: $message", Toast.LENGTH_SHORT).show()
             }
@@ -112,9 +123,8 @@ class ResDetailView : AppCompatActivity() {
         viewModel.unBookmarkResult.observe(this, Observer { result ->
             result.onSuccess {
                 Toast.makeText(this, "Unbookmarked successfully", Toast.LENGTH_SHORT).show()
-                binding.bookmarkBtn.setImageResource(R.drawable.favourite)
-                binding.bookmarkBtn.isEnabled = true
-                binding.unBookmarkBtn.isEnabled = false
+                isBookmarked = false
+                updateBookmarkButton()
             }.onFailure {
                 Toast.makeText(this, "Unbookmark failed: ${it.message}", Toast.LENGTH_SHORT).show()
             }

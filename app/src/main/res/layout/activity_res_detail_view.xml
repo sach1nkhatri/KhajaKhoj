@@ -82,15 +82,14 @@
                 android:layout_margin="23dp"
                 android:src="@drawable/favourite" />
 
-            <ImageView
-                android:id="@+id/unBookmarkBtn"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_gravity="end|top"
-                android:layout_marginTop="60dp"
-                android:layout_marginRight="23dp"
-                android:src="@drawable/favourites" />
-
+<!--            <ImageView-->
+<!--                android:id="@+id/unBookmarkBtn"-->
+<!--                android:layout_width="30dp"-->
+<!--                android:layout_height="30dp"-->
+<!--                android:layout_gravity="end|top"-->
+<!--                android:layout_marginTop="60dp"-->
+<!--                android:layout_marginRight="23dp"-->
+<!--                android:src="@drawable/favourites" />-->
 
             <TextView
                 android:layout_width="80dp"

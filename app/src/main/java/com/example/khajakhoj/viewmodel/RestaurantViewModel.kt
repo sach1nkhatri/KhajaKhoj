@@ -53,11 +53,11 @@ class RestaurantViewModel : ViewModel() {
     fun getBookmarksByUserId() {
         repository.getBookmarksByUserId { restaurants, error ->
             if (error != null) {
-                _bookmarkError.value = error
-                _userBookmarks.value = null // Ensure bookmarks list is cleared if there's an error
+                _bookmarkError.postValue(error)
+                _userBookmarks.postValue(null) // Ensure bookmarks list is cleared if there's an error
             } else {
-                _userBookmarks.value = restaurants
-                _bookmarkError.value = null // Clear any previous error message
+                _userBookmarks.postValue(restaurants)
+                _bookmarkError.postValue(null) // Clear any previous error message
             }
         }
     }
@@ -87,4 +87,3 @@ class RestaurantViewModel : ViewModel() {
         }
     }
 }
-

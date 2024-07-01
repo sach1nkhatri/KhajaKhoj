@@ -1,6 +1,7 @@
 package com.example.khajakhoj.activity
 
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -33,6 +34,7 @@ class FavouritesActivity : AppCompatActivity() {
         viewModel.userBookmarks.observe(this, Observer { restaurants ->
             restaurants?.let {
                 restaurantAdapter.updateRestaurantList(it)
+                Log.d("FavouritesActivity", "Bookmarks retrieved: $it")
             }
         })
 

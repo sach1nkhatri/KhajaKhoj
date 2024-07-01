@@ -5,12 +5,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.constraintlayout.widget.ConstraintSet
-import androidx.constraintlayout.widget.ConstraintSet.Layout
 import androidx.recyclerview.widget.RecyclerView
 import com.example.khajakhoj.R
 import com.example.khajakhoj.activity.ResDetailView
-import com.example.khajakhoj.activity.RestaurantView
 import com.example.khajakhoj.model.Restaurant
 import com.google.android.material.imageview.ShapeableImageView
 import com.squareup.picasso.Picasso
@@ -51,8 +48,6 @@ class RestaurantAdapter(private var restaurantList: List<Restaurant>) :
             val intent = Intent(context, ResDetailView::class.java)
             intent.putExtra("restaurant", restaurant)
             context.startActivity(intent)
-
-
         }
     }
 
