@@ -110,12 +110,12 @@
                 tools:ignore="RtlCompat" />
 
             <TextView
-                android:id="@+id/address"
+                android:id="@+id/visit"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="55dp"
                 android:layout_marginTop="135dp"
-                android:text="Adress"
+                android:text="Visit"
                 android:textStyle="bold" />
 
             <ImageView

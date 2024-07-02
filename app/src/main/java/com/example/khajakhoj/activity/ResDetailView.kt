@@ -1,5 +1,7 @@
 package com.example.khajakhoj.activity
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -86,12 +88,12 @@ class ResDetailView : AppCompatActivity() {
             binding.RestaurantName.text = it.name
             binding.ResturantCuisineDetail.text = it.cuisineType
             binding.RestaurantAddress.text = it.address
-            binding.address.text = it.address
             binding.restaurantPhone.text = it.contactNumber
             binding.timing.text = "${it.openTime} - ${it.closeTime}"
 
-            // Uncomment the following line if using an image loading library like Picasso or Glide
-            // Picasso.get().load(it.restaurantLogoUrl).into(binding.restuarantImageLogo)
+
+
+//            Picasso.get().load(it.restaurantLogoUrl).into(binding.restuarantImageLogo)
 
             if (it.bikeParking) {
                 binding.twoWheelerParking.setImageResource(R.drawable.availabegreenicon)
