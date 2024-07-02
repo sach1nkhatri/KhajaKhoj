@@ -22,6 +22,7 @@ import com.example.khajakhoj.adapter.ReviewAdapter
 import com.example.khajakhoj.databinding.ActivityResDetailViewBinding
 import com.example.khajakhoj.model.Restaurant
 import com.example.khajakhoj.model.Review
+import com.example.khajakhoj.utils.MapUtils
 import com.example.khajakhoj.viewmodel.RestaurantViewModel
 import com.squareup.picasso.Picasso
 
@@ -88,11 +89,11 @@ class ResDetailView : AppCompatActivity() {
             }
             ResturantCuisineDetail.text = restaurant.cuisineType
             RestaurantAddress.text = restaurant.address
-            visit.text = if (restaurant.address.length > 13) {
-                "${restaurant.address.substring(0, 13)}..."
-            } else {
-                restaurant.address
+
+            visit.setOnClickListener(){
+                MapUtils.showMapsWebViewDialog(this@ResDetailView,"https://www.google.com/maps/place/Radisson+Hotel+Kathmandu/@27.7156814,85.3245952,15z/data=!4m9!3m8!1s0x39eb191b0080f92b:0x3d08c08a7f53eace!5m2!4m1!1i2!8m2!3d27.7199291!4d85.3212645!16s%2Fg%2F1tdjz_mp?entry=ttu")
             }
+
             restaurantPhone.text = restaurant.contactNumber
             timing.text = "${restaurant.openTime} - ${restaurant.closeTime}"
 
