@@ -10,7 +10,6 @@ import android.view.GestureDetector
 import android.view.MotionEvent
 import android.widget.ImageSwitcher
 import android.widget.ImageView
-import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -36,6 +35,7 @@ class ResDetailView : AppCompatActivity() {
     private var currentIndex = 0
     private lateinit var handler: Handler
     private lateinit var runnable: Runnable
+    private var isBookmarked = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,26 +43,130 @@ class ResDetailView : AppCompatActivity() {
         binding = ActivityResDetailViewBinding.inflate(layoutInflater)
         setContentView(binding.root)
         viewModel = ViewModelProvider(this).get(RestaurantViewModel::class.java)
+        setupImageSwitcher()
+        setupGestureDetection()
+        setupImageSwitchHandler()
 
-        // Initialize ImageSwitcher
-        imageSwitcher = findViewById(R.id.imageSwitcher)
+        val restaurant = intent.getParcelableExtra<Restaurant>("restaurant")
+
+        restaurant?.let {
+            updateUI(it)
+            updateBookmarkButton() // Update button state based on isBookmarked
+            if (!isBookmarked) {
+                checkBookmarkStatus(it.id) // Check bookmark status only if not already bookmarked
+            }
+        }
+
+        binding.bookmarkBtn.setOnClickListener {
+            restaurant?.let {
+                if (isBookmarked) {
+                    viewModel.unBookmarkRestaurant(it.id)
+                    Log.d("RestaurantViewModel", "Unbookmarked restaurant with ID: ${it.id}")
+                    Log.d("RestaurantViewModel", "Unbookmarked restaurant with ID: ${it.id}")
+                    Log.d("RestaurantViewModel", "Unbookmarked restaurant with ID: ${it.id}")
+                    Log.d("RestaurantViewModel", "Unbookmarked restaurant with ID: ${it.id}")
+                    observeUnBookmarkResult()
+                } else {
+                    viewModel.bookmarkRestaurant(it)
+                    Log.d("RestaurantViewModel", "Bookmarked restaurant with ID: ${it.id}")
+                    Log.d("RestaurantViewModel", "Bookmarked restaurant with ID: ${it.id}")
+                    Log.d("RestaurantViewModel", "Bookmarked restaurant with ID: ${it.id}")
+                    Log.d("RestaurantViewModel", "Bookmarked restaurant with ID: ${it.id}")
+                    observeBookmarkResult()
+                }
+            }
+        }
+
+    }
+
+    private fun updateUI(restaurant: Restaurant) {
+        with(binding) {
+            RestaurantName.text = if (restaurant.name.length > 15) {
+                "${restaurant.name.substring(0, 15)}..."
+            } else {
+                restaurant.name
+            }
+            ResturantCuisineDetail.text = restaurant.cuisineType
+            RestaurantAddress.text = restaurant.address
+            visit.text = if (restaurant.address.length > 13) {
+                "${restaurant.address.substring(0, 13)}..."
+            } else {
+                restaurant.address
+            }
+            restaurantPhone.text = restaurant.contactNumber
+            timing.text = "${restaurant.openTime} - ${restaurant.closeTime}"
+
+            twoWheelerParking.setImageResource(if (restaurant.bikeParking) R.drawable.availabegreenicon else R.drawable.wrongicon)
+            fourWheelerParking.setImageResource(if (restaurant.carParking) R.drawable.availabegreenicon else R.drawable.wrongicon)
+            wifi.setImageResource(if (restaurant.wifi) R.drawable.availabegreenicon else R.drawable.wrongicon)
+        }
+        val reviews = listOf(
+            Review("", "","User1",2.0,"I recently dined at Bistro Delights, and it was a fantastic experience. The ambiance is cozy and welcoming, perfect for a relaxing meal", 20240627),
+            Review("","","User2",1.3,"I enjoyed going this place.I tried the grilled salmon, which was cooked to perfection—crispy on the outside and tender on the inside. The accompanying vegetables were fresh and flavorful. The staff was attentive and friendly, ensuring that we had everything we needed. For dessert, the chocolate lava cake was a decadent treat that I highly recommend. Overall, Bistro Delights offers delicious food, great service, and a pleasant atmosphere. I will definitely be returning!", 20240626),
+            Review("", "","User3",5.0,"Could use some improvements.", 20240625)
+        )
+
+        val reviewPagerAdapter = ReviewAdapter(reviews)
+        binding.reviewsViewPager.adapter = reviewPagerAdapter
+        binding.springDotsIndicator.attachTo(binding.reviewsViewPager)
+    }
+
+    private fun checkBookmarkStatus(restaurantId: String) {
+        viewModel.isRestaurantBookmarked(restaurantId) { isBookmarked ->
+            this.isBookmarked = isBookmarked
+            updateBookmarkButton()
+        }
+    }
+
+    private fun updateBookmarkButton() {
+        if (isBookmarked) {
+            binding.bookmarkBtn.setImageResource(R.drawable.favourites)
+        } else {
+            binding.bookmarkBtn.setImageResource(R.drawable.favourite)
+        }
+    }
+
+    private fun observeBookmarkResult() {
+        viewModel.bookmarkResult.observe(this, Observer { result ->
+            val (success, message) = result
+            if (success) {
+                Toast.makeText(this, "Bookmark added successfully!", Toast.LENGTH_SHORT).show()
+                isBookmarked = true
+                updateBookmarkButton()
+            } else {
+                Toast.makeText(this, "Failed to add bookmark: $message", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    private fun observeUnBookmarkResult() {
+        viewModel.unBookmarkResult.observe(this, Observer { result ->
+            result.onSuccess {
+                Toast.makeText(this, "Unbookmarked successfully", Toast.LENGTH_SHORT).show()
+                isBookmarked = false
+                updateBookmarkButton()
+            }.onFailure {
+                Toast.makeText(this, "Unbookmark failed: ${it.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    private fun setupImageSwitcher() {
+        imageSwitcher = binding.imageSwitcher
         imageSwitcher.setFactory {
             val imageView = ImageView(this)
             imageView.scaleType = ImageView.ScaleType.CENTER_CROP
             imageView
         }
+    }
 
-        // Initial image
-        imageSwitcher.setImageResource(imageIds[currentIndex])
-
-        // Setup gesture detection for swipe
+    private fun setupGestureDetection() {
         gestureDetector = GestureDetector(this, SwipeGestureListener())
-
-        // Set OnTouchListener for swipe gestures on the CardView
-        val cardView: CardView = findViewById(R.id.ResPhotos)
+        val cardView: CardView = binding.ResPhotos
         cardView.setOnTouchListener { _, event -> gestureDetector.onTouchEvent(event) }
+    }
 
-        // Setup handler to switch images
+    private fun setupImageSwitchHandler() {
         handler = Handler(Looper.getMainLooper())
         runnable = object : Runnable {
             override fun run() {
@@ -73,100 +177,8 @@ class ResDetailView : AppCompatActivity() {
         }
         handler.postDelayed(runnable, 5000) // Start the image switcher
 
-        val restaurant = intent.getParcelableExtra<Restaurant>("restaurant")
-        if (restaurant != null) {
-            val restaurantNameTextView: TextView = binding.RestaurantName
-            restaurantNameTextView.text = if (restaurant.name.length > 15) {
-                "${restaurant.name.substring(0, 15)}..."
-            } else {
-                restaurant.name
-            }
-
-            val restaurantCuisineTextView: TextView = binding.ResturantCuisineDetail
-            restaurantCuisineTextView.text = restaurant.cuisineType
-
-            val restaurantAddressTextView1: TextView = binding.RestaurantAddress
-            restaurantAddressTextView1.text = restaurant.address
-
-            val restaurantAddressTextView2: TextView = binding.visit
-            if (restaurant.address.length > 13) {
-                restaurantAddressTextView2.text = "${restaurant.address.substring(0, 13)}..."
-            } else {
-                restaurantAddressTextView2.text = restaurant.address
-            }
-
-            val restaurantPhoneTextView: TextView = binding.restaurantPhone
-            restaurantPhoneTextView.text = restaurant.contactNumber
-
-            val restaurantTimingTextView: TextView = binding.timing
-            restaurantTimingTextView.text = "${restaurant.openTime} - ${restaurant.closeTime}"
-
-            val twoWheelerParkingAvailability: ImageView = binding.twoWheelerParking
-            if (restaurant.bikeParking) {
-                twoWheelerParkingAvailability.setImageResource(R.drawable.availabegreenicon)
-            } else {
-                twoWheelerParkingAvailability.setImageResource(R.drawable.wrongicon)
-            }
-
-            val fourWheelerParkingAvailability: ImageView = binding.fourWheelerParking
-            if (restaurant.carParking) {
-                fourWheelerParkingAvailability.setImageResource(R.drawable.availabegreenicon)
-            } else {
-                fourWheelerParkingAvailability.setImageResource(R.drawable.wrongicon)
-            }
-
-            val wifiAvailability: ImageView = binding.wifi
-            if (restaurant.wifi) {
-                wifiAvailability.setImageResource(R.drawable.availabegreenicon)
-            } else {
-                wifiAvailability.setImageResource(R.drawable.wrongicon)
-            }
-        }
-
-        binding.bookmarkBtn.setOnClickListener {
-            if (restaurant != null) {
-                viewModel.bookmarkRestaurant(restaurant)
-                observeBookmarkResult()
-            }
-        }
-
-        Log.d("Restaurant", restaurant.toString())
-        // Update UI with restaurant details
-        restaurant?.let {
-            binding.RestaurantName.text = it.name
-            binding.ResturantCuisineDetail.text = it.cuisineType
-            binding.RestaurantAddress.text = it.address
-            binding.restaurantPhone.text = it.contactNumber
-            binding.timing.text = "${it.openTime} - ${it.closeTime}"
-
-
-
-//            Picasso.get().load(it.restaurantLogoUrl).into(binding.restuarantImageLogo)
-
-        }
-
-        val reviews = listOf(
-            Review("User1", "I recently dined at Bistro Delights, and it was a fantastic experience. The ambiance is cozy and welcoming, perfect for a relaxing meal", "2024-06-27"),
-            Review("User2", "I enjoyed going this place.I tried the grilled salmon, which was cooked to perfection—crispy on the outside and tender on the inside. The accompanying vegetables were fresh and flavorful. The staff was attentive and friendly, ensuring that we had everything we needed. For dessert, the chocolate lava cake was a decadent treat that I highly recommend. Overall, Bistro Delights offers delicious food, great service, and a pleasant atmosphere. I will definitely be returning!", "2024-06-26"),
-            Review("User3", "Could use some improvements.", "2024-06-25")
-        )
-
-        val reviewPagerAdapter = ReviewAdapter(reviews)
-        binding.reviewsViewPager.adapter = reviewPagerAdapter
-        binding.springDotsIndicator.attachTo(binding.reviewsViewPager)
-
     }
 
-    private fun observeBookmarkResult() {
-        viewModel.bookmarkResult.observe(this, Observer { result ->
-            val (success, message) = result
-            if (success) {
-                Toast.makeText(this, "Bookmark added successfully!", Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(this, "Failed to add bookmark: $message", Toast.LENGTH_SHORT).show()
-            }
-        })
-    }
 
 
     private inner class SwipeGestureListener : GestureDetector.SimpleOnGestureListener() {
@@ -179,7 +191,7 @@ class ResDetailView : AppCompatActivity() {
             velocityX: Float,
             velocityY: Float
         ): Boolean {
-            if (e1 == null || e2 == null) return false
+            if (e1 == null) return false
 
             val diffX = e2.x - e1.x
             val diffY = e2.y - e1.y
@@ -201,20 +213,12 @@ class ResDetailView : AppCompatActivity() {
     }
 
     private fun onSwipeLeft() {
-        if (currentIndex < imageIds.size - 1) {
-            currentIndex++
-        } else {
-            currentIndex = 0
-        }
+        currentIndex = (currentIndex + 1) % imageIds.size
         imageSwitcher.setImageResource(imageIds[currentIndex])
     }
 
     private fun onSwipeRight() {
-        if (currentIndex > 0) {
-            currentIndex--
-        } else {
-            currentIndex = imageIds.size - 1
-        }
+        currentIndex = (currentIndex - 1 + imageIds.size) % imageIds.size
         imageSwitcher.setImageResource(imageIds[currentIndex])
     }
 

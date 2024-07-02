@@ -24,8 +24,8 @@ class ReviewAdapter(private val reviews: List<Review>) :
 
     override fun onBindViewHolder(holder: ReviewViewHolder, position: Int) {
         val review = reviews[position]
-        holder.userTextView.text = review.user
-        holder.reviewTextView.text = review.text
+        holder.userTextView.text = review.userId
+        holder.reviewTextView.text = review.reviewText
         holder.reviewTextView.setOnClickListener(object : View.OnClickListener {
             var isExpanded: Boolean = false
 
@@ -48,4 +48,3 @@ class ReviewAdapter(private val reviews: List<Review>) :
 
     override fun getItemCount(): Int = reviews.size
 }
-

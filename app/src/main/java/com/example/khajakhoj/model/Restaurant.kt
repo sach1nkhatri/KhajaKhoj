@@ -16,7 +16,9 @@ data class Restaurant(
     var wifi: Boolean = false,
     val rating: Double = 0.0,
     val location: String = "",  // location of restaurnat for navigantion purpose
-    val restaurantLogoUrl: String = ""
+    val restaurantLogoUrl: String = "",
+    val restaurantId : String = "",
+    val userId : String = ""
 ):Parcelable{
     constructor(parcel: Parcel) : this(
         parcel.readString()?:"",
@@ -30,6 +32,8 @@ data class Restaurant(
         parcel.readByte() != 0.toByte(),
         parcel.readByte() != 0.toByte(),
         parcel.readDouble(),
+        parcel.readString()?:"",
+        parcel.readString()?:"",
         parcel.readString()?:"",
         parcel.readString()?:""
     ) {
@@ -49,6 +53,8 @@ data class Restaurant(
         parcel.writeDouble(rating)
         parcel.writeString(location)
         parcel.writeString(restaurantLogoUrl)
+        parcel.writeString(restaurantId)
+        parcel.writeString(userId)
     }
 
     override fun describeContents(): Int {

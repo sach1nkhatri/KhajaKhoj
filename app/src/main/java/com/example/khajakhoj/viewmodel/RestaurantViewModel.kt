@@ -1,5 +1,6 @@
 package com.example.khajakhoj.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -21,10 +22,6 @@ class RestaurantViewModel : ViewModel() {
     val errorMessage: LiveData<String?>
         get() = _errorMessage
 
-    private val _bookmarkResult = MutableLiveData<Pair<Boolean, String?>>()
-    val bookmarkResult: LiveData<Pair<Boolean, String?>>
-        get() = _bookmarkResult
-
     fun fetchRestaurants(cuisineType: String) {
         repository.getRestaurantsByCuisine(cuisineType) { restaurants, error ->
             if (error != null) {
@@ -34,6 +31,10 @@ class RestaurantViewModel : ViewModel() {
             }
         }
     }
+
+    private val _bookmarkResult = MutableLiveData<Pair<Boolean, String?>>()
+    val bookmarkResult: LiveData<Pair<Boolean, String?>>
+        get() = _bookmarkResult
 
     fun bookmarkRestaurant(restaurant: Restaurant) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -52,13 +53,37 @@ class RestaurantViewModel : ViewModel() {
     fun getBookmarksByUserId() {
         repository.getBookmarksByUserId { restaurants, error ->
             if (error != null) {
-                _bookmarkError.value = error
-                _userBookmarks.value = null // Ensure bookmarks list is cleared if there's an error
+                _bookmarkError.postValue(error)
+                _userBookmarks.postValue(null) // Ensure bookmarks list is cleared if there's an error
             } else {
-                _userBookmarks.value = restaurants
-                _bookmarkError.value = null // Clear any previous error message
+                _userBookmarks.postValue(restaurants)
+                _bookmarkError.postValue(null) // Clear any previous error message
+            }
+        }
+    }
+
+    private val _unBookmarkResult = MutableLiveData<Result<Boolean>>()
+    val unBookmarkResult: LiveData<Result<Boolean>> = _unBookmarkResult
+
+    fun unBookmarkRestaurant(restaurantId: String) {
+        viewModelScope.launch {
+            repository.unBookmarkRestaurant(restaurantId) { success, error ->
+                if (success) {
+                    _unBookmarkResult.postValue(Result.success(true))
+                    Log.d("RestaurantViewModel", "Unbookmarked restaurant with ID: $restaurantId")
+                } else {
+                    _unBookmarkResult.postValue(Result.failure(Exception(error)))
+                    Log.e("RestaurantViewModel", "Failed to unbookmark restaurant: $error")
+                }
+            }
+        }
+    }
+
+    fun isRestaurantBookmarked(restaurantId: String, callback: (Boolean) -> Unit) {
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.isRestaurantBookmarked(restaurantId) { isBookmarked ->
+                callback(isBookmarked)
             }
         }
     }
 }
-
