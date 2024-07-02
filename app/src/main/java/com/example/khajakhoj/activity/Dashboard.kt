@@ -68,6 +68,10 @@ class Dashboard : AppCompatActivity() {
         dashboardBinding.navigationView.setNavigationItemSelectedListener {MenuItem->
 
             when(MenuItem.itemId){
+                R.id.favourites ->{
+                    startActivity(Intent(this@Dashboard, FavouritesActivity::class.java))
+                }
+
                 R.id.coupons ->{
                     startActivity(Intent(this@Dashboard, CouponActivity::class.java))
                 }

@@ -1,12 +1,17 @@
 package com.example.khajakhoj.activity
 
+import android.R.attr.button
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.example.khajakhoj.databinding.ActivitySupportBinding
+
 
 class SupportActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySupportBinding
@@ -31,8 +36,6 @@ class SupportActivity : AppCompatActivity() {
         call.setOnClickListener {
             callSomeone()
         }
-
-
     }
 
     private fun sendMail(email: String, subject: String, message: String) {
@@ -46,17 +49,30 @@ class SupportActivity : AppCompatActivity() {
     }
 
     private fun callSomeone() {
-        val phoneNumber = "1234567890"
-        val callIntent = Intent(Intent.ACTION_DIAL).apply {
+        val phoneNumber = "1234567890" // Replace with the phone number you want to call
+        val callIntent = Intent(Intent.ACTION_CALL).apply {
             data = Uri.parse("tel:$phoneNumber")
         }
-
-        if (callIntent.resolveActivity(packageManager) != null) {
+        if (ContextCompat.checkSelfPermission(
+                this,
+                android.Manifest.permission.CALL_PHONE
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
             startActivity(callIntent)
         } else {
-            Toast.makeText(this, "No calling apps installed.", Toast.LENGTH_SHORT).show()
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(android.Manifest.permission.CALL_PHONE),
+                1
+            )
         }
     }
 
-
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == 1 && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            // Permission granted, you can initiate the call again here if needed
+        }
+    }
 }
+

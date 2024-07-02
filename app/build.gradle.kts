@@ -62,6 +62,9 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
+    implementation("com.tbuonomo:dotsindicator:4.3")
+
+
     implementation ("com.googlecode.libphonenumber:libphonenumber:8.13.11")
     implementation ("com.squareup.picasso:picasso:2.71828")
     implementation("androidx.security:security-crypto:1.1.0-alpha06")
@@ -72,5 +75,8 @@ dependencies {
     implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.2") // or the latest version
     implementation ("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0") // Check for the latest version
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1") // Use the latest version
-
 }
+
+
+
+
