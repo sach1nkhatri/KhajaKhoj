@@ -17,11 +17,11 @@ class ReviewRepositoryImpl : ReviewRepository {
         onSuccess: () -> Unit,
         onFailure: (DatabaseError) -> Unit
     ) {
-        val currentUser = auth.currentUser
+//        val currentUser = auth.currentUser
         val reviewsRef = database.getReference("reviews").push()
         review.reviewId = reviewsRef.key ?: return
-        review.userId = currentUser?.uid.toString()
-        review.username = currentUser?.displayName.toString()
+//        review.userId = currentUser?.uid.toString()
+//        review.username = currentUser?.displayName.toString()
 
         reviewsRef.setValue(review)
             .addOnSuccessListener { onSuccess() }

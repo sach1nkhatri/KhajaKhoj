@@ -12,6 +12,7 @@ import android.widget.ImageSwitcher
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.lifecycle.Observer
@@ -24,6 +25,7 @@ import com.example.khajakhoj.model.Restaurant
 import com.example.khajakhoj.model.Review
 import com.example.khajakhoj.viewmodel.RestaurantViewModel
 import com.example.khajakhoj.viewmodel.ReviewViewModel
+import com.example.khajakhoj.viewmodel.UserViewModel
 import com.squareup.picasso.Picasso
 import java.util.Date
 
@@ -31,6 +33,7 @@ class ResDetailView : AppCompatActivity() {
 
     private lateinit var viewModel: RestaurantViewModel
     private lateinit var reviewViewModel: ReviewViewModel
+    private val userViewModel: UserViewModel by viewModels()
     private lateinit var imageSwitcher: ImageSwitcher
     private lateinit var gestureDetector: GestureDetector
     private lateinit var binding: ActivityResDetailViewBinding
@@ -125,133 +128,151 @@ class ResDetailView : AppCompatActivity() {
 
     private fun sendReview(restaurantId: String) {
         binding.reviewSubmitButton.setOnClickListener {
-            val reviewRating = binding.userRestaurantRating.toDouble()
+            val reviewRating = binding.userRestaurantRating.rating // Get the rating as Float
             val reviewText = binding.reviewMessageInput.text.toString()
 
-            val review = Review(
-                restaurantId = restaurantId,
-                rating = reviewRating,
-                reviewText = reviewText,
-                timestamp = Date().time
-            )
+            userViewModel.currentUser.observe(this) { user ->
+                if (user != null) {
+                    val userId = user.uid
+                    val fullName = user.fullName
 
-            reviewViewModel.submitReview(review)
-        }
-    }
+                    if (reviewText.isNotBlank()) {
+                        val review = Review(
+                            restaurantId = restaurantId,
+                            userId = userId,
+                            username = fullName,
+                            rating = reviewRating.toDouble(), // Convert Float to Double
+                            reviewText = reviewText,
+                            timestamp = Date().time
+                        )
 
-    private fun checkBookmarkStatus(restaurantId: String) {
-        viewModel.isRestaurantBookmarked(restaurantId) { isBookmarked ->
-            this.isBookmarked = isBookmarked
-            updateBookmarkButton()
-        }
-    }
+                        reviewViewModel.submitReview(review)
+                        binding.reviewMessageInput.text.clear() // Clear input field after submitting
+                        binding.userRestaurantRating.rating = 0f // Reset the rating bar
 
-    private fun updateBookmarkButton() {
-        if (isBookmarked) {
-            binding.bookmarkBtn.setImageResource(R.drawable.favourites)
-        } else {
-            binding.bookmarkBtn.setImageResource(R.drawable.favourite)
-        }
-    }
-
-    private fun observeBookmarkResult() {
-        viewModel.bookmarkResult.observe(this, Observer { result ->
-            val (success, message) = result
-            if (success) {
-                Toast.makeText(this, "Bookmark added successfully!", Toast.LENGTH_SHORT).show()
-                isBookmarked = true
-                updateBookmarkButton()
-            } else {
-                Toast.makeText(this, "Failed to add bookmark: $message", Toast.LENGTH_SHORT).show()
-            }
-        })
-    }
-
-    private fun observeUnBookmarkResult() {
-        viewModel.unBookmarkResult.observe(this, Observer { result ->
-            result.onSuccess {
-                Toast.makeText(this, "Unbookmarked successfully", Toast.LENGTH_SHORT).show()
-                isBookmarked = false
-                updateBookmarkButton()
-            }.onFailure {
-                Toast.makeText(this, "Unbookmark failed: ${it.message}", Toast.LENGTH_SHORT).show()
-            }
-        })
-    }
-
-    private fun setupImageSwitcher() {
-        imageSwitcher = binding.imageSwitcher
-        imageSwitcher.setFactory {
-            val imageView = ImageView(this)
-            imageView.scaleType = ImageView.ScaleType.CENTER_CROP
-            imageView
-        }
-    }
-
-    private fun setupGestureDetection() {
-        gestureDetector = GestureDetector(this, SwipeGestureListener())
-        val cardView: CardView = binding.ResPhotos
-        cardView.setOnTouchListener { _, event -> gestureDetector.onTouchEvent(event) }
-    }
-
-    private fun setupImageSwitchHandler() {
-        handler = Handler(Looper.getMainLooper())
-        runnable = object : Runnable {
-            override fun run() {
-                currentIndex = (currentIndex + 1) % imageIds.size
-                imageSwitcher.setImageResource(imageIds[currentIndex])
-                handler.postDelayed(this, 5000) // Switch image every 5 seconds
-            }
-        }
-        handler.postDelayed(runnable, 5000) // Start the image switcher
-
-    }
-
-
-
-    private inner class SwipeGestureListener : GestureDetector.SimpleOnGestureListener() {
-        private val SWIPE_THRESHOLD = 100
-        private val SWIPE_VELOCITY_THRESHOLD = 100
-
-        override fun onFling(
-            e1: MotionEvent?,
-            e2: MotionEvent,
-            velocityX: Float,
-            velocityY: Float
-        ): Boolean {
-            if (e1 == null) return false
-
-            val diffX = e2.x - e1.x
-            val diffY = e2.y - e1.y
-
-            return if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > SWIPE_THRESHOLD && Math.abs(
-                    velocityX
-                ) > SWIPE_VELOCITY_THRESHOLD
-            ) {
-                if (diffX > 0) {
-                    onSwipeRight()
-                } else {
-                    onSwipeLeft()
+                    } else {
+                        Toast.makeText(this, "Please write a review", Toast.LENGTH_SHORT).show()
+                    }
                 }
-                true
-            } else {
-                false
             }
         }
     }
 
-    private fun onSwipeLeft() {
-        currentIndex = (currentIndex + 1) % imageIds.size
-        imageSwitcher.setImageResource(imageIds[currentIndex])
-    }
 
-    private fun onSwipeRight() {
-        currentIndex = (currentIndex - 1 + imageIds.size) % imageIds.size
-        imageSwitcher.setImageResource(imageIds[currentIndex])
-    }
+        private fun checkBookmarkStatus(restaurantId: String) {
+            viewModel.isRestaurantBookmarked(restaurantId) { isBookmarked ->
+                this.isBookmarked = isBookmarked
+                updateBookmarkButton()
+            }
+        }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        handler.removeCallbacks(runnable)
+        private fun updateBookmarkButton() {
+            if (isBookmarked) {
+                binding.bookmarkBtn.setImageResource(R.drawable.favourites)
+            } else {
+                binding.bookmarkBtn.setImageResource(R.drawable.favourite)
+            }
+        }
+
+        private fun observeBookmarkResult() {
+            viewModel.bookmarkResult.observe(this, Observer { result ->
+                val (success, message) = result
+                if (success) {
+                    Toast.makeText(this, "Bookmark added successfully!", Toast.LENGTH_SHORT).show()
+                    isBookmarked = true
+                    updateBookmarkButton()
+                } else {
+                    Toast.makeText(this, "Failed to add bookmark: $message", Toast.LENGTH_SHORT)
+                        .show()
+                }
+            })
+        }
+
+        private fun observeUnBookmarkResult() {
+            viewModel.unBookmarkResult.observe(this, Observer { result ->
+                result.onSuccess {
+                    Toast.makeText(this, "Unbookmarked successfully", Toast.LENGTH_SHORT).show()
+                    isBookmarked = false
+                    updateBookmarkButton()
+                }.onFailure {
+                    Toast.makeText(this, "Unbookmark failed: ${it.message}", Toast.LENGTH_SHORT)
+                        .show()
+                }
+            })
+        }
+
+        private fun setupImageSwitcher() {
+            imageSwitcher = binding.imageSwitcher
+            imageSwitcher.setFactory {
+                val imageView = ImageView(this)
+                imageView.scaleType = ImageView.ScaleType.CENTER_CROP
+                imageView
+            }
+        }
+
+        private fun setupGestureDetection() {
+            gestureDetector = GestureDetector(this, SwipeGestureListener())
+            val cardView: CardView = binding.ResPhotos
+            cardView.setOnTouchListener { _, event -> gestureDetector.onTouchEvent(event) }
+        }
+
+        private fun setupImageSwitchHandler() {
+            handler = Handler(Looper.getMainLooper())
+            runnable = object : Runnable {
+                override fun run() {
+                    currentIndex = (currentIndex + 1) % imageIds.size
+                    imageSwitcher.setImageResource(imageIds[currentIndex])
+                    handler.postDelayed(this, 5000) // Switch image every 5 seconds
+                }
+            }
+            handler.postDelayed(runnable, 5000) // Start the image switcher
+
+        }
+
+
+        private inner class SwipeGestureListener : GestureDetector.SimpleOnGestureListener() {
+            private val SWIPE_THRESHOLD = 100
+            private val SWIPE_VELOCITY_THRESHOLD = 100
+
+            override fun onFling(
+                e1: MotionEvent?,
+                e2: MotionEvent,
+                velocityX: Float,
+                velocityY: Float
+            ): Boolean {
+                if (e1 == null) return false
+
+                val diffX = e2.x - e1.x
+                val diffY = e2.y - e1.y
+
+                return if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > SWIPE_THRESHOLD && Math.abs(
+                        velocityX
+                    ) > SWIPE_VELOCITY_THRESHOLD
+                ) {
+                    if (diffX > 0) {
+                        onSwipeRight()
+                    } else {
+                        onSwipeLeft()
+                    }
+                    true
+                } else {
+                    false
+                }
+            }
+        }
+
+        private fun onSwipeLeft() {
+            currentIndex = (currentIndex + 1) % imageIds.size
+            imageSwitcher.setImageResource(imageIds[currentIndex])
+        }
+
+        private fun onSwipeRight() {
+            currentIndex = (currentIndex - 1 + imageIds.size) % imageIds.size
+            imageSwitcher.setImageResource(imageIds[currentIndex])
+        }
+
+        override fun onDestroy() {
+            super.onDestroy()
+            handler.removeCallbacks(runnable)
+        }
     }
-}
