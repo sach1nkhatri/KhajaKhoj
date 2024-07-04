@@ -1,5 +1,6 @@
 [versions]
 agp = "8.4.1"
+dotsindicator = "4.3"
 firebaseDatabaseKtx = "X.X.X"
 kotlin = "1.9.0"
 coreKtx = "1.13.1"
@@ -21,6 +22,7 @@ uiDesktop = "1.6.8"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+dotsindicator = { module = "com.tbuonomo:dotsindicator", version.ref = "dotsindicator" }
 firebase-database-ktx = { module = "com.google.firebase:firebase-database-ktx", version.ref = "firebaseDatabaseKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }

@@ -23,6 +23,7 @@ class ReviewsActivity : AppCompatActivity() {
     private val reviewViewModel: ReviewViewModel by viewModels()
     private lateinit var auth: FirebaseAuth
     private lateinit var restaurantId: String
+    private lateinit var username: String
 
     private lateinit var submitReviewButton: Button
     private lateinit var ratingBar: RatingBar
@@ -36,7 +37,8 @@ class ReviewsActivity : AppCompatActivity() {
         setContentView(R.layout.activity_reviews)
 
         auth = FirebaseAuth.getInstance()
-        restaurantId = "234567890345" // Replace with actual restaurantId
+        restaurantId = "-O0Hfl_EtO7ss2YVoG3G" // Replace with actual restaurantId
+        username = "Rahul Chaudhari" // Replace with actual restaurantId
 
         // Initialize UI components
         submitReviewButton = findViewById(R.id.submitReviewButton)
@@ -56,6 +58,7 @@ class ReviewsActivity : AppCompatActivity() {
             val review = Review(
                 restaurantId = restaurantId,
                 userId = userId,
+                username = username,
                 rating = rating,
                 reviewText = reviewText,
                 timestamp = Date().time

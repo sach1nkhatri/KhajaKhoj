@@ -23,11 +23,14 @@ import com.example.khajakhoj.databinding.ActivityResDetailViewBinding
 import com.example.khajakhoj.model.Restaurant
 import com.example.khajakhoj.model.Review
 import com.example.khajakhoj.viewmodel.RestaurantViewModel
+import com.example.khajakhoj.viewmodel.ReviewViewModel
 import com.squareup.picasso.Picasso
+import java.util.Date
 
 class ResDetailView : AppCompatActivity() {
 
     private lateinit var viewModel: RestaurantViewModel
+    private lateinit var reviewViewModel: ReviewViewModel
     private lateinit var imageSwitcher: ImageSwitcher
     private lateinit var gestureDetector: GestureDetector
     private lateinit var binding: ActivityResDetailViewBinding
@@ -43,6 +46,7 @@ class ResDetailView : AppCompatActivity() {
         binding = ActivityResDetailViewBinding.inflate(layoutInflater)
         setContentView(binding.root)
         viewModel = ViewModelProvider(this).get(RestaurantViewModel::class.java)
+        reviewViewModel = ViewModelProvider(this).get(ReviewViewModel::class.java)
         setupImageSwitcher()
         setupGestureDetection()
         setupImageSwitchHandler()
@@ -55,7 +59,15 @@ class ResDetailView : AppCompatActivity() {
             if (!isBookmarked) {
                 checkBookmarkStatus(it.id) // Check bookmark status only if not already bookmarked
             }
+            sendReview(it.id)
+            reviewViewModel.getRandomReviews(it.id)
         }
+
+        reviewViewModel.randomReviews.observe(this, Observer { reviews ->
+            val reviewPagerAdapter = ReviewAdapter(reviews)
+            binding.reviewsViewPager.adapter = reviewPagerAdapter
+            binding.springDotsIndicator.attachTo(binding.reviewsViewPager)
+        })
 
         binding.bookmarkBtn.setOnClickListener {
             restaurant?.let {
@@ -100,15 +112,31 @@ class ResDetailView : AppCompatActivity() {
             fourWheelerParking.setImageResource(if (restaurant.carParking) R.drawable.availabegreenicon else R.drawable.wrongicon)
             wifi.setImageResource(if (restaurant.wifi) R.drawable.availabegreenicon else R.drawable.wrongicon)
         }
-        val reviews = listOf(
-            Review("", "","User1",2.0,"I recently dined at Bistro Delights, and it was a fantastic experience. The ambiance is cozy and welcoming, perfect for a relaxing meal", 20240627),
-            Review("","","User2",1.3,"I enjoyed going this place.I tried the grilled salmon, which was cooked to perfection—crispy on the outside and tender on the inside. The accompanying vegetables were fresh and flavorful. The staff was attentive and friendly, ensuring that we had everything we needed. For dessert, the chocolate lava cake was a decadent treat that I highly recommend. Overall, Bistro Delights offers delicious food, great service, and a pleasant atmosphere. I will definitely be returning!", 20240626),
-            Review("", "","User3",5.0,"Could use some improvements.", 20240625)
-        )
+//        val reviews = listOf(
+//            Review("", "","User1",2.0,"I recently dined at Bistro Delights, and it was a fantastic experience. The ambiance is cozy and welcoming, perfect for a relaxing meal", 20240627),
+//            Review("","","User2",1.3,"I enjoyed going this place.I tried the grilled salmon, which was cooked to perfection—crispy on the outside and tender on the inside. The accompanying vegetables were fresh and flavorful. The staff was attentive and friendly, ensuring that we had everything we needed. For dessert, the chocolate lava cake was a decadent treat that I highly recommend. Overall, Bistro Delights offers delicious food, great service, and a pleasant atmosphere. I will definitely be returning!", 20240626),
+//            Review("", "","User3",5.0,"Could use some improvements.", 20240625)
+//        )
+//
+//        val reviewPagerAdapter = ReviewAdapter(reviews)
+//        binding.reviewsViewPager.adapter = reviewPagerAdapter
+//        binding.springDotsIndicator.attachTo(binding.reviewsViewPager)
+    }
 
-        val reviewPagerAdapter = ReviewAdapter(reviews)
-        binding.reviewsViewPager.adapter = reviewPagerAdapter
-        binding.springDotsIndicator.attachTo(binding.reviewsViewPager)
+    private fun sendReview(restaurantId: String) {
+        binding.reviewSubmitButton.setOnClickListener {
+            val reviewRating = binding.userRestaurantRating.toDouble()
+            val reviewText = binding.reviewMessageInput.text.toString()
+
+            val review = Review(
+                restaurantId = restaurantId,
+                rating = reviewRating,
+                reviewText = reviewText,
+                timestamp = Date().time
+            )
+
+            reviewViewModel.submitReview(review)
+        }
     }
 
     private fun checkBookmarkStatus(restaurantId: String) {
