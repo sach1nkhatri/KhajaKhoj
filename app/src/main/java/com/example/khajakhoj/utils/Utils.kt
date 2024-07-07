@@ -8,15 +8,18 @@ import android.text.Html
 import android.view.Window
 import android.widget.Button
 import android.widget.EditText
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.startActivity
+import androidx.lifecycle.LifecycleOwner
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
 import com.example.khajakhoj.activity.Dashboard
 import com.example.khajakhoj.activity.LoginPage
 import com.example.khajakhoj.R
+import com.example.khajakhoj.viewmodel.UserViewModel
 
 object Utils {
     fun logOut(context: Context, onLogoutConfirmed: () -> Unit): AlertDialog {
@@ -197,14 +200,42 @@ object Utils {
         adc.show()
     }
 
-    fun showPasswordChangeDialog(context: Context){
+    fun showPasswordChangeDialog(context: Context,viewModel: UserViewModel){
         val dialog = Dialog(context)
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         dialog.setCancelable(true)
         dialog.setContentView(R.layout.change_password_dialog)
         dialog.window?.setBackgroundDrawableResource(R.drawable.custom_dialog_background)
         dialog.show()
+
+        val currentPasswordEditText = dialog.findViewById<EditText>(R.id.currentPassword)
+        val newPasswordEditText = dialog.findViewById<EditText>(R.id.newPassword)
+        val confirmNewPasswordEditText = dialog.findViewById<EditText>(R.id.confirmPassword)
+        val changeButton = dialog.findViewById<Button>(R.id.changePasswordButton)
+
+        changeButton.setOnClickListener {
+            val currentPassword = currentPasswordEditText.text.toString()
+            val newPassword = newPasswordEditText.text.toString()
+            val confirmNewPassword = confirmNewPasswordEditText.text.toString()
+            viewModel.changePassword(currentPassword, newPassword, confirmNewPassword).observe(context as LifecycleOwner) { result ->
+                result.fold(
+                    onSuccess = {
+                        Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+                        if (it == "Password Changed Successfully") {
+                            dialog.dismiss()
+                        }
+                    },
+                    onFailure = {
+                        Toast.makeText(context, it.message, Toast.LENGTH_SHORT).show()
+                    }
+                )
+            }
+
     }
+
+
+
+}
 
     fun showForgotPasswordDialog(context: Context, onEmailSubmitted: (String) -> Unit) {
         val dialog = Dialog(context)

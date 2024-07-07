@@ -1,5 +1,6 @@
 package com.example.khajakhoj.repository
 
+import androidx.lifecycle.LiveData
 import com.example.khajakhoj.model.User
 
 interface UserRepository {
@@ -9,6 +10,11 @@ interface UserRepository {
     suspend fun sendPasswordResetEmail(email: String): Result<Boolean>
     suspend fun checkEmailExists(email: String): Boolean
     suspend fun getCurrentUser() : User?
+    fun changePassword(
+        currentPassword: String,
+        newPassword: String,
+        confirmNewPassword: String
+    ): LiveData<Result<String>>
 
 }
 

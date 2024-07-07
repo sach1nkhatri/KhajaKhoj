@@ -12,16 +12,20 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
+import androidx.fragment.app.viewModels
 import com.example.khajakhoj.R
 import com.example.khajakhoj.activity.Dashboard
 import com.example.khajakhoj.activity.ProfileActivity
 import com.example.khajakhoj.databinding.ActivitySettingsBinding
 import com.example.khajakhoj.utils.Utils
+import com.example.khajakhoj.viewmodel.UserViewModel
 
 class SettingsFragment : Fragment() {
     lateinit var binding: ActivitySettingsBinding
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var editor: SharedPreferences.Editor
+    private val viewModel: UserViewModel by viewModels()
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -61,7 +65,7 @@ class SettingsFragment : Fragment() {
 
 
         binding.changePasswordButton.setOnClickListener {
-            Utils.showPasswordChangeDialog(requireContext())
+            Utils.showPasswordChangeDialog(requireContext(),viewModel)
         }
 
         binding.settingImageView.setOnClickListener {

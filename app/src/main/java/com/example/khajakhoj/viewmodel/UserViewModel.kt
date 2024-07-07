@@ -205,4 +205,15 @@ class UserViewModel : ViewModel() {
             }
         }
     }
+
+    fun changePassword(
+        currentPassword: String,
+        newPassword: String,
+        confirmNewPassword: String
+    ): LiveData<Result<String>> {
+        return repository.changePassword(currentPassword, newPassword, confirmNewPassword)
+    }
+
+
+
 }

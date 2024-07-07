@@ -4,15 +4,19 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import com.example.khajakhoj.databinding.ActivitySettingsBinding
 import com.example.khajakhoj.utils.Utils
+import com.example.khajakhoj.viewmodel.UserViewModel
 
 class SettingsActivity : AppCompatActivity() {
     lateinit var binding: ActivitySettingsBinding
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var editor: SharedPreferences.Editor
+    private val userViewModel: UserViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -48,7 +52,7 @@ class SettingsActivity : AppCompatActivity() {
         // Initialize SharedPreferences editor
         editor = sharedPreferences.edit()
         binding.changePasswordButton.setOnClickListener(){
-            Utils.showPasswordChangeDialog(this)
+            Utils.showPasswordChangeDialog(this,userViewModel)
         }
         binding.settingImageView.setOnClickListener(){
             startActivity(Intent(this@SettingsActivity, ProfileActivity::class.java))

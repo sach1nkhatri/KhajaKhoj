@@ -1,7 +1,10 @@
 package com.example.khajakhoj.repository
 
 import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.example.khajakhoj.model.User
+import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.coroutines.tasks.await
@@ -137,6 +140,47 @@ class UserRepositoryImpl : UserRepository {
             profilePictureUrl = profilePictureUrl,
             createdAt = createdAt
         )
+    }
+    override fun changePassword(
+        currentPassword: String,
+        newPassword: String,
+        confirmNewPassword: String
+    ): LiveData<Result<String>> {
+        val resultLiveData = MutableLiveData<Result<String>>()
+
+        if (currentPassword.isNotEmpty() && newPassword.isNotEmpty() && confirmNewPassword.isNotEmpty()) {
+            if (currentPassword != newPassword) {
+                if (newPassword == confirmNewPassword) {
+                    val user = firebaseAuth.currentUser
+                    if (user != null && user.email != null) {
+                        val credential = EmailAuthProvider.getCredential(user.email!!, currentPassword)
+                        user.reauthenticate(credential).addOnCompleteListener { reAuthTask ->
+                            if (reAuthTask.isSuccessful) {
+                                user.updatePassword(newPassword).addOnCompleteListener { passwordChange ->
+                                    if (passwordChange.isSuccessful) {
+                                        resultLiveData.postValue(Result.success("Password Changed Successfully"))
+                                    } else {
+                                        resultLiveData.postValue(Result.failure(Exception("Failed to change password")))
+                                    }
+                                }
+                            } else {
+                                resultLiveData.postValue(Result.failure(Exception("Current password is wrong.")))
+                            }
+                        }
+                    } else {
+                        resultLiveData.postValue(Result.failure(Exception("User authentication failed")))
+                    }
+                } else {
+                    resultLiveData.postValue(Result.failure(Exception("New password and confirm password do not match.")))
+                }
+            } else {
+                resultLiveData.postValue(Result.failure(Exception("New password and current password cannot be similar.")))
+            }
+        } else {
+            resultLiveData.postValue(Result.failure(Exception("Please fill all the fields.")))
+        }
+
+        return resultLiveData
     }
 
 
