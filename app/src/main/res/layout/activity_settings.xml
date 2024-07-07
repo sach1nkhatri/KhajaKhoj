@@ -54,20 +54,7 @@
             tools:layout_editor_absoluteX="34dp"
             tools:layout_editor_absoluteY="149dp" />
 
-        <Button
-            android:id="@+id/editProfileButton"
-            android:layout_width="233dp"
-            android:layout_height="35dp"
-            android:layout_margin="0dp"
-            android:background="@android:color/transparent"
-            android:gravity="center_vertical"
-            android:padding="0dp"
-            android:text="Edit Profile"
-            android:textAppearance="?android:attr/textAppearanceSmallInverse"
-            android:textSize="15sp"
-            android:textColor="?attr/colorPrimary"
-            tools:layout_editor_absoluteX="34dp"
-            tools:layout_editor_absoluteY="185dp" />
+
 
         <Button
             android:id="@+id/changePasswordButton"
@@ -83,6 +70,21 @@
             android:textSize="15sp"
             tools:layout_editor_absoluteX="34dp"
             tools:layout_editor_absoluteY="224dp" />
+
+        <Button
+            android:id="@+id/deleteAccountButton"
+            android:layout_width="233dp"
+            android:layout_height="35dp"
+            android:layout_margin="0dp"
+            android:background="@android:color/transparent"
+            android:gravity="center_vertical"
+            android:padding="0dp"
+            android:text="Delete Account"
+            android:textAppearance="?android:attr/textAppearanceSmallInverse"
+            android:textColor="?attr/colorPrimary"
+            android:textSize="15sp"
+            tools:layout_editor_absoluteX="34dp"
+            tools:layout_editor_absoluteY="185dp" />
 
         <Button
             android:id="@+id/privacyButton"

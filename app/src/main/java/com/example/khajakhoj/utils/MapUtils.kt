@@ -3,6 +3,7 @@ package com.example.khajakhoj.utils
 import android.app.Dialog
 import android.content.Context
 import android.view.Window
+import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Button
@@ -30,6 +31,8 @@ object MapUtils {
 
         // if you want to enable zoom feature
         webView.settings.setSupportZoom(true)
+        webView.settings.mixedContentMode = WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE
+
 
 
         dialog.show()

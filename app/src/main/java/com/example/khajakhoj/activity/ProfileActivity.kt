@@ -26,10 +26,6 @@ class ProfileActivity : AppCompatActivity() {
         binding = ActivityProfileBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Set up button click listener to navigate to SettingsActivity
-        binding.settingButtonProfile.setOnClickListener {
-            startActivity(Intent(this@ProfileActivity, SettingsActivity::class.java))
-        }
 
         // Set up button click listener to log out and redirect to the login page
         binding.logOutProfile.setOnClickListener {

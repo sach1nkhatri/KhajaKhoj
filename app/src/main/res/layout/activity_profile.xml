@@ -176,36 +176,6 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/settingButtonProfile"
-            android:layout_width="288dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:foreground="?attr/selectableItemBackground">
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_centerVertical="true"
-                android:paddingStart="10dp"
-                android:src="@drawable/setting_profile" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:paddingStart="27dp"
-                android:text="Settings"
-                android:textAllCaps="false"
-                android:textAppearance="?attr/textAppearanceButton"
-                android:textColor="?attr/colorPrimary"
-                android:textSize="15sp"
-                android:gravity="center_vertical"/>
-        </LinearLayout>
-
-        <LinearLayout
             android:id="@+id/logOutProfile"
             android:layout_width="288dp"
             android:layout_height="wrap_content"

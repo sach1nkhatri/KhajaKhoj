@@ -18,6 +18,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.khajakhoj.R
+import com.example.khajakhoj.ReviewsActivity
 import com.example.khajakhoj.adapter.ReviewAdapter
 import com.example.khajakhoj.databinding.ActivityResDetailViewBinding
 import com.example.khajakhoj.model.Restaurant
@@ -91,7 +92,7 @@ class ResDetailView : AppCompatActivity() {
             RestaurantAddress.text = restaurant.address
 
             visit.setOnClickListener(){
-                MapUtils.showMapsWebViewDialog(this@ResDetailView,"https://www.google.com/maps/place/Radisson+Hotel+Kathmandu/@27.7156814,85.3245952,15z/data=!4m9!3m8!1s0x39eb191b0080f92b:0x3d08c08a7f53eace!5m2!4m1!1i2!8m2!3d27.7199291!4d85.3212645!16s%2Fg%2F1tdjz_mp?entry=ttu")
+                MapUtils.showMapsWebViewDialog(this@ResDetailView, "https://www.google.com/maps/place/The+Soaltee+Kathmandu/@27.6917812,85.2620819,15.01z/data=!4m9!3m8!1s0x39eb18609488cdb7:0x44edd8fc9a17af63!5m2!4m1!1i2!8m2!3d27.7005975!4d85.291006!16s%2Fg%2F1tcv4qxf?entry=ttu")
             }
 
             restaurantPhone.text = restaurant.contactNumber
@@ -100,6 +101,10 @@ class ResDetailView : AppCompatActivity() {
             twoWheelerParking.setImageResource(if (restaurant.bikeParking) R.drawable.availabegreenicon else R.drawable.wrongicon)
             fourWheelerParking.setImageResource(if (restaurant.carParking) R.drawable.availabegreenicon else R.drawable.wrongicon)
             wifi.setImageResource(if (restaurant.wifi) R.drawable.availabegreenicon else R.drawable.wrongicon)
+
+            seeAllReviews.setOnClickListener(){
+                startActivity(Intent(applicationContext,ReviewsActivity::class.java))
+            }
         }
         val reviews = listOf(
             Review("", "","User1",2.0,"I recently dined at Bistro Delights, and it was a fantastic experience. The ambiance is cozy and welcoming, perfect for a relaxing meal", 20240627),

@@ -29,13 +29,6 @@ class ProfileFragment : Fragment() {
     ): View? {
         binding = ActivityProfileBinding.inflate(inflater, container, false)
 
-        // Set up button click listener to navigate to SettingsActivity
-        binding.settingButtonProfile.setOnClickListener {
-            val fragmentTransaction = requireActivity().supportFragmentManager.beginTransaction()
-            fragmentTransaction.replace(R.id.frameLayout, SettingsFragment())
-            fragmentTransaction.addToBackStack(null)
-            fragmentTransaction.commit()
-        }
 
         // Set up button click listener to log out and redirect to the login page
         binding.logOutProfile.setOnClickListener {
