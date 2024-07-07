@@ -214,6 +214,10 @@ class UserViewModel : ViewModel() {
         return repository.changePassword(currentPassword, newPassword, confirmNewPassword)
     }
 
+    fun deleteUser(userId: String): LiveData<Result<Void?>> {
+        return repository.deleteUser(userId)
+    }
+
 
 
 }

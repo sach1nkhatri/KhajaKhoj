@@ -74,5 +74,9 @@ class SettingsFragment : Fragment() {
             fragmentTransaction.addToBackStack(null)
             fragmentTransaction.commit()
         }
+
+        binding.deleteAccountButton.setOnClickListener(){
+            Utils.showDeleteAccountDialog(requireContext(),viewModel)
+        }
     }
 }

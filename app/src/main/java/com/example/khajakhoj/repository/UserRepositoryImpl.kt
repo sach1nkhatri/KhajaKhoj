@@ -183,5 +183,17 @@ class UserRepositoryImpl : UserRepository {
         return resultLiveData
     }
 
+    override fun deleteUser(userId: String): LiveData<Result<Void?>> {
+        val result = MutableLiveData<Result<Void?>>()
+            databaseReference.getReference("users").child(userId).removeValue()
+            .addOnSuccessListener {
+                result.value = Result.success(null)
+            }
+            .addOnFailureListener {
+                result.value = Result.failure(it)
+            }
+        return result
+    }
+
 
 }

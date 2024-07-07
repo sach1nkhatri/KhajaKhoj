@@ -5,6 +5,7 @@ import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.text.Html
+import android.view.Gravity
 import android.view.Window
 import android.widget.Button
 import android.widget.EditText
@@ -20,6 +21,8 @@ import com.example.khajakhoj.activity.Dashboard
 import com.example.khajakhoj.activity.LoginPage
 import com.example.khajakhoj.R
 import com.example.khajakhoj.viewmodel.UserViewModel
+import com.google.firebase.auth.EmailAuthProvider
+import com.google.firebase.auth.FirebaseAuth
 
 object Utils {
     fun logOut(context: Context, onLogoutConfirmed: () -> Unit): AlertDialog {
@@ -258,5 +261,57 @@ object Utils {
         }
 
         dialog.show()
+    }
+
+    fun showDeleteAccountDialog(context: Context, userViewModel: UserViewModel) {
+        val dialog = Dialog(context)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setCancelable(true)
+        dialog.setContentView(R.layout.delete_account_dialog_layout)
+        dialog.window?.setBackgroundDrawableResource(R.drawable.custom_dialog_background)
+        dialog.window?.setGravity(Gravity.CENTER)
+        dialog.show()
+
+        val passwordEditText = dialog.findViewById<EditText>(R.id.passwordEntry)
+        val deleteButton = dialog.findViewById<Button>(R.id.deleteAccountButton)
+        val firebaseAuth = FirebaseAuth.getInstance()
+        val user = firebaseAuth.currentUser
+
+        deleteButton.setOnClickListener {
+            val password = passwordEditText.text.toString()
+            if (password.isNotEmpty() && user != null && user.email != null) {
+                val credential = EmailAuthProvider.getCredential(user.email!!, password)
+
+                user.reauthenticate(credential).addOnCompleteListener { reAuthTask ->
+                    if (reAuthTask.isSuccessful) {
+                        userViewModel.deleteUser(user.uid).observe(context as LifecycleOwner) { result ->
+                            if (result.isSuccess) {
+                                user.delete().addOnCompleteListener { deleteTask ->
+                                    if (deleteTask.isSuccessful) {
+                                        Toast.makeText(context, "User account deleted.", Toast.LENGTH_SHORT).show()
+                                        dialog.dismiss()
+                                        navigateToLoginPage(context)
+                                    } else {
+                                        Toast.makeText(context, "Failed to delete user account.", Toast.LENGTH_SHORT).show()
+                                    }
+                                }
+                            } else {
+                                Toast.makeText(context, "Failed to delete teacher data.", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    } else {
+                        Toast.makeText(context, "Authentication failed. Please check your password.", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            } else {
+                Toast.makeText(context, "Please enter your password.", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun navigateToLoginPage(context: Context) {
+        val intent = Intent(context, LoginPage::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        context.startActivity(intent)
     }
 }

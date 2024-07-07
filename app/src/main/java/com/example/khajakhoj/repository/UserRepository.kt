@@ -1,6 +1,7 @@
 package com.example.khajakhoj.repository
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.example.khajakhoj.model.User
 
 interface UserRepository {
@@ -15,6 +16,8 @@ interface UserRepository {
         newPassword: String,
         confirmNewPassword: String
     ): LiveData<Result<String>>
+
+    fun deleteUser(userId: String): LiveData<Result<Void?>>
 
 }
 
