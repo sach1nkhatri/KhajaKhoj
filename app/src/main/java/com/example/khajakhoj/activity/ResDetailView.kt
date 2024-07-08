@@ -1,5 +1,6 @@
 package com.example.khajakhoj.activity
 
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -15,14 +16,22 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.khajakhoj.R
+import com.example.khajakhoj.adapter.MenuAdapter
 import com.example.khajakhoj.adapter.ReviewAdapter
 import com.example.khajakhoj.databinding.ActivityResDetailViewBinding
+import com.example.khajakhoj.model.MenuItem
 import com.example.khajakhoj.model.Restaurant
 import com.example.khajakhoj.model.Review
 import com.example.khajakhoj.viewmodel.RestaurantViewModel
 import com.example.khajakhoj.viewmodel.ReviewViewModel
 import com.example.khajakhoj.viewmodel.UserViewModel
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import java.util.Date
 
 class ResDetailView : AppCompatActivity() {
@@ -39,16 +48,27 @@ class ResDetailView : AppCompatActivity() {
     private lateinit var runnable: Runnable
     private var isBookmarked = false
 
+    private var fileUri: Uri? = null
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var menuAdapter: MenuAdapter
+    private val menuItems = mutableListOf<MenuItem>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         binding = ActivityResDetailViewBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
         viewModel = ViewModelProvider(this).get(RestaurantViewModel::class.java)
         reviewViewModel = ViewModelProvider(this).get(ReviewViewModel::class.java)
         setupImageSwitcher()
         setupGestureDetection()
         setupImageSwitchHandler()
+
+        recyclerView = findViewById(R.id.recyclerView)
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        menuAdapter = MenuAdapter(menuItems)
+        recyclerView.adapter = menuAdapter
 
         val restaurant = intent.getParcelableExtra<Restaurant>("restaurant")
 
@@ -60,6 +80,7 @@ class ResDetailView : AppCompatActivity() {
             }
             sendReview(it.id)
             reviewViewModel.getRandomReviews(it.id)
+            fetchMenuItemsFromFirebase(it.id)
         }
 
         reviewViewModel.randomReviews.observe(this, Observer { reviews ->
@@ -193,6 +214,28 @@ class ResDetailView : AppCompatActivity() {
             }.onFailure {
                 Toast.makeText(this, "Unbookmark failed: ${it.message}", Toast.LENGTH_SHORT)
                     .show()
+            }
+        })
+    }
+
+    private fun fetchMenuItemsFromFirebase(restaurantId: String) {
+        val databaseRef = FirebaseDatabase.getInstance().getReference("menus/$restaurantId")
+        databaseRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                menuItems.clear()
+                snapshot.children.forEach { itemSnapshot ->
+                    val name = itemSnapshot.child("name").getValue(String::class.java) ?: ""
+                    val description = itemSnapshot.child("description").getValue(String::class.java) ?: ""
+                    val price = itemSnapshot.child("price").getValue(String::class.java) ?: ""
+//                    val menuItem = MenuItem(name, description, price.toDouble())
+                    val menuItem = MenuItem(name, description, price.toInt())
+                    menuItems.add(menuItem)
+                }
+                menuAdapter.notifyDataSetChanged()
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Toast.makeText(this@ResDetailView, "Failed to fetch data: ${error.message}", Toast.LENGTH_SHORT).show()
             }
         })
     }
