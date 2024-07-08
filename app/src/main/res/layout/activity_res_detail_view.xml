@@ -228,8 +228,7 @@
             android:progressTint="#FFCC01"
             android:scaleX="0.7"
             android:scaleY="0.7"
-            android:stepSize="0.5"
-            />
+            android:stepSize="0.5" />
 
         <androidx.cardview.widget.CardView
             android:id="@+id/reviewCardView"
@@ -258,8 +257,7 @@
                     android:layout_gravity="center"
                     app:dotsSize="10dp"
                     app:dotsSpacing="4dp"
-                    app:progressMode="true"
-                    />
+                    app:progressMode="true" />
 
                 <TextView
                     android:id="@+id/textView8"
@@ -299,11 +297,7 @@
                         android:contentDescription="Send Message"
                         android:src="@android:drawable/ic_menu_send" />
                 </LinearLayout>
-
-
             </LinearLayout>
-
-
         </androidx.cardview.widget.CardView>
 
 
