@@ -1,5 +1,6 @@
 package com.example.khajakhoj.activity
 
+import android.annotation.SuppressLint
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -25,6 +26,7 @@ import com.example.khajakhoj.databinding.ActivityResDetailViewBinding
 import com.example.khajakhoj.model.MenuItem
 import com.example.khajakhoj.model.Restaurant
 import com.example.khajakhoj.model.Review
+import com.example.khajakhoj.viewmodel.MenuViewModel
 import com.example.khajakhoj.viewmodel.RestaurantViewModel
 import com.example.khajakhoj.viewmodel.ReviewViewModel
 import com.example.khajakhoj.viewmodel.UserViewModel
@@ -36,7 +38,7 @@ import java.util.Date
 
 class ResDetailView : AppCompatActivity() {
 
-    private lateinit var viewModel: RestaurantViewModel
+    private lateinit var restaurantViewModel: RestaurantViewModel
     private lateinit var reviewViewModel: ReviewViewModel
     private val userViewModel: UserViewModel by viewModels()
     private lateinit var imageSwitcher: ImageSwitcher
@@ -48,27 +50,40 @@ class ResDetailView : AppCompatActivity() {
     private lateinit var runnable: Runnable
     private var isBookmarked = false
 
-    private var fileUri: Uri? = null
     private lateinit var recyclerView: RecyclerView
+    private lateinit var viewModel: MenuViewModel
     private lateinit var menuAdapter: MenuAdapter
     private val menuItems = mutableListOf<MenuItem>()
 
+    @SuppressLint("NotifyDataSetChanged")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         binding = ActivityResDetailViewBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        viewModel = ViewModelProvider(this).get(RestaurantViewModel::class.java)
-        reviewViewModel = ViewModelProvider(this).get(ReviewViewModel::class.java)
+        restaurantViewModel = ViewModelProvider(this)[RestaurantViewModel::class.java]
+        reviewViewModel = ViewModelProvider(this)[ReviewViewModel::class.java]
+        viewModel = ViewModelProvider(this)[MenuViewModel::class.java]
         setupImageSwitcher()
         setupGestureDetection()
         setupImageSwitchHandler()
 
+        // Initialize RecyclerView for menu items
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
         menuAdapter = MenuAdapter(menuItems)
         recyclerView.adapter = menuAdapter
+
+        viewModel.menuItems.observe(this) { items ->
+            menuItems.clear()
+            menuItems.addAll(items)
+            menuAdapter.notifyDataSetChanged()
+        }
+
+        viewModel.error.observe(this) { errorMessage ->
+            Toast.makeText(this, "Failed to fetch data: $errorMessage", Toast.LENGTH_SHORT).show()
+        }
 
         val restaurant = intent.getParcelableExtra<Restaurant>("restaurant")
 
@@ -80,7 +95,8 @@ class ResDetailView : AppCompatActivity() {
             }
             sendReview(it.id)
             reviewViewModel.getRandomReviews(it.id)
-            fetchMenuItemsFromFirebase(it.id)
+            viewModel.fetchMenuItems(it.id)
+
         }
 
         reviewViewModel.randomReviews.observe(this, Observer { reviews ->
@@ -92,14 +108,14 @@ class ResDetailView : AppCompatActivity() {
         binding.bookmarkBtn.setOnClickListener {
             restaurant?.let {
                 if (isBookmarked) {
-                    viewModel.unBookmarkRestaurant(it.id)
+                    restaurantViewModel.unBookmarkRestaurant(it.id)
                     Log.d("RestaurantViewModel", "Unbookmarked restaurant with ID: ${it.id}")
                     Log.d("RestaurantViewModel", "Unbookmarked restaurant with ID: ${it.id}")
                     Log.d("RestaurantViewModel", "Unbookmarked restaurant with ID: ${it.id}")
                     Log.d("RestaurantViewModel", "Unbookmarked restaurant with ID: ${it.id}")
                     observeUnBookmarkResult()
                 } else {
-                    viewModel.bookmarkRestaurant(it)
+                    restaurantViewModel.bookmarkRestaurant(it)
                     Log.d("RestaurantViewModel", "Bookmarked restaurant with ID: ${it.id}")
                     Log.d("RestaurantViewModel", "Bookmarked restaurant with ID: ${it.id}")
                     Log.d("RestaurantViewModel", "Bookmarked restaurant with ID: ${it.id}")
@@ -177,7 +193,7 @@ class ResDetailView : AppCompatActivity() {
 
 
     private fun checkBookmarkStatus(restaurantId: String) {
-        viewModel.isRestaurantBookmarked(restaurantId) { isBookmarked ->
+        restaurantViewModel.isRestaurantBookmarked(restaurantId) { isBookmarked ->
             this.isBookmarked = isBookmarked
             updateBookmarkButton()
         }
@@ -192,7 +208,7 @@ class ResDetailView : AppCompatActivity() {
     }
 
     private fun observeBookmarkResult() {
-        viewModel.bookmarkResult.observe(this, Observer { result ->
+        restaurantViewModel.bookmarkResult.observe(this, Observer { result ->
             val (success, message) = result
             if (success) {
                 Toast.makeText(this, "Bookmark added successfully!", Toast.LENGTH_SHORT).show()
@@ -206,7 +222,7 @@ class ResDetailView : AppCompatActivity() {
     }
 
     private fun observeUnBookmarkResult() {
-        viewModel.unBookmarkResult.observe(this, Observer { result ->
+        restaurantViewModel.unBookmarkResult.observe(this, Observer { result ->
             result.onSuccess {
                 Toast.makeText(this, "Unbookmarked successfully", Toast.LENGTH_SHORT).show()
                 isBookmarked = false
@@ -214,28 +230,6 @@ class ResDetailView : AppCompatActivity() {
             }.onFailure {
                 Toast.makeText(this, "Unbookmark failed: ${it.message}", Toast.LENGTH_SHORT)
                     .show()
-            }
-        })
-    }
-
-    private fun fetchMenuItemsFromFirebase(restaurantId: String) {
-        val databaseRef = FirebaseDatabase.getInstance().getReference("menus/$restaurantId")
-        databaseRef.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                menuItems.clear()
-                snapshot.children.forEach { itemSnapshot ->
-                    val name = itemSnapshot.child("name").getValue(String::class.java) ?: ""
-                    val description = itemSnapshot.child("description").getValue(String::class.java) ?: ""
-                    val price = itemSnapshot.child("price").getValue(String::class.java) ?: ""
-//                    val menuItem = MenuItem(name, description, price.toDouble())
-                    val menuItem = MenuItem(name, description, price.toInt())
-                    menuItems.add(menuItem)
-                }
-                menuAdapter.notifyDataSetChanged()
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(this@ResDetailView, "Failed to fetch data: ${error.message}", Toast.LENGTH_SHORT).show()
             }
         })
     }
