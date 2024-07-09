@@ -1,8 +1,6 @@
 package com.example.khajakhoj.activity
 
 import android.annotation.SuppressLint
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -14,7 +12,6 @@ import android.widget.ImageSwitcher
 import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -25,23 +22,19 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.khajakhoj.R
-import com.example.khajakhoj.ReviewsActivity
 import com.example.khajakhoj.adapter.MenuAdapter
 import com.example.khajakhoj.adapter.ReviewAdapter
 import com.example.khajakhoj.databinding.ActivityResDetailViewBinding
-import com.example.khajakhoj.fragments.BottomSheetDialogFragment
+import com.example.khajakhoj.fragments.ReviewBottomSheetDialogFragment
 import com.example.khajakhoj.model.MenuItem
 import com.example.khajakhoj.model.Restaurant
 import com.example.khajakhoj.model.Review
 import com.example.khajakhoj.utils.MapUtils
+import com.example.khajakhoj.utils.VulgarityUtils
 import com.example.khajakhoj.viewmodel.MenuViewModel
 import com.example.khajakhoj.viewmodel.RestaurantViewModel
 import com.example.khajakhoj.viewmodel.ReviewViewModel
 import com.example.khajakhoj.viewmodel.UserViewModel
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
 import java.util.Date
 
 class ResDetailView : AppCompatActivity() {
@@ -83,6 +76,8 @@ class ResDetailView : AppCompatActivity() {
         menuAdapter = MenuAdapter(menuItems)
         recyclerView.adapter = menuAdapter
 
+        VulgarityUtils.initialize(this)
+
         viewModel.menuItems.observe(this) { items ->
             menuItems.clear()
             menuItems.addAll(items)
@@ -111,7 +106,7 @@ class ResDetailView : AppCompatActivity() {
         }
 
         reviewViewModel.randomReviews.observe(this, Observer { reviews ->
-            val reviewPagerAdapter = ReviewAdapter(reviews,true)
+            val reviewPagerAdapter = ReviewAdapter(reviews, true)
             binding.reviewsViewPager.adapter = reviewPagerAdapter
             binding.springDotsIndicator.attachTo(binding.reviewsViewPager)
         })
@@ -137,7 +132,7 @@ class ResDetailView : AppCompatActivity() {
         }
 
         binding.seeAllReviews.setOnClickListener {
-            val bottomSheetFragment = BottomSheetDialogFragment(restaurantId)
+            val bottomSheetFragment = ReviewBottomSheetDialogFragment(restaurantId)
             bottomSheetFragment.show(supportFragmentManager, bottomSheetFragment.tag)
         }
 
@@ -153,8 +148,11 @@ class ResDetailView : AppCompatActivity() {
             ResturantCuisineDetail.text = restaurant.cuisineType
             RestaurantAddress.text = restaurant.address
 
-            visit.setOnClickListener(){
-                MapUtils.showMapsWebViewDialog(this@ResDetailView, "https://www.google.com/maps/place/The+Soaltee+Kathmandu/@27.6917812,85.2620819,15.01z/data=!4m9!3m8!1s0x39eb18609488cdb7:0x44edd8fc9a17af63!5m2!4m1!1i2!8m2!3d27.7005975!4d85.291006!16s%2Fg%2F1tcv4qxf?entry=ttu")
+            visit.setOnClickListener() {
+                MapUtils.showMapsWebViewDialog(
+                    this@ResDetailView,
+                    "https://www.google.com/maps/place/The+Soaltee+Kathmandu/@27.6917812,85.2620819,15.01z/data=!4m9!3m8!1s0x39eb18609488cdb7:0x44edd8fc9a17af63!5m2!4m1!1i2!8m2!3d27.7005975!4d85.291006!16s%2Fg%2F1tcv4qxf?entry=ttu"
+                )
             }
 
             restaurantPhone.text = restaurant.contactNumber
@@ -167,16 +165,26 @@ class ResDetailView : AppCompatActivity() {
         }
     }
 
-private fun sendReview(restaurantId: String) {
-    binding.reviewSubmitButton.setOnClickListener {
-        if(binding.reviewMessageInput.text.isNotEmpty()) {
-            showRatingDialog(restaurantId)
-        }
-        else{
-            Toast.makeText(this, "Please write a review", Toast.LENGTH_SHORT).show()
+    private fun sendReview(restaurantId: String) {
+        binding.reviewSubmitButton.setOnClickListener {
+            val reviewText = binding.reviewMessageInput.text.toString().trim()
+            if (reviewText.isNotEmpty()) {
+                VulgarityUtils.checkVulgarity(reviewText) { isClean ->
+                    if (isClean) {
+                        showRatingDialog(restaurantId)
+                    } else {
+                        binding.reviewMessageInput.text.clear()
+                        Toast.makeText(this, "Your review contains inappropriate content.", Toast.LENGTH_SHORT)
+                            .show()
+                    }
+                }
+            } else {
+                Toast.makeText(this, "Please write a review", Toast.LENGTH_SHORT).show()
+            }
         }
     }
-}
+
+
 
     private fun showRatingDialog(restaurantId: String) {
         val dialogView = layoutInflater.inflate(R.layout.rating_dialog_layout, null)
@@ -239,7 +247,6 @@ private fun sendReview(restaurantId: String) {
     }
 
 
-
     private fun checkBookmarkStatus(restaurantId: String) {
         restaurantViewModel.isRestaurantBookmarked(restaurantId) { isBookmarked ->
             this.isBookmarked = isBookmarked
@@ -263,7 +270,8 @@ private fun sendReview(restaurantId: String) {
                 isBookmarked = true
                 updateBookmarkButton()
             } else {
-                Toast.makeText(this, "Failed to add Favourites: $message", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Failed to add Favourites: $message", Toast.LENGTH_SHORT)
+                    .show()
             }
         })
     }
@@ -276,7 +284,11 @@ private fun sendReview(restaurantId: String) {
                 updateBookmarkButton()
             }.onFailure {
 
-                Toast.makeText(this, "Removed from Favourites failed: ${it.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this,
+                    "Removed from Favourites failed: ${it.message}",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         })
     }
