@@ -9,13 +9,17 @@ import android.os.Looper
 import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
+import android.widget.Button
 import android.widget.ImageSwitcher
 import android.widget.ImageView
+import android.widget.RatingBar
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -161,48 +165,79 @@ class ResDetailView : AppCompatActivity() {
             wifi.setImageResource(if (restaurant.wifi) R.drawable.availabegreenicon else R.drawable.wrongicon)
 
         }
-//        val reviews = listOf(
-//            Review("", "","User1",2.0,"I recently dined at Bistro Delights, and it was a fantastic experience. The ambiance is cozy and welcoming, perfect for a relaxing meal", 20240627),
-//            Review("","","User2",1.3,"I enjoyed going this place.I tried the grilled salmon, which was cooked to perfection—crispy on the outside and tender on the inside. The accompanying vegetables were fresh and flavorful. The staff was attentive and friendly, ensuring that we had everything we needed. For dessert, the chocolate lava cake was a decadent treat that I highly recommend. Overall, Bistro Delights offers delicious food, great service, and a pleasant atmosphere. I will definitely be returning!", 20240626),
-//            Review("", "","User3",5.0,"Could use some improvements.", 20240625)
-//        )
-//
-//        val reviewPagerAdapter = ReviewAdapter(reviews)
-//        binding.reviewsViewPager.adapter = reviewPagerAdapter
-//        binding.springDotsIndicator.attachTo(binding.reviewsViewPager)
     }
 
-    private fun sendReview(restaurantId: String) {
-        binding.reviewSubmitButton.setOnClickListener {
-            val reviewRating = binding.userRestaurantRating.rating // Get the rating as Float
-            val reviewText = binding.reviewMessageInput.text.toString()
+private fun sendReview(restaurantId: String) {
+    binding.reviewSubmitButton.setOnClickListener {
+        if(binding.reviewMessageInput.text.isNotEmpty()) {
+            showRatingDialog(restaurantId)
+        }
+        else{
+            Toast.makeText(this, "Please write a review", Toast.LENGTH_SHORT).show()
+        }
+    }
+}
 
-            userViewModel.currentUser.observe(this) { user ->
-                if (user != null) {
-                    val userId = user.uid
-                    val fullName = user.fullName
+    private fun showRatingDialog(restaurantId: String) {
+        val dialogView = layoutInflater.inflate(R.layout.rating_dialog_layout, null)
+        val dialog = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .create()
+        val backgroundDrawable =
+            ContextCompat.getDrawable(this, R.drawable.custom_dialog_background)
+        dialog.window?.setBackgroundDrawable(backgroundDrawable)
 
-                    if (reviewText.isNotBlank()) {
-                        val review = Review(
-                            restaurantId = restaurantId,
-                            userId = userId,
-                            username = fullName,
-                            rating = reviewRating.toDouble(), // Convert Float to Double
-                            reviewText = reviewText,
-                            timestamp = Date().time
-                        )
+        val ratingBar: RatingBar = dialogView.findViewById(R.id.ratingBar)
+        val positiveButton: Button = dialogView.findViewById(R.id.positiveButton)
+        val negativeButton: Button = dialogView.findViewById(R.id.negativeButton)
 
-                        reviewViewModel.submitReview(review)
-                        binding.reviewMessageInput.text.clear() // Clear input field after submitting
-                        binding.userRestaurantRating.rating = 0f // Reset the rating bar
+        positiveButton.setOnClickListener {
+            val rating = ratingBar.rating
+            if (rating > 0) {
+                dialog.dismiss()
+                submitReviewWithRating(restaurantId, rating)
+            } else {
+                Toast.makeText(this, "Please provide a rating", Toast.LENGTH_SHORT).show()
+            }
+        }
 
-                    } else {
-                        Toast.makeText(this, "Please write a review", Toast.LENGTH_SHORT).show()
-                    }
+        negativeButton.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.show()
+    }
+
+    private fun submitReviewWithRating(restaurantId: String, rating: Float) {
+        val reviewText = binding.reviewMessageInput.text.toString()
+
+        userViewModel.currentUser.observe(this) { user ->
+            if (user != null) {
+                val userId = user.uid
+                val fullName = user.fullName
+
+                if (reviewText.isNotBlank()) {
+                    val review = Review(
+                        restaurantId = restaurantId,
+                        userId = userId,
+                        username = fullName,
+                        rating = rating.toDouble(),
+                        reviewText = reviewText,
+                        timestamp = Date().time
+                    )
+
+                    reviewViewModel.submitReview(review)
+                    binding.reviewMessageInput.text.clear()
+                    Toast.makeText(this, "Review submitted", Toast.LENGTH_SHORT).show()
+
+
+                } else {
+                    Toast.makeText(this, "Failed to submit review", Toast.LENGTH_SHORT).show()
                 }
             }
         }
     }
+
 
 
     private fun checkBookmarkStatus(restaurantId: String) {
