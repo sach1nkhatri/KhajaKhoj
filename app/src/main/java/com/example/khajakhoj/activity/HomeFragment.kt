@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageSwitcher
 import android.widget.ImageView
+import android.widget.SearchView
 import android.widget.ViewSwitcher
 import androidx.fragment.app.Fragment
 import com.example.khajakhoj.R
@@ -21,6 +22,7 @@ class HomeFragment : Fragment() {
     private var currentIndex = 0
     private lateinit var handler: Handler
     private lateinit var runnable: Runnable
+    lateinit var cusineSearch : ImageView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -28,6 +30,8 @@ class HomeFragment : Fragment() {
     ): View? {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
         val view = binding.root
+
+        cusineSearch = view.findViewById(R.id.cuisineSearch)
 
         // Initialize ImageSwitcher using view binding
         imageSwitcher = binding.imageSwitcher
@@ -53,6 +57,13 @@ class HomeFragment : Fragment() {
 
         // Set click listener on image buttons
         setupCuisineButtons()
+
+
+        cusineSearch.setOnClickListener {
+            val intent = Intent(requireContext(), GlobalSearchView::class.java)
+            startActivity(intent)
+        }
+
 
         return view
     }
