@@ -204,7 +204,7 @@ class ResDetailView : AppCompatActivity() {
 
     private fun updateBookmarkButton() {
         if (isBookmarked) {
-            binding.bookmarkBtn.setImageResource(R.drawable.favourites)
+            binding.bookmarkBtn.setImageResource(R.drawable.redfav)
         } else {
             binding.bookmarkBtn.setImageResource(R.drawable.favourite)
         }
@@ -214,12 +214,11 @@ class ResDetailView : AppCompatActivity() {
         restaurantViewModel.bookmarkResult.observe(this, Observer { result ->
             val (success, message) = result
             if (success) {
-                Toast.makeText(this, "Bookmark added successfully!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Added to Favourites", Toast.LENGTH_SHORT).show()
                 isBookmarked = true
                 updateBookmarkButton()
             } else {
-                Toast.makeText(this, "Failed to add bookmark: $message", Toast.LENGTH_SHORT)
-                    .show()
+                Toast.makeText(this, "Failed to add Favourites: $message", Toast.LENGTH_SHORT).show()
             }
         })
     }
@@ -227,12 +226,12 @@ class ResDetailView : AppCompatActivity() {
     private fun observeUnBookmarkResult() {
         restaurantViewModel.unBookmarkResult.observe(this, Observer { result ->
             result.onSuccess {
-                Toast.makeText(this, "Unbookmarked successfully", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Removed from Favourites", Toast.LENGTH_SHORT).show()
                 isBookmarked = false
                 updateBookmarkButton()
             }.onFailure {
-                Toast.makeText(this, "Unbookmark failed: ${it.message}", Toast.LENGTH_SHORT)
-                    .show()
+
+                Toast.makeText(this, "Removed from Favourites failed: ${it.message}", Toast.LENGTH_SHORT).show()
             }
         })
     }

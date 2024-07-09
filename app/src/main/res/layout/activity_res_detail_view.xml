@@ -83,7 +83,7 @@
                 android:layout_height="30dp"
                 android:layout_gravity="end|top"
                 android:layout_margin="23dp"
-                android:src="@drawable/favourite" />
+                android:src="@drawable/redfav" />
 
             <TextView
                 android:layout_width="80dp"
