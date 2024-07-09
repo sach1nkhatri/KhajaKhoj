@@ -43,7 +43,8 @@ class ReviewViewModel : ViewModel() {
     fun getReviews(restaurantId: String) {
         repository.getReviews(restaurantId,
             onSuccess = {
-                _reviews.value = it
+                val sortedReviews = it.sortedByDescending { review -> review.timestamp }
+                _reviews.value = sortedReviews
             },
             onFailure = {
                 _error.value = it

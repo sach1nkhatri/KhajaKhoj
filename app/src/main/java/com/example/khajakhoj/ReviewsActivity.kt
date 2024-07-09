@@ -81,7 +81,7 @@ class ReviewsActivity : AppCompatActivity() {
 
         reviewViewModel.reviews.observe(this, Observer { reviews ->
             // Update UI with reviews
-            reviewsRecyclerView.adapter = ReviewAdapter(reviews)        })
+            reviewsRecyclerView.adapter = ReviewAdapter(reviews,false)        })
 
         reviewViewModel.averageRating.observe(this, Observer { averageRating ->
             averageRatingTextView.text = "Average Rating: $averageRating"

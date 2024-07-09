@@ -1,6 +1,7 @@
 package com.example.khajakhoj.activity
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -24,6 +25,7 @@ import com.example.khajakhoj.ReviewsActivity
 import com.example.khajakhoj.adapter.MenuAdapter
 import com.example.khajakhoj.adapter.ReviewAdapter
 import com.example.khajakhoj.databinding.ActivityResDetailViewBinding
+import com.example.khajakhoj.fragments.BottomSheetDialogFragment
 import com.example.khajakhoj.model.MenuItem
 import com.example.khajakhoj.model.Restaurant
 import com.example.khajakhoj.model.Review
@@ -56,11 +58,11 @@ class ResDetailView : AppCompatActivity() {
     private lateinit var viewModel: MenuViewModel
     private lateinit var menuAdapter: MenuAdapter
     private val menuItems = mutableListOf<MenuItem>()
+    private lateinit var restaurantId: String
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         binding = ActivityResDetailViewBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -88,6 +90,9 @@ class ResDetailView : AppCompatActivity() {
         }
 
         val restaurant = intent.getParcelableExtra<Restaurant>("restaurant")
+        if (restaurant != null) {
+            restaurantId = restaurant.id
+        }
 
         restaurant?.let {
             updateUI(it)
@@ -102,7 +107,7 @@ class ResDetailView : AppCompatActivity() {
         }
 
         reviewViewModel.randomReviews.observe(this, Observer { reviews ->
-            val reviewPagerAdapter = ReviewAdapter(reviews)
+            val reviewPagerAdapter = ReviewAdapter(reviews,true)
             binding.reviewsViewPager.adapter = reviewPagerAdapter
             binding.springDotsIndicator.attachTo(binding.reviewsViewPager)
         })
@@ -125,6 +130,11 @@ class ResDetailView : AppCompatActivity() {
                     observeBookmarkResult()
                 }
             }
+        }
+
+        binding.seeAllReviews.setOnClickListener {
+            val bottomSheetFragment = BottomSheetDialogFragment(restaurantId)
+            bottomSheetFragment.show(supportFragmentManager, bottomSheetFragment.tag)
         }
 
     }

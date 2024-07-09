@@ -1,0 +1,43 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp">
+
+    <!-- Username TextView -->
+    <TextView
+        android:id="@+id/reviewUserTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Username"
+        android:textStyle="bold"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginRight="8dp" />
+
+    <!-- Review TextView -->
+    <TextView
+        android:id="@+id/reviewTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/reviewUserTextView"
+        android:ellipsize="end"
+        android:maxLines="3"
+        android:paddingTop="8dp"
+        android:text="The ambiance is cozy and welcoming, perfect for a relaxing meal. I tried the grilled salmon, which was cooked to perfection—crispy on the outside and tender on the inside. The accompanying vegetables were fresh and flavorful. The staff was attentive and friendly, ensuring that we had everything we needed." />
+
+    <!-- RatingBar -->
+    <RatingBar
+        android:id="@+id/smallDynamicRating"
+        style="?android:attr/ratingBarStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:progressTint="#FFCC01"
+        android:stepSize="0.5"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true" />
+
+</RelativeLayout>
+
+
+
+

@@ -20,7 +20,7 @@ class MenuAdapter(private val menuItems: List<MenuItem>) :
         val menuItem = menuItems[position]
         holder.nameTextView.text = menuItem.name
         holder.descriptionTextView.text = menuItem.description
-        holder.priceTextView.text = menuItem.price.toString()
+        holder.priceTextView.text = "Rs."+menuItem.price.toString()
     }
 
     override fun getItemCount() = menuItems.size
