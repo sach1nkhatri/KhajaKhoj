@@ -14,6 +14,9 @@ class ReviewViewModel : ViewModel() {
     private val _reviews = MutableLiveData<List<Review>>()
     val reviews: LiveData<List<Review>> = _reviews
 
+    private val _randomReviews = MutableLiveData<List<Review>>()
+    val randomReviews : LiveData<List<Review>> = _randomReviews
+
     private val _reviewSubmissionStatus = MutableLiveData<Boolean>()
     val reviewSubmissionStatus: LiveData<Boolean> = _reviewSubmissionStatus
 
@@ -41,6 +44,16 @@ class ReviewViewModel : ViewModel() {
         repository.getReviews(restaurantId,
             onSuccess = {
                 _reviews.value = it
+            },
+            onFailure = {
+                _error.value = it
+            })
+    }
+
+    fun getRandomReviews(restaurantId: String) {
+        repository.getRandomReviews(restaurantId,
+            onSuccess = {
+                _randomReviews.value = it
             },
             onFailure = {
                 _error.value = it

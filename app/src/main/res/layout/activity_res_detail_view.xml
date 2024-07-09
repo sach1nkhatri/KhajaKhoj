@@ -220,8 +220,18 @@
             android:textColor="@color/white"
             android:textStyle="bold" />
 
+        <RatingBar
+            android:id="@+id/userRestaurantRating"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="-50dp"
+            android:progressTint="#FFCC01"
+            android:scaleX="0.7"
+            android:scaleY="0.7"
+            android:stepSize="0.5" />
+
         <androidx.cardview.widget.CardView
-            android:id="@+id/cardView2"
+            android:id="@+id/reviewCardView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
@@ -239,6 +249,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     tools:listitem="@layout/sample_review_item" />
+
                 <com.tbuonomo.viewpagerdotsindicator.SpringDotsIndicator
                     android:id="@+id/spring_dots_indicator"
                     android:layout_width="wrap_content"
@@ -246,11 +257,7 @@
                     android:layout_gravity="center"
                     app:dotsSize="10dp"
                     app:dotsSpacing="4dp"
-                    app:progressMode="true"
-                    />
-
-
-
+                    app:progressMode="true" />
 
                 <TextView
                     android:id="@+id/seeAllReviews"
@@ -270,7 +277,7 @@
                     android:padding="8dp">
 
                     <EditText
-                        android:id="@+id/messageInput"
+                        android:id="@+id/reviewMessageInput"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -282,7 +289,7 @@
 
 
                     <ImageButton
-                        android:id="@+id/sendButton"
+                        android:id="@+id/reviewSubmitButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
@@ -290,14 +297,17 @@
                         android:contentDescription="Send Message"
                         android:src="@android:drawable/ic_menu_send" />
                 </LinearLayout>
-
-
             </LinearLayout>
-
-
         </androidx.cardview.widget.CardView>
 
-
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="500dp"
+            android:layout_marginTop="20dp"
+            android:background="@android:color/transparent"
+            android:orientation="vertical"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
     </LinearLayout>
 
 </ScrollView>

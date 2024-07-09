@@ -4,6 +4,7 @@ import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.RatingBar
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.khajakhoj.R
@@ -13,6 +14,7 @@ class ReviewAdapter(private val reviews: List<Review>) :
     RecyclerView.Adapter<ReviewAdapter.ReviewViewHolder>() {
 
     inner class ReviewViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val ratingBar: RatingBar = itemView.findViewById(R.id.smallDynamicRating)
         val userTextView: TextView = itemView.findViewById(R.id.reviewUserTextView)
         val reviewTextView: TextView = itemView.findViewById(R.id.reviewTextView)
     }
@@ -24,7 +26,8 @@ class ReviewAdapter(private val reviews: List<Review>) :
 
     override fun onBindViewHolder(holder: ReviewViewHolder, position: Int) {
         val review = reviews[position]
-        holder.userTextView.text = review.userId
+        holder.ratingBar.rating = review.rating.toFloat()
+        holder.userTextView.text = review.username
         holder.reviewTextView.text = review.reviewText
         holder.reviewTextView.setOnClickListener(object : View.OnClickListener {
             var isExpanded: Boolean = false

@@ -5,14 +5,17 @@
         <item name="android:textColor">@android:color/transparent</item>
 
     </style>
+
     <style name="RestaurantImageCorner">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">10dp</item>
         <item name="color">@color/red_KK</item>
     </style>
+
     <style name="ShapeAppearanceOverlay">
     <item name="cornerFamily">rounded</item>
     <item name="cornerSize">50%</item>
     </style>
+
 
 </resources>
