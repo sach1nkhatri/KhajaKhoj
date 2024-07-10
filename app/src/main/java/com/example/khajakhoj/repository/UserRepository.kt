@@ -3,6 +3,7 @@ package com.example.khajakhoj.repository
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.khajakhoj.model.User
+import com.example.khajakhoj.utils.LoadingUtil
 
 interface UserRepository {
     suspend fun signUpUserWithEmailAndPassword(email: String, password: String): Result<Boolean>
@@ -14,7 +15,8 @@ interface UserRepository {
     fun changePassword(
         currentPassword: String,
         newPassword: String,
-        confirmNewPassword: String
+        confirmNewPassword: String,
+        loadingUtil: LoadingUtil
     ): LiveData<Result<String>>
 
     fun deleteUser(userId: String): LiveData<Result<Void?>>

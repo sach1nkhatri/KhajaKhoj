@@ -10,6 +10,7 @@ import androidx.fragment.app.viewModels
 import com.example.khajakhoj.activity.LoginPage
 import com.example.khajakhoj.databinding.ActivityProfileBinding
 import com.example.khajakhoj.model.User
+import com.example.khajakhoj.utils.LoadingUtil
 import com.example.khajakhoj.utils.Utils
 import com.example.khajakhoj.viewmodel.UserViewModel
 
@@ -23,7 +24,6 @@ class ProfileFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = ActivityProfileBinding.inflate(inflater, container, false)
-
 
         // Set up button click listener to log out and redirect to the login page
         binding.logOutProfile.setOnClickListener {

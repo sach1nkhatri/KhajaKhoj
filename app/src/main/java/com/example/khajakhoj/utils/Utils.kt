@@ -203,7 +203,7 @@ object Utils {
         adc.show()
     }
 
-    fun showPasswordChangeDialog(context: Context,viewModel: UserViewModel){
+    fun showPasswordChangeDialog(context: Context,viewModel: UserViewModel,loadingUtil: LoadingUtil){
         val dialog = Dialog(context)
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         dialog.setCancelable(true)
@@ -220,15 +220,17 @@ object Utils {
             val currentPassword = currentPasswordEditText.text.toString()
             val newPassword = newPasswordEditText.text.toString()
             val confirmNewPassword = confirmNewPasswordEditText.text.toString()
-            viewModel.changePassword(currentPassword, newPassword, confirmNewPassword).observe(context as LifecycleOwner) { result ->
+            viewModel.changePassword(currentPassword, newPassword, confirmNewPassword,loadingUtil).observe(context as LifecycleOwner) { result ->
                 result.fold(
                     onSuccess = {
                         Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
                         if (it == "Password Changed Successfully") {
+                            loadingUtil.dismiss()
                             dialog.dismiss()
                         }
                     },
                     onFailure = {
+                        loadingUtil.dismiss()
                         Toast.makeText(context, it.message, Toast.LENGTH_SHORT).show()
                     }
                 )
@@ -263,7 +265,7 @@ object Utils {
         dialog.show()
     }
 
-    fun showDeleteAccountDialog(context: Context, userViewModel: UserViewModel) {
+    fun showDeleteAccountDialog(context: Context, userViewModel: UserViewModel,loadingUtil: LoadingUtil) {
         val dialog = Dialog(context)
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         dialog.setCancelable(true)
@@ -281,7 +283,7 @@ object Utils {
             val password = passwordEditText.text.toString()
             if (password.isNotEmpty() && user != null && user.email != null) {
                 val credential = EmailAuthProvider.getCredential(user.email!!, password)
-
+                loadingUtil.showLoading()
                 user.reauthenticate(credential).addOnCompleteListener { reAuthTask ->
                     if (reAuthTask.isSuccessful) {
                         userViewModel.deleteUser(user.uid).observe(context as LifecycleOwner) { result ->
@@ -289,17 +291,21 @@ object Utils {
                                 user.delete().addOnCompleteListener { deleteTask ->
                                     if (deleteTask.isSuccessful) {
                                         Toast.makeText(context, "User account deleted.", Toast.LENGTH_SHORT).show()
+                                        loadingUtil.dismiss()
                                         dialog.dismiss()
                                         navigateToLoginPage(context)
                                     } else {
+                                        loadingUtil.dismiss()
                                         Toast.makeText(context, "Failed to delete user account.", Toast.LENGTH_SHORT).show()
                                     }
                                 }
                             } else {
+                                loadingUtil.dismiss()
                                 Toast.makeText(context, "Failed to delete teacher data.", Toast.LENGTH_SHORT).show()
                             }
                         }
                     } else {
+                        loadingUtil.dismiss()
                         Toast.makeText(context, "Authentication failed. Please check your password.", Toast.LENGTH_SHORT).show()
                     }
                 }

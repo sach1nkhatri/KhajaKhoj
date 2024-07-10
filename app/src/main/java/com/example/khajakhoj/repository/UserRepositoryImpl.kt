@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.khajakhoj.model.User
+import com.example.khajakhoj.utils.LoadingUtil
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
@@ -141,7 +142,8 @@ class UserRepositoryImpl : UserRepository {
     override fun changePassword(
         currentPassword: String,
         newPassword: String,
-        confirmNewPassword: String
+        confirmNewPassword: String,
+        loadingUtil: LoadingUtil
     ): LiveData<Result<String>> {
         val resultLiveData = MutableLiveData<Result<String>>()
 
@@ -150,6 +152,7 @@ class UserRepositoryImpl : UserRepository {
                 if (newPassword == confirmNewPassword) {
                     val user = firebaseAuth.currentUser
                     if (user != null && user.email != null) {
+                        loadingUtil.showLoading()
                         val credential =
                             EmailAuthProvider.getCredential(user.email!!, currentPassword)
                         user.reauthenticate(credential).addOnCompleteListener { reAuthTask ->

@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.khajakhoj.model.User
 import com.example.khajakhoj.repository.UserRepository
 import com.example.khajakhoj.repository.UserRepositoryImpl
+import com.example.khajakhoj.utils.LoadingUtil
 import com.example.khajakhoj.utils.ValidationUtils
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
@@ -195,9 +196,10 @@ class UserViewModel : ViewModel() {
     fun changePassword(
         currentPassword: String,
         newPassword: String,
-        confirmNewPassword: String
+        confirmNewPassword: String,
+        loadingUtil: LoadingUtil
     ): LiveData<Result<String>> {
-        return repository.changePassword(currentPassword, newPassword, confirmNewPassword)
+        return repository.changePassword(currentPassword, newPassword, confirmNewPassword,loadingUtil)
     }
 
     fun deleteUser(userId: String): LiveData<Result<Void?>> {

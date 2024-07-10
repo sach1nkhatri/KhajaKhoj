@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.viewModels
 import com.example.khajakhoj.R
 import com.example.khajakhoj.databinding.ActivitySettingsBinding
+import com.example.khajakhoj.utils.LoadingUtil
 import com.example.khajakhoj.utils.Utils
 import com.example.khajakhoj.viewmodel.UserViewModel
 
@@ -29,11 +30,11 @@ class SettingsFragment : Fragment() {
         // Inflate the layout for this fragment
         binding = ActivitySettingsBinding.inflate(inflater, container, false)
         return binding.root
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         sharedPreferences = requireContext().getSharedPreferences("AppPreferences", Context.MODE_PRIVATE)
         editor = sharedPreferences.edit()
 
@@ -60,7 +61,9 @@ class SettingsFragment : Fragment() {
 
 
         binding.changePasswordButton.setOnClickListener {
-            Utils.showPasswordChangeDialog(requireContext(),viewModel)
+            Utils.showPasswordChangeDialog(requireContext(),viewModel,
+                LoadingUtil(requireActivity())
+            )
         }
 
         binding.settingImageView.setOnClickListener {
@@ -71,7 +74,7 @@ class SettingsFragment : Fragment() {
         }
 
         binding.deleteAccountButton.setOnClickListener(){
-            Utils.showDeleteAccountDialog(requireContext(),viewModel)
+            Utils.showDeleteAccountDialog(requireContext(),viewModel,LoadingUtil(requireActivity()))
         }
         binding.languageOption.setOnClickListener(){
             Toast.makeText(requireContext(),"English is the only available language for now.",Toast.LENGTH_LONG).show()
