@@ -166,6 +166,7 @@ class UserRepositoryImpl : UserRepository {
                                         }
                                     }
                             } else {
+                                loadingUtil.dismiss()
                                 resultLiveData.postValue(Result.failure(Exception("Current password is wrong.")))
                             }
                         }

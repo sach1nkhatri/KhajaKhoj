@@ -60,7 +60,7 @@ object Utils {
                 • No misuse of the app.<br>
                 • No spamming or harmful content.<br><br>
             
-            <b>4. Content Ownership:</b> All materials provided in the app are the property of Siksha Sanskriti.<br><br>
+            <b>4. Content Ownership:</b> All materials provided in the app are the property of Khaja Khoj.<br><br>
             
             <b>5. Privacy:</> We respect your privacy and handle your personal information according to our Privacy Policy.<br><br>
             
@@ -230,7 +230,6 @@ object Utils {
                         }
                     },
                     onFailure = {
-                        loadingUtil.dismiss()
                         Toast.makeText(context, it.message, Toast.LENGTH_SHORT).show()
                     }
                 )
