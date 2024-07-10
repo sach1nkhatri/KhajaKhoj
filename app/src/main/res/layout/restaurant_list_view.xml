@@ -116,5 +116,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <ProgressBar
+        android:id="@+id/imageProgressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@+id/restuarantImage"
+        app:layout_constraintEnd_toEndOf="@+id/restuarantImage"
+        app:layout_constraintStart_toStartOf="@+id/restuarantImage"
+        app:layout_constraintTop_toTopOf="@+id/restuarantImage"
+        android:visibility="visible"
+        android:indeterminate="true"
+        android:indeterminateDrawable="@drawable/circular_progress_bar" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

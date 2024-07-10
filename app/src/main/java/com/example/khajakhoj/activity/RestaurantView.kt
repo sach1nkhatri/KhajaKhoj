@@ -1,6 +1,8 @@
 package com.example.khajakhoj.activity
 
 import android.os.Bundle
+import android.view.View
+import android.widget.ProgressBar
 import android.widget.SearchView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -18,6 +20,8 @@ class RestaurantView : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var restaurantAdapter: RestaurantAdapter
     private lateinit var viewModel: RestaurantViewModel
+    private lateinit var progressBar: ProgressBar
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,6 +32,8 @@ class RestaurantView : AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this)
         restaurantAdapter = RestaurantAdapter(emptyList())
         recyclerView.adapter = restaurantAdapter
+        progressBar = findViewById(R.id.progressBar)
+
 
         viewModel = ViewModelProvider(this).get(RestaurantViewModel::class.java)
 
@@ -38,14 +44,17 @@ class RestaurantView : AppCompatActivity() {
     }
 
     private fun fetchRestaurants(cuisineType: String) {
+        progressBar.visibility = View.VISIBLE
         viewModel.fetchRestaurants(cuisineType)
         viewModel.restaurantList.observe(this, Observer { restaurants ->
+            progressBar.visibility = View.GONE
             restaurants?.let {
                 restaurantAdapter.updateRestaurantList(it)
             }
         })
 
         viewModel.errorMessage.observe(this, Observer { errorMessage ->
+            progressBar.visibility = View.GONE
             errorMessage?.let {
                 Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
             }

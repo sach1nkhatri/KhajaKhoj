@@ -6,12 +6,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.khajakhoj.R
 import com.example.khajakhoj.activity.ResDetailView
 import com.example.khajakhoj.model.Restaurant
 import com.google.android.material.imageview.ShapeableImageView
+import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import java.util.*
 
@@ -29,6 +31,8 @@ class RestaurantAdapter(private var restaurantList: List<Restaurant>) :
         val restaurantAddress: TextView = itemView.findViewById(R.id.restaurantAddress)
         val restaurantRating: TextView = itemView.findViewById(R.id.restaurantRating)
         val restaurantMain: View = itemView.findViewById(R.id.restaurantMain)
+        val imageProgressBar: ProgressBar = itemView.findViewById(R.id.imageProgressBar)
+
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RestaurantViewHolder {
@@ -39,8 +43,17 @@ class RestaurantAdapter(private var restaurantList: List<Restaurant>) :
 
     override fun onBindViewHolder(holder: RestaurantViewHolder, position: Int) {
         val restaurant = restaurantList[position]
+        holder.imageProgressBar.visibility = View.VISIBLE
+        Picasso.get().load(restaurant.restaurantLogoUrl).into(holder.restaurantImage, object :
+            Callback {
+            override fun onSuccess() {
+                holder.imageProgressBar.visibility = View.GONE
+            }
 
-        Picasso.get().load(restaurant.restaurantLogoUrl).into(holder.restaurantImage)
+            override fun onError(e: Exception?) {
+                holder.imageProgressBar.visibility = View.GONE
+            }
+        })
         holder.restaurantName.text = restaurant.name
         holder.restaurantCuisine.text = restaurant.cuisineType
         holder.restaurantDistance.text = "0.5 km" // Replace with actual distance calculation if needed

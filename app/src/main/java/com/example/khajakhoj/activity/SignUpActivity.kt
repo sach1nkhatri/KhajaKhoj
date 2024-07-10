@@ -1,17 +1,15 @@
 package com.example.khajakhoj.activity
 
-import android.Manifest
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import com.example.khajakhoj.databinding.ActivitySignUpBinding
-import com.example.khajakhoj.utils.LocationUtils
+import com.example.khajakhoj.utils.LoadingUtil
 import com.example.khajakhoj.utils.Utils
 import com.example.khajakhoj.viewmodel.UserViewModel
 
@@ -19,28 +17,9 @@ class SignUpActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySignUpBinding
     private val viewModel: UserViewModel by viewModels()
 
-    private lateinit var locationUtils: LocationUtils
     private var isSignUpInProgress = false
     private var isActivityStarted = false
-
-    private val locationPermissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { isGranted ->
-        if (isGranted) {
-            Log.d("SignUpActivity", "Location permission granted")
-            locationUtils.getLocation { address ->
-                if (address != null) {
-                    Log.d("SignUpActivity", "Location obtained: $address")
-                    getLocationAndSignUp(address)
-                } else {
-                    Log.e("SignUpActivity", "Failed to obtain location")
-                }
-            }
-        } else {
-            Log.d("SignUpActivity", "Location permission denied")
-            Toast.makeText(this, "Location permission denied", Toast.LENGTH_SHORT).show()
-        }
-    }
+    private lateinit var loadingUtil: LoadingUtil
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,13 +27,12 @@ class SignUpActivity : AppCompatActivity() {
         binding = ActivitySignUpBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        locationUtils = LocationUtils(this)
+        loadingUtil = LoadingUtil(this)
 
         setupSignUpButton()
         observeSignUpResult()
 
         binding.termsTextView.setOnClickListener {
-            Log.d("SignUpActivity", "Terms and conditions clicked")
             Utils.showTermsAndConditions(this)
         }
 
@@ -67,17 +45,16 @@ class SignUpActivity : AppCompatActivity() {
 
     private fun setupSignUpButton() {
         binding.signupCustBtn.setOnClickListener {
+            signUpUser()
             Log.d("SignUpActivity", "Sign-up button clicked")
-            locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
         }
     }
 
-    private fun getLocationAndSignUp(address: String) {
+    private fun signUpUser() {
         if (isSignUpInProgress) {
             Log.d("SignUpActivity", "Sign-up already in progress")
             return
         }
-        isSignUpInProgress = true
 
         val fullName = binding.fullNameEditText.text.toString().trim()
         val email = binding.emailEditText.text.toString().trim()
@@ -85,20 +62,38 @@ class SignUpActivity : AppCompatActivity() {
         val password = binding.passwordEditText.text.toString().trim()
         val confirmPassword = binding.confirmPasswordEditText.text.toString().trim()
 
-        Log.d("SignUpActivity", "Starting sign-up with details: FullName=$fullName, Email=$email, PhoneNumber=$phoneNumber")
+        Log.d(
+            "SignUpActivity",
+            "Starting sign-up with details: FullName=$fullName, Email=$email, PhoneNumber=$phoneNumber"
+        )
+
+        if (fullName.isEmpty() || email.isEmpty() || phoneNumber.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
+            Toast.makeText(this, "All fields are required", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        if (!binding.termsCheckBox.isChecked) {
+            Toast.makeText(this, "Please accept terms and conditions", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        loadingUtil.showLoading()
+        isSignUpInProgress = true
 
         viewModel.signUpUser(
             fullName,
             email,
             phoneNumber,
             password,
-            confirmPassword,
-            address
+            confirmPassword
         )
     }
 
     private fun observeSignUpResult() {
         viewModel.signUpResult.observe(this, Observer { result ->
+            loadingUtil.dismiss() // Dismiss loading indicator
+            isSignUpInProgress = false
+
             result.onSuccess {
                 Log.d("SignUpActivity", "Sign-up successful")
                 Toast.makeText(this, "Sign-up successful! Please login.", Toast.LENGTH_SHORT).show()
@@ -107,7 +102,6 @@ class SignUpActivity : AppCompatActivity() {
                 val errorMessage = exception.message ?: "Unknown error occurred"
                 Log.e("SignUpActivity", "Sign-up failed: $errorMessage")
                 Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show()
-                isSignUpInProgress = false
             }
         })
     }

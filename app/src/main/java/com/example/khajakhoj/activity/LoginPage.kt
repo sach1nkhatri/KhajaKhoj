@@ -9,6 +9,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import com.example.khajakhoj.databinding.ActivityLoginPageBinding
+import com.example.khajakhoj.utils.LoadingUtil
 import com.example.khajakhoj.utils.Utils.showForgotPasswordDialog
 import com.example.khajakhoj.viewmodel.UserViewModel
 
@@ -16,12 +17,16 @@ class LoginPage : AppCompatActivity() {
 
     private lateinit var binding: ActivityLoginPageBinding
     private val viewModel: UserViewModel by viewModels()
+    lateinit var loadingUtil: LoadingUtil
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding = ActivityLoginPageBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        loadingUtil = LoadingUtil(this)
+
 
         setupListeners()
         observeViewModel()
@@ -32,6 +37,7 @@ class LoginPage : AppCompatActivity() {
             val email = binding.usernameInput.text.toString().trim()
             val password = binding.passwordInput.text.toString().trim()
             if (validateInput(email, password)) {
+                loadingUtil.showLoading()
                 viewModel.loginUser(email, password)
             }
         }
@@ -52,6 +58,7 @@ class LoginPage : AppCompatActivity() {
 
     private fun observeViewModel() {
         viewModel.loginResult.observe(this, Observer { loginResult ->
+            loadingUtil.dismiss() // Dismiss loading indicator
             if (loginResult.isSuccess) {
                 // Login successful
                 Log.d(TAG, "Sign-in successful from Activity")
@@ -63,7 +70,7 @@ class LoginPage : AppCompatActivity() {
                 // Login failed
                 Log.e(TAG, "Sign-in failed from Activity")
                 // Handle login failure, e.g., display an error message
-                Toast.makeText(this, "Login failed!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Invalid email or password.", Toast.LENGTH_SHORT).show()
             }
         })
 

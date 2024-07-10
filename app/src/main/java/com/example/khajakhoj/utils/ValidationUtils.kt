@@ -1,6 +1,7 @@
 package com.example.khajakhoj.utils
 
 import android.util.Log
+import com.google.i18n.phonenumbers.NumberParseException
 import com.google.i18n.phonenumbers.PhoneNumberUtil
 
 object ValidationUtils {
@@ -9,13 +10,12 @@ object ValidationUtils {
         return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
     }
 
-    fun validatePhoneNumber(phoneNumber: String): Boolean {
+    fun validatePhoneNumber(phoneNumber: String, defaultRegion: String = "NP"): Boolean {
         return try {
-            val phoneUtil = PhoneNumberUtil.getInstance()
-            val phoneNumberObj = phoneUtil.parse(phoneNumber, "NP")
-            phoneUtil.isValidNumber(phoneNumberObj)
-        } catch (e: Exception) {
-            Log.e("SignUpViewModel", "Error validating phone number", e)
+            val phoneNumberUtil = PhoneNumberUtil.getInstance()
+            val number = phoneNumberUtil.parse(phoneNumber, defaultRegion)
+            phoneNumberUtil.isValidNumber(number)
+        } catch (e: NumberParseException) {
             false
         }
     }

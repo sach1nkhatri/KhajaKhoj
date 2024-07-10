@@ -9,6 +9,7 @@
     android:background="@drawable/doodle30"
     tools:context=".activity.Restaurant_view">
 
+
     <SearchView
         android:id="@+id/cuisineSearch"
         android:layout_width="match_parent"
@@ -22,6 +23,17 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone"
+        android:indeterminate="true"
+        android:indeterminateDrawable="@drawable/circular_progress_bar" />
+
+
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/restaurantView"
@@ -32,5 +44,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/cuisineSearch"
         tools:listitem="@layout/restaurant_list_view" />
+
+
 
 </LinearLayout>

@@ -1,6 +1,5 @@
 package com.example.khajakhoj.viewmodel
 
-//import com.example.khajakhoj.utils.CredentialManager
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -11,6 +10,7 @@ import com.example.khajakhoj.repository.UserRepository
 import com.example.khajakhoj.repository.UserRepositoryImpl
 import com.example.khajakhoj.utils.ValidationUtils
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import kotlinx.coroutines.launch
 
 class UserViewModel : ViewModel() {
@@ -29,8 +29,8 @@ class UserViewModel : ViewModel() {
     private val _toastMessage = MutableLiveData<String>()
     val toastMessage: LiveData<String> = _toastMessage
 
-    companion object{
-        private val TAG = "UserViewModel"
+    companion object {
+        private const val TAG = "UserViewModel"
     }
 
     fun signUpUser(
@@ -38,11 +38,9 @@ class UserViewModel : ViewModel() {
         email: String,
         phoneNumber: String,
         password: String,
-        confirmPassword: String,
-        address: String
+        confirmPassword: String
     ) {
         Log.d(TAG, "Starting sign-up process")
-        Log.d(TAG, "Password: $password, Confirm Password: $confirmPassword")
         if (!validateSignUpInput(fullName, email, phoneNumber, password, confirmPassword)) {
             Log.d(TAG, "Validation failed")
             return
@@ -53,7 +51,6 @@ class UserViewModel : ViewModel() {
                 Log.d(TAG, "Checking if email exists: $email")
                 val emailExists = repository.checkEmailExists(email)
                 if (emailExists) {
-                    Log.d(TAG, "Email already exists")
                     _signUpResult.value = Result.failure(Exception("Email already exists"))
                 } else {
                     Log.d(TAG, "Email does not exist, proceeding with sign-up")
@@ -66,7 +63,6 @@ class UserViewModel : ViewModel() {
                             fullName = fullName,
                             email = email,
                             phoneNumber = phoneNumber,
-                            address = address,
                             profilePictureUrl = "",
                             bookmarkedRestaurants = emptyMap(),
                             reviews = emptyMap(),
@@ -80,11 +76,16 @@ class UserViewModel : ViewModel() {
                             _signUpResult.value = Result.success(true)
                         } else {
                             Log.e(TAG, "Failed to save user data after successful sign-up")
-                            _signUpResult.value = Result.failure(Exception("Signup successful, but failed to save user data"))
+                            _signUpResult.value = Result.failure(Exception("Sign-up successful, but failed to save user data"))
                         }
                     } else {
-                        Log.e(TAG, "Sign-up failed")
-                        _signUpResult.value = signUpResult // Propagate signup failure reason
+                        val exception = signUpResult.exceptionOrNull()
+                        if (exception is FirebaseAuthUserCollisionException) {
+                            _signUpResult.value = Result.failure(Exception("The email address is already in use by another account"))
+                        } else {
+                            Log.e(TAG, "Sign-up failed", exception)
+                            _signUpResult.value = Result.failure(exception ?: Exception("Sign-up failed"))
+                        }
                     }
                 }
             } catch (e: Exception) {
@@ -94,6 +95,8 @@ class UserViewModel : ViewModel() {
         }
     }
 
+
+
     fun loginUser(email: String, password: String) {
         Log.d(TAG, "Attempting to sign in user with email: $email")
         viewModelScope.launch {
@@ -101,49 +104,32 @@ class UserViewModel : ViewModel() {
             if (result.isSuccess) {
                 Log.d(TAG, "Sign-in successful")
             } else {
-                Log.e("LoginViewModel", "Sign-in failed for email: $email")
+                Log.e(TAG, "Sign-in failed for email: $email")
             }
             _loginResult.postValue(result)
         }
     }
 
-    // for displaying data in ProfileActivity
-    private val _currentUser = MutableLiveData<User?>()
-    val currentUser: LiveData<User?> = _currentUser
-
-    init {
-        viewModelScope.launch {
-            val user = repository.getCurrentUser()
-            _currentUser.value = user
-        }
-    }
-    // for displaying data in ProfileActivity
-
-
     fun sendPasswordResetEmail(email: String) {
-        Log.d("LoginViewModel", "Attempting to send password reset email to: $email")
+        Log.d(TAG, "Attempting to send password reset email to: $email")
         viewModelScope.launch {
             val emailExists = repository.checkEmailExists(email)
             if (emailExists) {
                 try {
                     val result = repository.sendPasswordResetEmail(email)
                     _resetPasswordResult.postValue(result)
-                    // Success: Show toast using view model communication
                     _toastMessage.postValue("Password reset instructions sent!")
-                    Log.d("LoginViewModel", "Password reset email sent to: $email")
+                    Log.d(TAG, "Password reset email sent to: $email")
                 } catch (e: Exception) {
-                    // Handle any exceptions during password reset
                     _toastMessage.postValue("Error sending password reset email: ${e.message}")
-                    Log.e("LoginViewModel", "Error sending password reset email to: $email", e)
+                    Log.e(TAG, "Error sending password reset email to: $email", e)
                 }
             } else {
-                // Email not found: Show toast using view model communication
                 _toastMessage.postValue("Email not found. Please check the address.")
-                Log.d("LoginViewModel", "Email not found: $email")
+                Log.d(TAG, "Email not found: $email")
             }
         }
     }
-
 
     private fun validateSignUpInput(
         fullName: String,
@@ -218,6 +204,13 @@ class UserViewModel : ViewModel() {
         return repository.deleteUser(userId)
     }
 
+    private val _currentUser = MutableLiveData<User?>()
+    val currentUser: LiveData<User?> = _currentUser
 
-
+    init {
+        viewModelScope.launch {
+            val user = repository.getCurrentUser()
+            _currentUser.value = user
+        }
+    }
 }

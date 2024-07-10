@@ -17,7 +17,7 @@ class UserRepositoryImpl : UserRepository {
         const val TAG = "UserRepositoryImpl"
     }
 
-    private lateinit var currentUserId : String
+    private lateinit var currentUserId: String
 
     override suspend fun checkEmailExists(email: String): Boolean {
         Log.d(TAG, "Checking if email exists: $email")
@@ -46,7 +46,6 @@ class UserRepositoryImpl : UserRepository {
             Log.d(TAG, "User signed up successfully: $userCreated")
             Result.success(userCreated)
         } catch (e: Exception) {
-            Log.e(TAG, "Error signing up user", e)
             Result.failure(e)
         }
     }
@@ -58,7 +57,6 @@ class UserRepositoryImpl : UserRepository {
             Log.d(TAG, "Saving fullName: ${user.fullName}")
             Log.d(TAG, "Saving email: ${user.email}")
             Log.d(TAG, "Saving phoneNumber: ${user.phoneNumber}")
-            Log.d(TAG, "Saving address: ${user.address}")
             Log.d(TAG, "Saving profilePictureUrl: ${user.profilePictureUrl}")
             Log.d(TAG, "Saving createdAt: ${user.createdAt}")
             databaseReference.getReference("users").child(user.uid).setValue(user).await()
@@ -126,7 +124,6 @@ class UserRepositoryImpl : UserRepository {
         val fullName = userSnapshot["fullName"] as? String ?: ""
         val email = firebaseUser.email ?: "" // Use email from FirebaseUser
         val phoneNumber = userSnapshot["phoneNumber"] as? String ?: ""
-        val address = userSnapshot["address"] as? String ?: ""
         val profilePictureUrl = userSnapshot["profilePictureUrl"] as? String ?: ""
         val createdAt = userSnapshot["createdAt"] as? Long ?: 0
 
@@ -136,11 +133,11 @@ class UserRepositoryImpl : UserRepository {
             email = email,
             fullName = fullName,
             phoneNumber = phoneNumber,
-            address = address,
             profilePictureUrl = profilePictureUrl,
             createdAt = createdAt
         )
     }
+
     override fun changePassword(
         currentPassword: String,
         newPassword: String,
@@ -153,16 +150,18 @@ class UserRepositoryImpl : UserRepository {
                 if (newPassword == confirmNewPassword) {
                     val user = firebaseAuth.currentUser
                     if (user != null && user.email != null) {
-                        val credential = EmailAuthProvider.getCredential(user.email!!, currentPassword)
+                        val credential =
+                            EmailAuthProvider.getCredential(user.email!!, currentPassword)
                         user.reauthenticate(credential).addOnCompleteListener { reAuthTask ->
                             if (reAuthTask.isSuccessful) {
-                                user.updatePassword(newPassword).addOnCompleteListener { passwordChange ->
-                                    if (passwordChange.isSuccessful) {
-                                        resultLiveData.postValue(Result.success("Password Changed Successfully"))
-                                    } else {
-                                        resultLiveData.postValue(Result.failure(Exception("Failed to change password")))
+                                user.updatePassword(newPassword)
+                                    .addOnCompleteListener { passwordChange ->
+                                        if (passwordChange.isSuccessful) {
+                                            resultLiveData.postValue(Result.success("Password Changed Successfully"))
+                                        } else {
+                                            resultLiveData.postValue(Result.failure(Exception("Failed to change password")))
+                                        }
                                     }
-                                }
                             } else {
                                 resultLiveData.postValue(Result.failure(Exception("Current password is wrong.")))
                             }
@@ -185,7 +184,7 @@ class UserRepositoryImpl : UserRepository {
 
     override fun deleteUser(userId: String): LiveData<Result<Void?>> {
         val result = MutableLiveData<Result<Void?>>()
-            databaseReference.getReference("users").child(userId).removeValue()
+        databaseReference.getReference("users").child(userId).removeValue()
             .addOnSuccessListener {
                 result.value = Result.success(null)
             }

@@ -47,17 +47,14 @@ class ProfileFragment : Fragment() {
                 Log.d("Profile Fragment", "User user: $user")
                 Log.d("Profile Fragment", "uid: ${user.uid}")
                 Log.d("Profile Fragment", "email: ${user.email}")
-                Log.d("Profile Fragment", "fullName: ${user.fullName}")
-                Log.d("Profile Fragment", "address: ${user.address}")
                 Log.d("Profile Fragment", "createdAt: ${user.createdAt}")
 
                 val fullName = user.fullName
-                val address = user.address
                 val createdAt = user.createdAt
 //                val createdAt = 1719029919881L // Assuming this is your timestamp in milliseconds
 
                 binding.nameTextViewOnProfile.text = fullName
-                binding.addressTextViewOnProfile.text = address
+                binding.emailTextViewOnProfile.text = user.email
 
                 val formattedDate =
                     SimpleDateFormat("yyyy", Locale.getDefault()).format(Date(createdAt))

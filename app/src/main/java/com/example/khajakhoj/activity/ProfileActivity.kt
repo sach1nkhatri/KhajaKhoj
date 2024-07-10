@@ -45,16 +45,13 @@ class ProfileActivity : AppCompatActivity() {
                 Log.d("LoginViewModel", "User logged in: ${user.uid}")
                 Log.d("LoginViewModel", "User logged in: ${user.email}")
                 Log.d("LoginViewModel", "User logged in: ${user.fullName}")
-                Log.d("LoginViewModel", "User logged in: ${user.address}")
                 Log.d("LoginViewModel", "User logged in: ${user.createdAt}")
 
                 val fullName = user.fullName
-                val address = user.address
                 val createdAt = user.createdAt
 
                 // Update the UI with the fetched data
                 binding.nameTextViewOnProfile.text = fullName
-                binding.addressTextViewOnProfile.text = address
 
                 val formattedDate = if (createdAt != 0L) {
                     SimpleDateFormat("yyyy", Locale.getDefault()).format(Date(createdAt))
