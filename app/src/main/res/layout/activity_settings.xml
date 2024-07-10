@@ -204,7 +204,7 @@
                 android:layout_height="25dp"
                 android:background="@drawable/setting_custom_box"
                 android:gravity="center"
-                android:text="Pakistan"
+                android:text="Nepal"
 
                 android:textColor="#999999" />
 

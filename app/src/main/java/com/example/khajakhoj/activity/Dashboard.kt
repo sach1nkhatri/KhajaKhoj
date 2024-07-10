@@ -33,7 +33,7 @@ class Dashboard : AppCompatActivity() {
 
         replaceFragment(HomeFragment())
         dashboardBinding.buttonNavigationView.setOnItemSelectedListener {
-            when(it.itemId){
+            when (it.itemId) {
                 R.id.home -> replaceFragment(HomeFragment())
                 R.id.profile -> replaceFragment(ProfileFragment())
                 R.id.settings -> replaceFragment(SettingsFragment())
@@ -65,23 +65,26 @@ class Dashboard : AppCompatActivity() {
             }
         }
 
-        dashboardBinding.navigationView.setNavigationItemSelectedListener {MenuItem->
+        dashboardBinding.navigationView.setNavigationItemSelectedListener { MenuItem ->
 
-            when(MenuItem.itemId){
-                R.id.favourites ->{
+            when (MenuItem.itemId) {
+                R.id.favourites -> {
                     startActivity(Intent(this@Dashboard, FavouritesActivity::class.java))
                 }
 
-                R.id.coupons ->{
+                R.id.coupons -> {
                     startActivity(Intent(this@Dashboard, CouponActivity::class.java))
                 }
-                R.id.About_us ->{
+
+                R.id.About_us -> {
                     startActivity(Intent(this@Dashboard, AboutUsActivity::class.java))
                 }
-                R.id.support ->{
+
+                R.id.support -> {
                     startActivity(Intent(this@Dashboard, SupportActivity::class.java))
                 }
-                R.id.Log_Out ->{
+
+                R.id.Log_Out -> {
                     Utils.logOut(this) {
                         // Callback for when logout is confirmed
                         redirectToLoginPage()
@@ -91,6 +94,7 @@ class Dashboard : AppCompatActivity() {
                     }
                 }
             }
+
             true
         }
         // Apply window insets
@@ -114,6 +118,15 @@ class Dashboard : AppCompatActivity() {
     private fun replaceFragment(fragment: Fragment) {
         val fragmentManager: FragmentManager = supportFragmentManager
         val fragmentTransaction: FragmentTransaction = fragmentManager.beginTransaction()
+
+        if (fragment is ProfileFragment) {
+            viewModel.currentUser.value?.let { user ->
+                val args = Bundle()
+                args.putParcelable("user", user)
+                fragment.arguments = args
+            }
+        }
+
         fragmentTransaction.replace(R.id.frameLayout, fragment)
         fragmentTransaction.commit()
     }
@@ -124,4 +137,6 @@ class Dashboard : AppCompatActivity() {
         })
         finish()
     }
+
+
 }

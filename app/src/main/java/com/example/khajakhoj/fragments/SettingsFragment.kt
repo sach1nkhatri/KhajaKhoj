@@ -1,21 +1,16 @@
 package com.example.khajakhoj.fragments
 
 import android.content.Context
-import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.viewModels
 import com.example.khajakhoj.R
-import com.example.khajakhoj.activity.Dashboard
-import com.example.khajakhoj.activity.ProfileActivity
 import com.example.khajakhoj.databinding.ActivitySettingsBinding
 import com.example.khajakhoj.utils.Utils
 import com.example.khajakhoj.viewmodel.UserViewModel
@@ -77,6 +72,9 @@ class SettingsFragment : Fragment() {
 
         binding.deleteAccountButton.setOnClickListener(){
             Utils.showDeleteAccountDialog(requireContext(),viewModel)
+        }
+        binding.languageOption.setOnClickListener(){
+            Toast.makeText(requireContext(),"English is the only available language for now.",Toast.LENGTH_LONG).show()
         }
     }
 }
