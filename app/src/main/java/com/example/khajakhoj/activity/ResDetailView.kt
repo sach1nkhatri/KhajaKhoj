@@ -1,26 +1,22 @@
 package com.example.khajakhoj.activity
 
+import AdsViewModel
 import android.annotation.SuppressLint
-import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.view.GestureDetector
-import android.view.MotionEvent
 import android.widget.ImageSwitcher
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.cardview.widget.CardView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.khajakhoj.R
-import com.example.khajakhoj.ReviewsActivity
 import com.example.khajakhoj.adapter.MenuAdapter
 import com.example.khajakhoj.adapter.ReviewAdapter
 import com.example.khajakhoj.databinding.ActivityResDetailViewBinding
@@ -32,10 +28,7 @@ import com.example.khajakhoj.viewmodel.MenuViewModel
 import com.example.khajakhoj.viewmodel.RestaurantViewModel
 import com.example.khajakhoj.viewmodel.ReviewViewModel
 import com.example.khajakhoj.viewmodel.UserViewModel
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
+import com.squareup.picasso.Picasso
 import java.util.Date
 
 class ResDetailView : AppCompatActivity() {
@@ -43,10 +36,11 @@ class ResDetailView : AppCompatActivity() {
     private lateinit var restaurantViewModel: RestaurantViewModel
     private lateinit var reviewViewModel: ReviewViewModel
     private val userViewModel: UserViewModel by viewModels()
+
     private lateinit var imageSwitcher: ImageSwitcher
     private lateinit var gestureDetector: GestureDetector
     private lateinit var binding: ActivityResDetailViewBinding
-    private val imageIds = listOf(R.drawable.ad3, R.drawable.ad2, R.drawable.ad4)
+//    private val imageIds = listOf(R.drawable.ad3, R.drawable.ad2, R.drawable.ad4)
     private var currentIndex = 0
     private lateinit var handler: Handler
     private lateinit var runnable: Runnable
@@ -60,6 +54,7 @@ class ResDetailView : AppCompatActivity() {
     @SuppressLint("NotifyDataSetChanged")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         enableEdgeToEdge()
         binding = ActivityResDetailViewBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -67,9 +62,19 @@ class ResDetailView : AppCompatActivity() {
         restaurantViewModel = ViewModelProvider(this)[RestaurantViewModel::class.java]
         reviewViewModel = ViewModelProvider(this)[ReviewViewModel::class.java]
         viewModel = ViewModelProvider(this)[MenuViewModel::class.java]
+
         setupImageSwitcher()
-        setupGestureDetection()
-        setupImageSwitchHandler()
+        val adsViewModel: AdsViewModel by viewModels()
+        adsViewModel.adsList.observe(this, Observer { adsList ->
+            if (adsList.isNotEmpty()) {
+                startImageSwitcher(adsList)
+            } else {
+                Toast.makeText(this, "No ads available", Toast.LENGTH_SHORT).show()
+            }
+        })
+
+//        setupGestureDetection()
+//        setupImageSwitchHandler()
 
         // Initialize RecyclerView for menu items
         recyclerView = findViewById(R.id.recyclerView)
@@ -139,8 +144,11 @@ class ResDetailView : AppCompatActivity() {
             ResturantCuisineDetail.text = restaurant.cuisineType
             RestaurantAddress.text = restaurant.address
 
-            visit.setOnClickListener(){
-                MapUtils.showMapsWebViewDialog(this@ResDetailView, "https://www.google.com/maps/place/The+Soaltee+Kathmandu/@27.6917812,85.2620819,15.01z/data=!4m9!3m8!1s0x39eb18609488cdb7:0x44edd8fc9a17af63!5m2!4m1!1i2!8m2!3d27.7005975!4d85.291006!16s%2Fg%2F1tcv4qxf?entry=ttu")
+            visit.setOnClickListener() {
+                MapUtils.showMapsWebViewDialog(
+                    this@ResDetailView,
+                    "https://www.google.com/maps/place/The+Soaltee+Kathmandu/@27.6917812,85.2620819,15.01z/data=!4m9!3m8!1s0x39eb18609488cdb7:0x44edd8fc9a17af63!5m2!4m1!1i2!8m2!3d27.7005975!4d85.291006!16s%2Fg%2F1tcv4qxf?entry=ttu"
+                )
             }
 
             restaurantPhone.text = restaurant.contactNumber
@@ -218,7 +226,8 @@ class ResDetailView : AppCompatActivity() {
                 isBookmarked = true
                 updateBookmarkButton()
             } else {
-                Toast.makeText(this, "Failed to add Favourites: $message", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Failed to add Favourites: $message", Toast.LENGTH_SHORT)
+                    .show()
             }
         })
     }
@@ -231,7 +240,11 @@ class ResDetailView : AppCompatActivity() {
                 updateBookmarkButton()
             }.onFailure {
 
-                Toast.makeText(this, "Removed from Favourites failed: ${it.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this,
+                    "Removed from Favourites failed: ${it.message}",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         })
     }
@@ -245,69 +258,90 @@ class ResDetailView : AppCompatActivity() {
         }
     }
 
-    private fun setupGestureDetection() {
-        gestureDetector = GestureDetector(this, SwipeGestureListener())
-        val cardView: CardView = binding.ResPhotos
-        cardView.setOnTouchListener { _, event -> gestureDetector.onTouchEvent(event) }
-    }
+//    private fun setupGestureDetection() {
+//        gestureDetector = GestureDetector(this, SwipeGestureListener())
+//        val cardView: CardView = binding.ResPhotos
+//        cardView.setOnTouchListener { view, event ->
+//            view.performClick() // Optional: to handle click events as well
+//            val result = gestureDetector.onTouchEvent(event)
+//            Log.d("GestureDetection", "Touch event: ${event.action}, Result: $result")
+//            result
+//        }
+//    }
 
-    private fun setupImageSwitchHandler() {
-        handler = Handler(Looper.getMainLooper())
-        runnable = object : Runnable {
+    private fun startImageSwitcher(adsList: List<String>) {
+        handler.postDelayed(object : Runnable {
             override fun run() {
-                currentIndex = (currentIndex + 1) % imageIds.size
-                imageSwitcher.setImageResource(imageIds[currentIndex])
-                handler.postDelayed(this, 5000) // Switch image every 5 seconds
+                Picasso.get()
+                    .load(adsList[currentIndex])
+                    .into(imageSwitcher.currentView as ImageView)
+
+                currentIndex = (currentIndex + 1) % adsList.size
+                handler.postDelayed(this, 3000) // Switch image every 3 seconds
             }
-        }
-        handler.postDelayed(runnable, 5000) // Start the image switcher
-
+        }, 3000)
     }
 
+//    private fun setupImageSwitchHandler() {
+//        handler = Handler(Looper.getMainLooper())
+//        runnable = object : Runnable {
+//            override fun run() {
+//                currentIndex = (currentIndex + 1) % imageIds.size
+//                imageSwitcher.setImageResource(imageIds[currentIndex])
+//                handler.postDelayed(this, 3000) // Switch image every 3 seconds
+//            }
+//        }
+//        handler.postDelayed(runnable, 3000) // Start the image switcher
+//
+//    }
 
-    private inner class SwipeGestureListener : GestureDetector.SimpleOnGestureListener() {
-        private val SWIPE_THRESHOLD = 100
-        private val SWIPE_VELOCITY_THRESHOLD = 100
 
-        override fun onFling(
-            e1: MotionEvent?,
-            e2: MotionEvent,
-            velocityX: Float,
-            velocityY: Float
-        ): Boolean {
-            if (e1 == null) return false
+//    private inner class SwipeGestureListener : GestureDetector.SimpleOnGestureListener() {
+//        private val SWIPE_THRESHOLD = 100
+//        private val SWIPE_VELOCITY_THRESHOLD = 100
+//
+//        override fun onFling(
+//            e1: MotionEvent?,
+//            e2: MotionEvent,
+//            velocityX: Float,
+//            velocityY: Float
+//        ): Boolean {
+//            if (e1 == null) return false
+//
+//            val diffX = e2.x - e1.x
+//            val diffY = e2.y - e1.y
+//
+//            return if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > SWIPE_THRESHOLD && Math.abs(
+//                    velocityX
+//                ) > SWIPE_VELOCITY_THRESHOLD
+//            ) {
+//                if (diffX > 0) {
+//                    onSwipeRight()
+//                } else {
+//                    onSwipeLeft()
+//                }
+//                true
+//            } else {
+//                false
+//            }
+//        }
+//    }
 
-            val diffX = e2.x - e1.x
-            val diffY = e2.y - e1.y
-
-            return if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > SWIPE_THRESHOLD && Math.abs(
-                    velocityX
-                ) > SWIPE_VELOCITY_THRESHOLD
-            ) {
-                if (diffX > 0) {
-                    onSwipeRight()
-                } else {
-                    onSwipeLeft()
-                }
-                true
-            } else {
-                false
-            }
-        }
-    }
-
-    private fun onSwipeLeft() {
-        currentIndex = (currentIndex + 1) % imageIds.size
-        imageSwitcher.setImageResource(imageIds[currentIndex])
-    }
-
-    private fun onSwipeRight() {
-        currentIndex = (currentIndex - 1 + imageIds.size) % imageIds.size
-        imageSwitcher.setImageResource(imageIds[currentIndex])
-    }
+//    private fun onSwipeLeft() {
+//        Log.d("SwipeGesture", "Swiped Left")
+//        currentIndex = (currentIndex + 1) % imageIds.size
+//        imageSwitcher.setImageResource(imageIds[currentIndex])
+//    }
+//
+//    private fun onSwipeRight() {
+//        Log.d("SwipeGesture", "Swiped Right")
+//        currentIndex = (currentIndex - 1 + imageIds.size) % imageIds.size
+//        imageSwitcher.setImageResource(imageIds[currentIndex])
+//    }
 
     override fun onDestroy() {
         super.onDestroy()
-        handler.removeCallbacks(runnable)
+//        handler.removeCallbacks(runnable)
+        handler.removeCallbacksAndMessages(null)
     }
 }

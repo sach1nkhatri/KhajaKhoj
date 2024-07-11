@@ -16,6 +16,7 @@ import com.example.khajakhoj.databinding.FragmentHomeBinding
 
 class HomeFragment : Fragment() {
     private lateinit var binding: FragmentHomeBinding
+
     private lateinit var imageSwitcher: ImageSwitcher
     private val imageIds = arrayOf(R.drawable.ad1, R.drawable.ad2, R.drawable.ad3, R.drawable.ad4)
     private var currentIndex = 0
