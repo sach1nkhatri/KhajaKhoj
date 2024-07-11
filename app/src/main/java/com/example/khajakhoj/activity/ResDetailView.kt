@@ -15,6 +15,7 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SearchView
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
@@ -29,7 +30,9 @@ import com.example.khajakhoj.fragments.ReviewBottomSheetDialogFragment
 import com.example.khajakhoj.model.MenuItem
 import com.example.khajakhoj.model.Restaurant
 import com.example.khajakhoj.model.Review
+import com.example.khajakhoj.utils.LoadingUtil
 import com.example.khajakhoj.utils.MapUtils
+import com.example.khajakhoj.utils.SearchManager
 import com.example.khajakhoj.utils.VulgarityUtils
 import com.example.khajakhoj.viewmodel.MenuViewModel
 import com.example.khajakhoj.viewmodel.RestaurantViewModel
@@ -55,6 +58,7 @@ class ResDetailView : AppCompatActivity() {
     private lateinit var viewModel: MenuViewModel
     private lateinit var menuAdapter: MenuAdapter
     private val menuItems = mutableListOf<MenuItem>()
+    private val filteredMenuItems = mutableListOf<MenuItem>()
     private lateinit var restaurantId: String
 
     @SuppressLint("NotifyDataSetChanged")
@@ -73,7 +77,7 @@ class ResDetailView : AppCompatActivity() {
         // Initialize RecyclerView for menu items
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
-        menuAdapter = MenuAdapter(menuItems)
+        menuAdapter = MenuAdapter(filteredMenuItems)
         recyclerView.adapter = menuAdapter
 
         VulgarityUtils.initialize(this)
@@ -81,7 +85,7 @@ class ResDetailView : AppCompatActivity() {
         viewModel.menuItems.observe(this) { items ->
             menuItems.clear()
             menuItems.addAll(items)
-            menuAdapter.notifyDataSetChanged()
+            filterMenuItems("")
         }
 
         viewModel.error.observe(this) { errorMessage ->
@@ -99,7 +103,7 @@ class ResDetailView : AppCompatActivity() {
             if (!isBookmarked) {
                 checkBookmarkStatus(it.id) // Check bookmark status only if not already bookmarked
             }
-            sendReview(it.id)
+            sendReview(it.id, LoadingUtil(this))
             reviewViewModel.getRandomReviews(it.id)
             viewModel.fetchMenuItems(it.id)
 
@@ -111,21 +115,17 @@ class ResDetailView : AppCompatActivity() {
             binding.springDotsIndicator.attachTo(binding.reviewsViewPager)
         })
 
+        SearchManager.setupSearchView(binding.menuSearchView) { query ->
+            filterMenuItems(query)
+        }
+
         binding.bookmarkBtn.setOnClickListener {
             restaurant?.let {
                 if (isBookmarked) {
                     restaurantViewModel.unBookmarkRestaurant(it.id)
-                    Log.d("RestaurantViewModel", "Unbookmarked restaurant with ID: ${it.id}")
-                    Log.d("RestaurantViewModel", "Unbookmarked restaurant with ID: ${it.id}")
-                    Log.d("RestaurantViewModel", "Unbookmarked restaurant with ID: ${it.id}")
-                    Log.d("RestaurantViewModel", "Unbookmarked restaurant with ID: ${it.id}")
                     observeUnBookmarkResult()
                 } else {
                     restaurantViewModel.bookmarkRestaurant(it)
-                    Log.d("RestaurantViewModel", "Bookmarked restaurant with ID: ${it.id}")
-                    Log.d("RestaurantViewModel", "Bookmarked restaurant with ID: ${it.id}")
-                    Log.d("RestaurantViewModel", "Bookmarked restaurant with ID: ${it.id}")
-                    Log.d("RestaurantViewModel", "Bookmarked restaurant with ID: ${it.id}")
                     observeBookmarkResult()
                 }
             }
@@ -135,6 +135,7 @@ class ResDetailView : AppCompatActivity() {
             val bottomSheetFragment = ReviewBottomSheetDialogFragment(restaurantId)
             bottomSheetFragment.show(supportFragmentManager, bottomSheetFragment.tag)
         }
+
 
     }
 
@@ -165,14 +166,17 @@ class ResDetailView : AppCompatActivity() {
         }
     }
 
-    private fun sendReview(restaurantId: String) {
+    private fun sendReview(restaurantId: String,loadingUtil: LoadingUtil) {
         binding.reviewSubmitButton.setOnClickListener {
             val reviewText = binding.reviewMessageInput.text.toString().trim()
             if (reviewText.isNotEmpty()) {
+                loadingUtil.showLoading()
                 VulgarityUtils.checkVulgarity(reviewText) { isClean ->
                     if (isClean) {
                         showRatingDialog(restaurantId)
+                        loadingUtil.dismiss()
                     } else {
+                        loadingUtil.dismiss()
                         binding.reviewMessageInput.text.clear()
                         Toast.makeText(this, "Your review contains inappropriate content.", Toast.LENGTH_SHORT)
                             .show()
@@ -236,6 +240,8 @@ class ResDetailView : AppCompatActivity() {
 
                     reviewViewModel.submitReview(review)
                     binding.reviewMessageInput.text.clear()
+                    val bottomSheetFragment = ReviewBottomSheetDialogFragment(restaurantId)
+                    bottomSheetFragment.show(supportFragmentManager, bottomSheetFragment.tag)
                     Toast.makeText(this, "Review submitted", Toast.LENGTH_SHORT).show()
 
 
@@ -366,5 +372,19 @@ class ResDetailView : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         handler.removeCallbacks(runnable)
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    private fun filterMenuItems(query: String?) {
+        val searchQuery = query?.lowercase() ?: ""
+        filteredMenuItems.clear()
+        if (searchQuery.isEmpty()) {
+            filteredMenuItems.addAll(menuItems)
+        } else {
+            filteredMenuItems.addAll(menuItems.filter {
+                it.name.lowercase().contains(searchQuery) || it.description.lowercase().contains(searchQuery) || it.price.toString().contains(searchQuery)
+            })
+        }
+        menuAdapter.notifyDataSetChanged()
     }
 }

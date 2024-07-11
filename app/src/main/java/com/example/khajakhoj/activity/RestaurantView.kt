@@ -3,10 +3,10 @@ package com.example.khajakhoj.activity
 import android.os.Bundle
 import android.view.View
 import android.widget.ProgressBar
-import android.widget.SearchView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.khajakhoj.R
 import com.example.khajakhoj.adapter.RestaurantAdapter
 import com.example.khajakhoj.model.Restaurant
+import com.example.khajakhoj.utils.SearchManager
 import com.example.khajakhoj.viewmodel.RestaurantViewModel
 
 class RestaurantView : AppCompatActivity() {
@@ -40,7 +41,10 @@ class RestaurantView : AppCompatActivity() {
         val cuisineType = intent.getStringExtra("CUISINE_TYPE")
         cuisineType?.let { fetchRestaurants(it) }
 
-        setupSearchView()
+        val searchView = findViewById<SearchView>(R.id.cuisineSearch)
+        SearchManager.setupSearchView(searchView) { query ->
+            filterRestaurants(query)
+        }
     }
 
     private fun fetchRestaurants(cuisineType: String) {
@@ -60,28 +64,12 @@ class RestaurantView : AppCompatActivity() {
             }
         })
     }
-
-    private fun setupSearchView() {
-        val searchView = findViewById<SearchView>(R.id.cuisineSearch)
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                return false
-            }
-
-            override fun onQueryTextChange(newText: String?): Boolean {
-                newText?.let { searchQuery ->
-                    filterRestaurants(searchQuery)
-                }
-                return true
-            }
-        })
-    }
-
-    private fun filterRestaurants(query: String) {
+    private fun filterRestaurants(query: String?) {
+        val searchQuery = query?.lowercase() ?: ""
         val filteredList = viewModel.restaurantList.value?.filter { restaurant ->
-            restaurant.name.toLowerCase().contains(query.toLowerCase()) ||
-                    restaurant.cuisineType.toLowerCase().contains(query.toLowerCase()) ||
-                    restaurant.address.toLowerCase().contains(query.toLowerCase())
+            restaurant.name.lowercase().contains(searchQuery) ||
+                    restaurant.cuisineType.lowercase().contains(searchQuery) ||
+                    restaurant.address.lowercase().contains(searchQuery)
         }
         restaurantAdapter.updateRestaurantList(filteredList ?: emptyList())
     }
