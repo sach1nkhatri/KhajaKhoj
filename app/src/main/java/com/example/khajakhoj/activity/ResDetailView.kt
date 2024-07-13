@@ -4,6 +4,7 @@ import AdsViewModel
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.GestureDetector
 import android.widget.ImageSwitcher
@@ -16,6 +17,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager2.widget.ViewPager2
 import com.example.khajakhoj.R
 import com.example.khajakhoj.adapter.MenuAdapter
 import com.example.khajakhoj.adapter.ReviewAdapter
@@ -23,6 +25,7 @@ import com.example.khajakhoj.databinding.ActivityResDetailViewBinding
 import com.example.khajakhoj.model.MenuItem
 import com.example.khajakhoj.model.Restaurant
 import com.example.khajakhoj.model.Review
+import com.example.khajakhoj.test.ImagePagerAdapter
 import com.example.khajakhoj.utils.MapUtils
 import com.example.khajakhoj.viewmodel.MenuViewModel
 import com.example.khajakhoj.viewmodel.RestaurantViewModel
@@ -32,22 +35,36 @@ import com.squareup.picasso.Picasso
 import java.util.Date
 
 class ResDetailView : AppCompatActivity() {
+    private lateinit var binding: ActivityResDetailViewBinding
 
     private lateinit var restaurantViewModel: RestaurantViewModel
     private lateinit var reviewViewModel: ReviewViewModel
     private val userViewModel: UserViewModel by viewModels()
 
-    private lateinit var imageSwitcher: ImageSwitcher
-    private lateinit var gestureDetector: GestureDetector
-    private lateinit var binding: ActivityResDetailViewBinding
-//    private val imageIds = listOf(R.drawable.ad3, R.drawable.ad2, R.drawable.ad4)
-    private var currentIndex = 0
-    private lateinit var handler: Handler
-    private lateinit var runnable: Runnable
+//    private lateinit var imageSwitcher: ImageSwitcher
+//    private lateinit var gestureDetector: GestureDetector
+////    private val imageIds = listOf(R.drawable.ad3, R.drawable.ad2, R.drawable.ad4)
+//    private var currentIndex = 0
+//    private lateinit var handler: Handler
+//    private lateinit var runnable: Runnable
+
+    private lateinit var viewPager: ViewPager2
+    private lateinit var adapter: ImagePagerAdapter
+    private val handler = Handler(Looper.getMainLooper())
+
+    private val autoSwipeRunnable = object : Runnable {
+        override fun run() {
+            val nextItem = (viewPager.currentItem + 1) % adapter.itemCount
+            viewPager.setCurrentItem(nextItem, true)
+            handler.postDelayed(this, 5000) // Adjust the delay as needed
+        }
+    }
+    private lateinit var adsViewModel: AdsViewModel
+
     private var isBookmarked = false
 
     private lateinit var recyclerView: RecyclerView
-    private lateinit var viewModel: MenuViewModel
+    private lateinit var menuViewModel: MenuViewModel
     private lateinit var menuAdapter: MenuAdapter
     private val menuItems = mutableListOf<MenuItem>()
 
@@ -55,23 +72,36 @@ class ResDetailView : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        enableEdgeToEdge()
         binding = ActivityResDetailViewBinding.inflate(layoutInflater)
+        enableEdgeToEdge()
         setContentView(binding.root)
 
         restaurantViewModel = ViewModelProvider(this)[RestaurantViewModel::class.java]
         reviewViewModel = ViewModelProvider(this)[ReviewViewModel::class.java]
-        viewModel = ViewModelProvider(this)[MenuViewModel::class.java]
+        menuViewModel = ViewModelProvider(this)[MenuViewModel::class.java]
 
-        setupImageSwitcher()
-        val adsViewModel: AdsViewModel by viewModels()
-        adsViewModel.adsList.observe(this, Observer { adsList ->
-            if (adsList.isNotEmpty()) {
-                startImageSwitcher(adsList)
-            } else {
-                Toast.makeText(this, "No ads available", Toast.LENGTH_SHORT).show()
+
+        viewPager = binding.viewPager
+
+        adsViewModel = ViewModelProvider(this).get(AdsViewModel::class.java)
+        adsViewModel.restaurantImageUrls.observe(this, Observer { imageUrls ->
+            if (imageUrls.isNotEmpty()) {
+                adapter = ImagePagerAdapter(imageUrls)
+                viewPager.adapter = adapter
+                binding.dotsIndicator.attachTo(viewPager)
+                startAutoSwipe()
             }
         })
+
+//        setupImageSwitcher()
+//        val adsViewModel: AdsViewModel by viewModels()
+//        adsViewModel.adsList.observe(this, Observer { adsList ->
+//            if (adsList.isNotEmpty()) {
+//                startImageSwitcher(adsList)
+//            } else {
+//                Toast.makeText(this, "No ads available", Toast.LENGTH_SHORT).show()
+//            }
+//        })
 
 //        setupGestureDetection()
 //        setupImageSwitchHandler()
@@ -82,13 +112,13 @@ class ResDetailView : AppCompatActivity() {
         menuAdapter = MenuAdapter(menuItems)
         recyclerView.adapter = menuAdapter
 
-        viewModel.menuItems.observe(this) { items ->
+        menuViewModel.menuItems.observe(this) { items ->
             menuItems.clear()
             menuItems.addAll(items)
             menuAdapter.notifyDataSetChanged()
         }
 
-        viewModel.error.observe(this) { errorMessage ->
+        menuViewModel.error.observe(this) { errorMessage ->
             Toast.makeText(this, "Failed to fetch data: $errorMessage", Toast.LENGTH_SHORT).show()
         }
 
@@ -102,7 +132,9 @@ class ResDetailView : AppCompatActivity() {
             }
             sendReview(it.id)
             reviewViewModel.getRandomReviews(it.id)
-            viewModel.fetchMenuItems(it.id)
+            menuViewModel.fetchMenuItems(it.id)
+            adsViewModel.fetchRestaurantImagesByRestaurantId(it.id)
+
 
         }
 
@@ -249,14 +281,14 @@ class ResDetailView : AppCompatActivity() {
         })
     }
 
-    private fun setupImageSwitcher() {
-        imageSwitcher = binding.imageSwitcher
-        imageSwitcher.setFactory {
-            val imageView = ImageView(this)
-            imageView.scaleType = ImageView.ScaleType.CENTER_CROP
-            imageView
-        }
-    }
+//    private fun setupImageSwitcher() {
+//        imageSwitcher = binding.imageSwitcher
+//        imageSwitcher.setFactory {
+//            val imageView = ImageView(this)
+//            imageView.scaleType = ImageView.ScaleType.CENTER_CROP
+//            imageView
+//        }
+//    }
 
 //    private fun setupGestureDetection() {
 //        gestureDetector = GestureDetector(this, SwipeGestureListener())
@@ -269,18 +301,18 @@ class ResDetailView : AppCompatActivity() {
 //        }
 //    }
 
-    private fun startImageSwitcher(adsList: List<String>) {
-        handler.postDelayed(object : Runnable {
-            override fun run() {
-                Picasso.get()
-                    .load(adsList[currentIndex])
-                    .into(imageSwitcher.currentView as ImageView)
-
-                currentIndex = (currentIndex + 1) % adsList.size
-                handler.postDelayed(this, 3000) // Switch image every 3 seconds
-            }
-        }, 3000)
-    }
+//    private fun startImageSwitcher(adsList: List<String>) {
+//        handler.postDelayed(object : Runnable {
+//            override fun run() {
+//                Picasso.get()
+//                    .load(adsList[currentIndex])
+//                    .into(imageSwitcher.currentView as ImageView)
+//
+//                currentIndex = (currentIndex + 1) % adsList.size
+//                handler.postDelayed(this, 3000) // Switch image every 3 seconds
+//            }
+//        }, 3000)
+//    }
 
 //    private fun setupImageSwitchHandler() {
 //        handler = Handler(Looper.getMainLooper())
@@ -339,9 +371,18 @@ class ResDetailView : AppCompatActivity() {
 //        imageSwitcher.setImageResource(imageIds[currentIndex])
 //    }
 
+    private fun startAutoSwipe() {
+        handler.postDelayed(autoSwipeRunnable, 3000) // Adjust the delay as needed
+    }
+
+    private fun stopAutoSwipe() {
+        handler.removeCallbacks(autoSwipeRunnable)
+    }
+
     override fun onDestroy() {
         super.onDestroy()
+        stopAutoSwipe()
 //        handler.removeCallbacks(runnable)
-        handler.removeCallbacksAndMessages(null)
+//        handler.removeCallbacksAndMessages(null)
     }
 }
