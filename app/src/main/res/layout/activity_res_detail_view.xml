@@ -14,23 +14,38 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/ResPhotos"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="200dp"
+            android:layout_height="220dp"
             android:layout_marginTop="30dp"
-            android:layout_marginBottom="20dp"
-            app:cardCornerRadius="20dp"
-            app:cardElevation="10dp">
+            android:layout_marginBottom="20dp">
 
-            <ImageSwitcher
-                android:id="@+id/imageSwitcher"
+            <androidx.cardview.widget.CardView
+                android:id="@+id/restaurantPhotoCardView"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:inAnimation="@android:anim/slide_in_left"
-                android:outAnimation="@android:anim/slide_out_right" />
+                android:layout_height="200dp"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="10dp">
 
-        </androidx.cardview.widget.CardView>
+                <androidx.viewpager2.widget.ViewPager2
+                    android:id="@+id/viewPager"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    tools:list_item="@layout/viewpager_item" />
+
+            </androidx.cardview.widget.CardView>
+
+            <com.tbuonomo.viewpagerdotsindicator.SpringDotsIndicator
+                android:id="@+id/dotsIndicator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginTop="20dp"
+                app:dotsSize="10dp"
+                app:dotsSpacing="4dp"
+                app:progressMode="true" />
+        </RelativeLayout>
 
         <androidx.cardview.widget.CardView
             android:id="@+id/ResDetail"

@@ -1,5 +1,6 @@
 package com.example.khajakhoj.activity
 
+import AdsViewModel
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.os.Handler
@@ -12,6 +13,7 @@ import android.widget.ImageSwitcher
 import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.Toast
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -22,6 +24,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager2.widget.ViewPager2
 import com.example.khajakhoj.R
 import com.example.khajakhoj.adapter.MenuAdapter
 import com.example.khajakhoj.adapter.ReviewAdapter
@@ -31,6 +34,7 @@ import com.example.khajakhoj.model.MenuItem
 import com.example.khajakhoj.model.Restaurant
 import com.example.khajakhoj.model.Review
 import com.example.khajakhoj.utils.LoadingUtil
+import com.example.khajakhoj.test.ImagePagerAdapter
 import com.example.khajakhoj.utils.MapUtils
 import com.example.khajakhoj.utils.SearchManager
 import com.example.khajakhoj.utils.VulgarityUtils
@@ -38,24 +42,34 @@ import com.example.khajakhoj.viewmodel.MenuViewModel
 import com.example.khajakhoj.viewmodel.RestaurantViewModel
 import com.example.khajakhoj.viewmodel.ReviewViewModel
 import com.example.khajakhoj.viewmodel.UserViewModel
+import com.squareup.picasso.Picasso
 import java.util.Date
 
 class ResDetailView : AppCompatActivity() {
+    private lateinit var binding: ActivityResDetailViewBinding
 
     private lateinit var restaurantViewModel: RestaurantViewModel
     private lateinit var reviewViewModel: ReviewViewModel
     private val userViewModel: UserViewModel by viewModels()
-    private lateinit var imageSwitcher: ImageSwitcher
-    private lateinit var gestureDetector: GestureDetector
-    private lateinit var binding: ActivityResDetailViewBinding
-    private val imageIds = listOf(R.drawable.ad3, R.drawable.ad2, R.drawable.ad4)
-    private var currentIndex = 0
-    private lateinit var handler: Handler
-    private lateinit var runnable: Runnable
+
+
+    private lateinit var viewPager: ViewPager2
+    private lateinit var adapter: ImagePagerAdapter
+    private val handler = Handler(Looper.getMainLooper())
+
+    private val autoSwipeRunnable = object : Runnable {
+        override fun run() {
+            val nextItem = (viewPager.currentItem + 1) % adapter.itemCount
+            viewPager.setCurrentItem(nextItem, true)
+            handler.postDelayed(this, 5000) // Adjust the delay as needed
+        }
+    }
+    private lateinit var adsViewModel: AdsViewModel
+
     private var isBookmarked = false
 
     private lateinit var recyclerView: RecyclerView
-    private lateinit var viewModel: MenuViewModel
+    private lateinit var menuViewModel: MenuViewModel
     private lateinit var menuAdapter: MenuAdapter
     private val menuItems = mutableListOf<MenuItem>()
     private val filteredMenuItems = mutableListOf<MenuItem>()
@@ -65,14 +79,26 @@ class ResDetailView : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityResDetailViewBinding.inflate(layoutInflater)
+        enableEdgeToEdge()
         setContentView(binding.root)
 
         restaurantViewModel = ViewModelProvider(this)[RestaurantViewModel::class.java]
         reviewViewModel = ViewModelProvider(this)[ReviewViewModel::class.java]
-        viewModel = ViewModelProvider(this)[MenuViewModel::class.java]
-        setupImageSwitcher()
-        setupGestureDetection()
-        setupImageSwitchHandler()
+        menuViewModel = ViewModelProvider(this)[MenuViewModel::class.java]
+
+
+        viewPager = binding.viewPager
+
+        adsViewModel = ViewModelProvider(this).get(AdsViewModel::class.java)
+        adsViewModel.restaurantImageUrls.observe(this, Observer { imageUrls ->
+            if (imageUrls.isNotEmpty()) {
+                adapter = ImagePagerAdapter(imageUrls)
+                viewPager.adapter = adapter
+                binding.dotsIndicator.attachTo(viewPager)
+                startAutoSwipe()
+            }
+        })
+
 
         // Initialize RecyclerView for menu items
         recyclerView = findViewById(R.id.recyclerView)
@@ -82,61 +108,66 @@ class ResDetailView : AppCompatActivity() {
 
         VulgarityUtils.initialize(this)
 
-        viewModel.menuItems.observe(this) { items ->
-            menuItems.clear()
-            menuItems.addAll(items)
-            filterMenuItems("")
-        }
-
-        viewModel.error.observe(this) { errorMessage ->
-            Toast.makeText(this, "Failed to fetch data: $errorMessage", Toast.LENGTH_SHORT).show()
-        }
-
-        val restaurant = intent.getParcelableExtra<Restaurant>("restaurant")
-        if (restaurant != null) {
-            restaurantId = restaurant.id
-        }
-
-        restaurant?.let {
-            updateUI(it)
-            updateBookmarkButton() // Update button state based on isBookmarked
-            if (!isBookmarked) {
-                checkBookmarkStatus(it.id) // Check bookmark status only if not already bookmarked
+        menuViewModel.menuItems.observe(this) { items ->
+            menuViewModel.menuItems.observe(this) { items ->
+                menuItems.clear()
+                menuItems.addAll(items)
+                filterMenuItems("")
             }
-            sendReview(it.id, LoadingUtil(this))
-            reviewViewModel.getRandomReviews(it.id)
-            viewModel.fetchMenuItems(it.id)
 
-        }
+            menuViewModel.error.observe(this) { errorMessage ->
+                Toast.makeText(this, "Failed to fetch data: $errorMessage", Toast.LENGTH_SHORT)
+                    .show()
+            }
 
-        reviewViewModel.randomReviews.observe(this, Observer { reviews ->
-            val reviewPagerAdapter = ReviewAdapter(reviews, true)
-            binding.reviewsViewPager.adapter = reviewPagerAdapter
-            binding.springDotsIndicator.attachTo(binding.reviewsViewPager)
-        })
+            val restaurant = intent.getParcelableExtra<Restaurant>("restaurant")
+            if (restaurant != null) {
+                restaurantId = restaurant.id
+            }
 
-        SearchManager.setupSearchView(binding.menuSearchView) { query ->
-            filterMenuItems(query)
-        }
-
-        binding.bookmarkBtn.setOnClickListener {
             restaurant?.let {
-                if (isBookmarked) {
-                    restaurantViewModel.unBookmarkRestaurant(it.id)
-                    observeUnBookmarkResult()
-                } else {
-                    restaurantViewModel.bookmarkRestaurant(it)
-                    observeBookmarkResult()
+                updateUI(it)
+                updateBookmarkButton() // Update button state based on isBookmarked
+                if (!isBookmarked) {
+                    checkBookmarkStatus(it.id) // Check bookmark status only if not already bookmarked
+                }
+                sendReview(it.id, LoadingUtil(this))
+                reviewViewModel.getRandomReviews(it.id)
+                menuViewModel.fetchMenuItems(it.id)
+                adsViewModel.fetchRestaurantImagesByRestaurantId(it.id)
+
+
+            }
+
+            reviewViewModel.randomReviews.observe(this, Observer { reviews ->
+                val reviewPagerAdapter = ReviewAdapter(reviews, true)
+                binding.reviewsViewPager.adapter = reviewPagerAdapter
+                binding.springDotsIndicator.attachTo(binding.reviewsViewPager)
+            })
+
+            SearchManager.setupSearchView(binding.menuSearchView) { query ->
+                filterMenuItems(query)
+            }
+
+            binding.bookmarkBtn.setOnClickListener {
+                restaurant?.let {
+                    if (isBookmarked) {
+                        restaurantViewModel.unBookmarkRestaurant(it.id)
+                        observeUnBookmarkResult()
+                    } else {
+                        restaurantViewModel.bookmarkRestaurant(it)
+                        observeBookmarkResult()
+                    }
                 }
             }
+
+            binding.seeAllReviews.setOnClickListener {
+                val bottomSheetFragment = ReviewBottomSheetDialogFragment(restaurantId)
+                bottomSheetFragment.show(supportFragmentManager, bottomSheetFragment.tag)
+            }
+
+
         }
-
-        binding.seeAllReviews.setOnClickListener {
-            val bottomSheetFragment = ReviewBottomSheetDialogFragment(restaurantId)
-            bottomSheetFragment.show(supportFragmentManager, bottomSheetFragment.tag)
-        }
-
-
     }
 
     private fun updateUI(restaurant: Restaurant) {
@@ -299,79 +330,18 @@ class ResDetailView : AppCompatActivity() {
         })
     }
 
-    private fun setupImageSwitcher() {
-        imageSwitcher = binding.imageSwitcher
-        imageSwitcher.setFactory {
-            val imageView = ImageView(this)
-            imageView.scaleType = ImageView.ScaleType.CENTER_CROP
-            imageView
-        }
+
+    private fun startAutoSwipe() {
+        handler.postDelayed(autoSwipeRunnable, 3000) // Adjust the delay as needed
     }
 
-    private fun setupGestureDetection() {
-        gestureDetector = GestureDetector(this, SwipeGestureListener())
-        val cardView: CardView = binding.ResPhotos
-        cardView.setOnTouchListener { _, event -> gestureDetector.onTouchEvent(event) }
-    }
-
-    private fun setupImageSwitchHandler() {
-        handler = Handler(Looper.getMainLooper())
-        runnable = object : Runnable {
-            override fun run() {
-                currentIndex = (currentIndex + 1) % imageIds.size
-                imageSwitcher.setImageResource(imageIds[currentIndex])
-                handler.postDelayed(this, 5000) // Switch image every 5 seconds
-            }
-        }
-        handler.postDelayed(runnable, 5000) // Start the image switcher
-
-    }
-
-
-    private inner class SwipeGestureListener : GestureDetector.SimpleOnGestureListener() {
-        private val SWIPE_THRESHOLD = 100
-        private val SWIPE_VELOCITY_THRESHOLD = 100
-
-        override fun onFling(
-            e1: MotionEvent?,
-            e2: MotionEvent,
-            velocityX: Float,
-            velocityY: Float
-        ): Boolean {
-            if (e1 == null) return false
-
-            val diffX = e2.x - e1.x
-            val diffY = e2.y - e1.y
-
-            return if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > SWIPE_THRESHOLD && Math.abs(
-                    velocityX
-                ) > SWIPE_VELOCITY_THRESHOLD
-            ) {
-                if (diffX > 0) {
-                    onSwipeRight()
-                } else {
-                    onSwipeLeft()
-                }
-                true
-            } else {
-                false
-            }
-        }
-    }
-
-    private fun onSwipeLeft() {
-        currentIndex = (currentIndex + 1) % imageIds.size
-        imageSwitcher.setImageResource(imageIds[currentIndex])
-    }
-
-    private fun onSwipeRight() {
-        currentIndex = (currentIndex - 1 + imageIds.size) % imageIds.size
-        imageSwitcher.setImageResource(imageIds[currentIndex])
+    private fun stopAutoSwipe() {
+        handler.removeCallbacks(autoSwipeRunnable)
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        handler.removeCallbacks(runnable)
+        stopAutoSwipe()
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -388,3 +358,4 @@ class ResDetailView : AppCompatActivity() {
         menuAdapter.notifyDataSetChanged()
     }
 }
+

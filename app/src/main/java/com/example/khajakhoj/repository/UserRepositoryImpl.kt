@@ -1,5 +1,6 @@
 package com.example.khajakhoj.repository
 
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -186,6 +187,7 @@ class UserRepositoryImpl : UserRepository {
         return resultLiveData
     }
 
+    @SuppressLint("SuspiciousIndentation")
     override fun deleteUser(userId: String): LiveData<Result<Void?>> {
         val result = MutableLiveData<Result<Void?>>()
         databaseReference.getReference("users").child(userId).removeValue()

@@ -1,5 +1,6 @@
 package com.example.khajakhoj.activity
 
+import AdsViewModel
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
@@ -7,20 +8,27 @@ import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageSwitcher
-import android.widget.ImageView
-import android.widget.ViewSwitcher
 import androidx.fragment.app.Fragment
-import com.example.khajakhoj.R
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.viewpager2.widget.ViewPager2
 import com.example.khajakhoj.databinding.FragmentHomeBinding
+import com.example.khajakhoj.test.ImagePagerAdapter
 
 class HomeFragment : Fragment() {
     private lateinit var binding: FragmentHomeBinding
-    private lateinit var imageSwitcher: ImageSwitcher
-    private val imageIds = arrayOf(R.drawable.ad1, R.drawable.ad2, R.drawable.ad3, R.drawable.ad4)
-    private var currentIndex = 0
-    private lateinit var handler: Handler
-    private lateinit var runnable: Runnable
+    private lateinit var viewPager: ViewPager2
+    private lateinit var adapter: ImagePagerAdapter
+    private val handler = Handler(Looper.getMainLooper())
+
+    private val autoSwipeRunnable = object : Runnable {
+        override fun run() {
+            val nextItem = (viewPager.currentItem + 1) % adapter.itemCount
+            viewPager.setCurrentItem(nextItem, true)
+            handler.postDelayed(this, 5000) // Adjust the delay as needed
+        }
+    }
+    private lateinit var adsViewModel: AdsViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -29,32 +37,31 @@ class HomeFragment : Fragment() {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
         val view = binding.root
 
-        // Initialize ImageSwitcher using view binding
-        imageSwitcher = binding.imageSwitcher
-        imageSwitcher.setFactory(ViewSwitcher.ViewFactory {
-            ImageView(requireContext()).apply {
-                scaleType = ImageView.ScaleType.CENTER_CROP
+        viewPager = binding.viewPager
+
+        adsViewModel = ViewModelProvider(this).get(AdsViewModel::class.java)
+        adsViewModel.adsList.observe(viewLifecycleOwner, Observer { imageUrls ->
+            if (imageUrls.isNotEmpty()) {
+                adapter = ImagePagerAdapter(imageUrls)
+                viewPager.adapter = adapter
+                binding.springDotsIndicatorHome.attachTo(viewPager)
+                startAutoSwipe()
             }
         })
-
-        // Initial image
-        imageSwitcher.setImageResource(imageIds[currentIndex])
-
-        // Setup handler to switch images
-        handler = Handler(Looper.getMainLooper())
-        runnable = object : Runnable {
-            override fun run() {
-                currentIndex = (currentIndex + 1) % imageIds.size
-                imageSwitcher.setImageResource(imageIds[currentIndex])
-                handler.postDelayed(this, 5000) // Switch image every 5 seconds
-            }
-        }
-        handler.postDelayed(runnable, 5000) // Start the image switcher
+        adsViewModel.fetchAds()
 
         // Set click listener on image buttons
         setupCuisineButtons()
 
         return view
+    }
+
+    private fun startAutoSwipe() {
+        handler.postDelayed(autoSwipeRunnable, 3000) // Adjust the delay as needed
+    }
+
+    private fun stopAutoSwipe() {
+        handler.removeCallbacks(autoSwipeRunnable)
     }
 
     private fun setupCuisineButtons() {
@@ -76,6 +83,8 @@ class HomeFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        handler.removeCallbacks(runnable) // Stop the image switcher when the fragment is destroyed
+        stopAutoSwipe()
     }
+
+
 }

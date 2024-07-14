@@ -43,7 +43,7 @@ class CouponAdapter(
         holder.couponCodeTextView.text = coupon.code
         holder.discountTextView.text =
             "Get ${coupon.discountPercentage}% off on order above Rs.${coupon.minimumOrderPrice}"
-        holder.addressTextView.text = "at ${coupon.restaurantName}, ${coupon.address}"
+        holder.addressTextView.text = "at ${coupon.restaurantName}, ${coupon.location}"
         holder.expiryDate.text = "Valid until ${coupon.validTo}"
 
         val isRedeemedByCurrentUser = coupon.redeemedBy.containsKey(currentUserUid)
