@@ -21,7 +21,8 @@ class ImagePagerAdapter(private val imageUrls: List<String>) :
     }
 
     override fun onBindViewHolder(holder: ImageViewHolder, position: Int) {
-        Picasso.get().load(imageUrls[position]).into(holder.imageView)
+        Picasso.get().load(imageUrls[position]).resize(800, 800) // resize the image to 800x800 pixels
+            .centerInside().into(holder.imageView)
     }
 
     override fun getItemCount(): Int = imageUrls.size

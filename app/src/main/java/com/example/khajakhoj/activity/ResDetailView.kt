@@ -186,7 +186,7 @@ class ResDetailView : AppCompatActivity() {
             visit.setOnClickListener() {
                 MapUtils.showMapsWebViewDialog(
                     this@ResDetailView,
-                    "https://www.google.com/maps/place/The+Soaltee+Kathmandu/@27.6917812,85.2620819,15.01z/data=!4m9!3m8!1s0x39eb18609488cdb7:0x44edd8fc9a17af63!5m2!4m1!1i2!8m2!3d27.7005975!4d85.291006!16s%2Fg%2F1tcv4qxf?entry=ttu"
+                    restaurant.location
                 )
             }
 
