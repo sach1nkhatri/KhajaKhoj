@@ -44,6 +44,7 @@ import com.example.khajakhoj.viewmodel.ReviewViewModel
 import com.example.khajakhoj.viewmodel.UserViewModel
 import com.squareup.picasso.Picasso
 import java.util.Date
+import kotlin.math.log
 
 class ResDetailView : AppCompatActivity() {
     private lateinit var binding: ActivityResDetailViewBinding
@@ -119,11 +120,13 @@ class ResDetailView : AppCompatActivity() {
                 Toast.makeText(this, "Failed to fetch data: $errorMessage", Toast.LENGTH_SHORT)
                     .show()
             }
+        }
 
             val restaurant = intent.getParcelableExtra<Restaurant>("restaurant")
             if (restaurant != null) {
                 restaurantId = restaurant.id
             }
+
 
             restaurant?.let {
                 updateUI(it)
@@ -167,7 +170,7 @@ class ResDetailView : AppCompatActivity() {
             }
 
 
-        }
+
     }
 
     private fun updateUI(restaurant: Restaurant) {
