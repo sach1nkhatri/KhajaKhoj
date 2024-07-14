@@ -26,6 +26,7 @@
         android:layout_height="wrap_content"
         android:text="@string/sachin_gmail_com"
         android:textSize="20sp"
+        android:visibility="invisible"
         android:textColor="@color/white"/>
 
 </LinearLayout>

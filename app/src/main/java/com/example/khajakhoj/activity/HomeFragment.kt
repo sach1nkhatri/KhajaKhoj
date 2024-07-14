@@ -8,10 +8,15 @@ import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageSwitcher
+import android.widget.ImageView
+import android.widget.SearchView
+import android.widget.ViewSwitcher
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.widget.ViewPager2
+import com.example.khajakhoj.R
 import com.example.khajakhoj.databinding.FragmentHomeBinding
 import com.example.khajakhoj.test.ImagePagerAdapter
 
@@ -29,6 +34,9 @@ class HomeFragment : Fragment() {
         }
     }
     private lateinit var adsViewModel: AdsViewModel
+
+    lateinit var cusineSearch : ImageView
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -48,10 +56,19 @@ class HomeFragment : Fragment() {
                 startAutoSwipe()
             }
         })
+        cusineSearch = view.findViewById(R.id.cuisineSearch)
+
         adsViewModel.fetchAds()
 
         // Set click listener on image buttons
         setupCuisineButtons()
+
+
+        cusineSearch.setOnClickListener {
+            val intent = Intent(requireContext(), GlobalSearchView::class.java)
+            startActivity(intent)
+        }
+
 
         return view
     }

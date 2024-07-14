@@ -28,4 +28,6 @@
             android:title="@string/log_out"/>
     </group>
 
+
+    <group android:checkableBehavior="single"/>
 </menu>
