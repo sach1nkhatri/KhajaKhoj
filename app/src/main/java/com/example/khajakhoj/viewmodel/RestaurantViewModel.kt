@@ -42,6 +42,8 @@ class RestaurantViewModel : ViewModel() {
                 _bookmarkResult.postValue(Pair(success, message))
             }
         }
+
+        viewModelScope
     }
 
     private val _userBookmarks = MutableLiveData<List<Restaurant>?>()

@@ -29,7 +29,6 @@ class CouponActivity : AppCompatActivity() {
         enableEdgeToEdge()
         binding = ActivityCouponsBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
         coupons = mutableListOf()
         val auth = FirebaseAuth.getInstance()
         val currentUser = auth.currentUser

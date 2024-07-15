@@ -42,12 +42,12 @@ object Utils {
         }
 
         val alertDialog = alertDialogBuilder.create()
-        val backgroundDrawable = ContextCompat.getDrawable(context, R.drawable.custom_dialog_background)
+        val backgroundDrawable =
+            ContextCompat.getDrawable(context, R.drawable.custom_dialog_background)
         alertDialog.window?.setBackgroundDrawable(backgroundDrawable)
         alertDialog.show()
         return alertDialog
     }
-
 
 
     fun showTermsAndConditions(context: Context) {
@@ -80,6 +80,63 @@ object Utils {
         adc.window?.setBackgroundDrawable(backgroundDrawable)
         adc.show()
     }
+
+    fun showTellYourFriendsContent(context: Context) {
+        val content = """
+            <h1>Tell Your Friends about Khaja Khoj!</h1>
+    
+    <p>
+        Discovering the best places to dine is even more enjoyable when shared with friends. Khaja Khoj makes it easy for you to spread the word and help your friends find their next favorite restaurant. With our user-friendly platform and personalized recommendations, everyone can enjoy a seamless and delightful dining experience.
+    </p>
+
+    <h2>Why Share Khaja Khoj with Your Friends?</h2>
+    
+    <p>
+        By telling your friends about Khaja Khoj, you can:
+    </p>
+
+    <ul>
+        <li><strong>Share the Experience:</strong> Let your friends know about the amazing dining spots you’ve discovered.</li>
+        <li><strong>Enhance Social Dining:</strong> Make group outings and gatherings more enjoyable with personalized restaurant recommendations.</li>
+        <li><strong>Build a Foodie Community:</strong> Join a network of food enthusiasts and share your culinary adventures.</li>
+    </ul>
+
+    <h2>How to Share Khaja Khoj</h2>
+    
+    <p>
+        Spreading the word about Khaja Khoj is simple and quick:
+    </p>
+
+    <ul>
+        <li><strong>Invite via App:</strong> Use the in-app sharing feature to send invitations directly to your contacts.</li>
+        <li><strong>Social Media:</strong> Share your favorite restaurant discoveries and reviews on your social media profiles using #KhajaKhoj.</li>
+        <li><strong>Word of Mouth:</strong> Tell your friends and family about the benefits of using Khaja Khoj for their dining choices.</li>
+    </ul>
+
+    <h2>Join the Khaja Khoj Community</h2>
+    
+    <p>
+        At Khaja Khoj, we’re building a vibrant community of food lovers who appreciate great dining experiences. By sharing Khaja Khoj with your friends, you’re helping to grow this community and making it easier for everyone to find the best places to eat.
+    </p>
+    
+    <p>
+        Thank you for being a valued member of the Khaja Khoj family. Together, we can make dining out a more enjoyable and personalized experience for everyone!
+    </p>
+            
+        """.trimIndent()
+
+
+        val ad = AlertDialog.Builder(context)
+        ad.setTitle("Tell Your Friends")
+        ad.setMessage(Html.fromHtml(content))
+        ad.setPositiveButton("OK") { dialog, _ -> dialog.dismiss() }
+        val adc = ad.create()
+        val backgroundDrawable =
+            ContextCompat.getDrawable(context, R.drawable.custom_dialog_background)
+        adc.window?.setBackgroundDrawable(backgroundDrawable)
+        adc.show()
+    }
+
 
     fun showPolicy(context: Context) {
         val privacyMessage = """
@@ -203,7 +260,70 @@ object Utils {
         adc.show()
     }
 
-    fun showPasswordChangeDialog(context: Context,viewModel: UserViewModel,loadingUtil: LoadingUtil){
+    fun showPromotionsDialog(context: Context) {
+        val promotionContent = """
+            <h1>Promoting Khaja Khoj: Partner with Us!</h1>
+    
+    <p>
+        At Khaja Khoj, we believe that finding the perfect dining experience should be as delightful as the meal itself. Our app is dedicated to making restaurant discovery seamless and enjoyable for users by prioritizing their preferences such as cuisine type, budget, proximity, and reliable reviews.
+    </p>
+
+    <h2>Why Promote Your Restaurant with Khaja Khoj?</h2>
+    
+    <p>
+        We offer a unique platform that not only simplifies the process of finding restaurants but also ensures that each dining experience is personalized and memorable. By partnering with Khaja Khoj, you can:
+    </p>
+
+    <ul>
+        <li><strong>Increase Visibility:</strong> Reach a wider audience and attract more customers to your restaurant.</li>
+        <li><strong>Targeted Marketing:</strong> Utilize our advanced algorithms to connect with users who are looking for dining options that match what your restaurant offers.</li>
+        <li><strong>Enhanced Reviews:</strong> Benefit from reliable and trustworthy reviews that can boost your restaurant’s reputation.</li>
+    </ul>
+
+    <h2>Join Our Network</h2>
+    
+    <p>
+        We invite restaurant owners, managers, and food service providers to join our growing network. By collaborating with Khaja Khoj, you can showcase your restaurant’s unique offerings and attract more diners. Here’s how you can get involved:
+    </p>
+
+    <ul>
+        <li><strong>Promotional Features:</strong> Highlight special deals, events, and menu items directly on our app.</li>
+        <li><strong>Exclusive Listings:</strong> Get featured in our curated recommendations, ensuring that your restaurant stands out.</li>
+        <li><strong>Engage with Users:</strong> Interact with your customers through reviews and feedback to enhance their dining experience.</li>
+    </ul>
+
+    <h2>Contact Us</h2>
+    
+    <p class="contact-info">
+        If you are interested in promoting your restaurant through Khaja Khoj, we would love to hear from you. Contact us today to learn more about how we can help you reach more customers and elevate your restaurant's presence in the dining community.
+    </p>
+    
+    <p class="contact-info">
+        Email: <a href="mailto:promotions@khajakhoj.com">promotions@khajakhoj.com</a><br>
+        Phone: +123-456-7890<br>
+        Website: <a href="https://www.khajakhoj.com/promotions" target="_blank">www.khajakhoj.com/promotions</a>
+    </p>
+    
+    <p>
+        Join Khaja Khoj and take your restaurant to new culinary heights!
+    </p>
+                    """.trimIndent()
+
+
+        val ad = AlertDialog.Builder(context)
+        ad.setTitle("Promotions")
+        ad.setMessage(Html.fromHtml(promotionContent))
+        ad.setPositiveButton("OK") { dialog, _ -> dialog.dismiss() }
+        val adc = ad.create()
+        val backgroundDrawable =
+            ContextCompat.getDrawable(context, R.drawable.custom_dialog_background)
+        adc.window?.setBackgroundDrawable(backgroundDrawable)
+        adc.show()
+    }
+
+    fun showPasswordChangeDialog(
+        context: Context, viewModel: UserViewModel, loadingUtil: LoadingUtil
+    ) {
         val dialog = Dialog(context)
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         dialog.setCancelable(true)
@@ -220,26 +340,23 @@ object Utils {
             val currentPassword = currentPasswordEditText.text.toString()
             val newPassword = newPasswordEditText.text.toString()
             val confirmNewPassword = confirmNewPasswordEditText.text.toString()
-            viewModel.changePassword(currentPassword, newPassword, confirmNewPassword,loadingUtil).observe(context as LifecycleOwner) { result ->
-                result.fold(
-                    onSuccess = {
+            viewModel.changePassword(currentPassword, newPassword, confirmNewPassword, loadingUtil)
+                .observe(context as LifecycleOwner) { result ->
+                    result.fold(onSuccess = {
                         Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
                         if (it == "Password Changed Successfully") {
                             loadingUtil.dismiss()
                             dialog.dismiss()
                         }
-                    },
-                    onFailure = {
+                    }, onFailure = {
                         Toast.makeText(context, it.message, Toast.LENGTH_SHORT).show()
-                    }
-                )
-            }
+                    })
+                }
+
+        }
+
 
     }
-
-
-
-}
 
     fun showForgotPasswordDialog(context: Context, onEmailSubmitted: (String) -> Unit) {
         val dialog = Dialog(context)
@@ -264,7 +381,9 @@ object Utils {
         dialog.show()
     }
 
-    fun showDeleteAccountDialog(context: Context, userViewModel: UserViewModel,loadingUtil: LoadingUtil) {
+    fun showDeleteAccountDialog(
+        context: Context, userViewModel: UserViewModel, loadingUtil: LoadingUtil
+    ) {
         val dialog = Dialog(context)
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         dialog.setCancelable(true)
@@ -285,27 +404,42 @@ object Utils {
                 loadingUtil.showLoading()
                 user.reauthenticate(credential).addOnCompleteListener { reAuthTask ->
                     if (reAuthTask.isSuccessful) {
-                        userViewModel.deleteUser(user.uid).observe(context as LifecycleOwner) { result ->
-                            if (result.isSuccess) {
-                                user.delete().addOnCompleteListener { deleteTask ->
-                                    if (deleteTask.isSuccessful) {
-                                        Toast.makeText(context, "User account deleted.", Toast.LENGTH_SHORT).show()
-                                        loadingUtil.dismiss()
-                                        dialog.dismiss()
-                                        navigateToLoginPage(context)
-                                    } else {
-                                        loadingUtil.dismiss()
-                                        Toast.makeText(context, "Failed to delete user account.", Toast.LENGTH_SHORT).show()
+                        userViewModel.deleteUser(user.uid)
+                            .observe(context as LifecycleOwner) { result ->
+                                if (result.isSuccess) {
+                                    user.delete().addOnCompleteListener { deleteTask ->
+                                        if (deleteTask.isSuccessful) {
+                                            Toast.makeText(
+                                                context, "User account deleted.", Toast.LENGTH_SHORT
+                                            ).show()
+                                            loadingUtil.dismiss()
+                                            dialog.dismiss()
+                                            navigateToLoginPage(context)
+                                        } else {
+                                            loadingUtil.dismiss()
+                                            Toast.makeText(
+                                                context,
+                                                "Failed to delete user account.",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        }
                                     }
+                                } else {
+                                    loadingUtil.dismiss()
+                                    Toast.makeText(
+                                        context,
+                                        "Failed to delete teacher data.",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
                                 }
-                            } else {
-                                loadingUtil.dismiss()
-                                Toast.makeText(context, "Failed to delete teacher data.", Toast.LENGTH_SHORT).show()
                             }
-                        }
                     } else {
                         loadingUtil.dismiss()
-                        Toast.makeText(context, "Authentication failed. Please check your password.", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            context,
+                            "Authentication failed. Please check your password.",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 }
             } else {

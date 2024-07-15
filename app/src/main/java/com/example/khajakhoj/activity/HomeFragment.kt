@@ -26,6 +26,7 @@ class HomeFragment : Fragment() {
     private lateinit var adapter: ImagePagerAdapter
     private val handler = Handler(Looper.getMainLooper())
 
+
     private val autoSwipeRunnable = object : Runnable {
         override fun run() {
             val nextItem = (viewPager.currentItem + 1) % adapter.itemCount

@@ -6,13 +6,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.viewModels
+import com.example.khajakhoj.R
+import com.example.khajakhoj.activity.Dashboard
 import com.example.khajakhoj.activity.LoginPage
 import com.example.khajakhoj.databinding.ActivityProfileBinding
 import com.example.khajakhoj.model.User
 import com.example.khajakhoj.utils.LoadingUtil
 import com.example.khajakhoj.utils.Utils
 import com.example.khajakhoj.viewmodel.UserViewModel
+import com.google.firebase.firestore.util.Util
 
 class ProfileFragment : Fragment() {
     private val viewModel: UserViewModel by viewModels()
@@ -35,6 +40,15 @@ class ProfileFragment : Fragment() {
                 logoutDialog = it
             }
         }
+        binding.yourFavButtonProfile.setOnClickListener(){
+            replaceFragment(ProfileFragment())
+        }
+        binding.promotionButtonProfile.setOnClickListener(){
+            Utils.showPromotionsDialog(requireContext())
+        }
+        binding.tellFriendsButton.setOnClickListener(){
+            Utils.showTellYourFriendsContent(requireContext())
+        }
         val user: User? = arguments?.getParcelable("user")
         user?.let {
             binding.nameTextViewOnProfile.text = it.fullName
@@ -51,4 +65,13 @@ class ProfileFragment : Fragment() {
         })
         requireActivity().finish()
     }
+
+    private fun replaceFragment(fragment: Fragment) {
+        val fragmentManager = parentFragmentManager
+        val fragmentTransaction = fragmentManager.beginTransaction()
+        fragmentTransaction.replace(R.id.frameLayout, fragment)
+        fragmentTransaction.addToBackStack(null)
+        fragmentTransaction.commit()
+    }
+
 }
