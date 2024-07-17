@@ -1,5 +1,6 @@
 package com.example.khajakhoj.viewmodel
 
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -29,6 +30,9 @@ class UserViewModel : ViewModel() {
 
     private val _toastMessage = MutableLiveData<String>()
     val toastMessage: LiveData<String> = _toastMessage
+
+    private val _imageUploadResult = MutableLiveData<Result<Unit>>()
+    val imageUploadResult: LiveData<Result<Unit>> = _imageUploadResult
 
     companion object {
         private const val TAG = "UserViewModel"
@@ -95,7 +99,6 @@ class UserViewModel : ViewModel() {
             }
         }
     }
-
 
 
     fun loginUser(email: String, password: String) {
@@ -200,6 +203,13 @@ class UserViewModel : ViewModel() {
         loadingUtil: LoadingUtil
     ): LiveData<Result<String>> {
         return repository.changePassword(currentPassword, newPassword, confirmNewPassword,loadingUtil)
+    }
+
+    fun updateUserProfileImage(profileImageUri: Uri) {
+        viewModelScope.launch {
+            val result = repository.updateUserProfileImage(profileImageUri)
+            _imageUploadResult.postValue(result)
+        }
     }
 
     fun deleteUser(userId: String): LiveData<Result<Void?>> {

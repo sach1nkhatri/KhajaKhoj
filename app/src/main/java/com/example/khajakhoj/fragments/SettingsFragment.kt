@@ -12,9 +12,11 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.viewModels
 import com.example.khajakhoj.R
 import com.example.khajakhoj.databinding.ActivitySettingsBinding
+import com.example.khajakhoj.model.User
 import com.example.khajakhoj.utils.LoadingUtil
 import com.example.khajakhoj.utils.Utils
 import com.example.khajakhoj.viewmodel.UserViewModel
+import com.squareup.picasso.Picasso
 
 class SettingsFragment : Fragment() {
     lateinit var binding: ActivitySettingsBinding
@@ -66,12 +68,23 @@ class SettingsFragment : Fragment() {
             )
         }
 
-        binding.settingImageView.setOnClickListener {
-            val fragmentTransaction = requireActivity().supportFragmentManager.beginTransaction()
-            fragmentTransaction.replace(R.id.frameLayout, ProfileFragment())
-            fragmentTransaction.addToBackStack(null)
-            fragmentTransaction.commit()
-        }
+//        binding.settingImageView.setOnClickListener {
+//
+//            val user: User? = arguments?.getParcelable("user")
+//            user?.let {
+//                val profileImage = user.profilePictureUrl
+//                if (!profileImage.isNullOrEmpty()) {
+//                    Picasso.get().load(profileImage).into(binding.settingImageView)
+//                } else {
+//                    binding.settingImageView.setImageResource(R.drawable.pizzaico)
+//                }
+//            }
+//
+//            val fragmentTransaction = requireActivity().supportFragmentManager.beginTransaction()
+//            fragmentTransaction.replace(R.id.frameLayout, ProfileFragment())
+//            fragmentTransaction.addToBackStack(null)
+//            fragmentTransaction.commit()
+//        }
 
         binding.deleteAccountButton.setOnClickListener(){
             Utils.showDeleteAccountDialog(requireContext(),viewModel,LoadingUtil(requireActivity()))

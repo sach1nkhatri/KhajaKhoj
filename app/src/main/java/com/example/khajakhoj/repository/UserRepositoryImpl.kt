@@ -1,6 +1,7 @@
 package com.example.khajakhoj.repository
 
 import android.annotation.SuppressLint
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -9,11 +10,14 @@ import com.example.khajakhoj.utils.LoadingUtil
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.tasks.await
 
 class UserRepositoryImpl : UserRepository {
     private val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private val databaseReference = FirebaseDatabase.getInstance()
+    private val storage: FirebaseStorage = FirebaseStorage.getInstance()
+
 
     companion object {
         const val TAG = "UserRepositoryImpl"
@@ -69,6 +73,30 @@ class UserRepositoryImpl : UserRepository {
             Result.failure(e)
         }
     }
+
+    override suspend fun updateUserProfileImage(profileImageUri: Uri): Result<Unit> {
+        return try {
+            val userId = firebaseAuth.currentUser?.uid ?: throw Exception("User not logged in")
+            val storageRef = storage.reference.child("profileImages/$userId")
+
+            storageRef.putFile(profileImageUri).await()
+
+            val downloadUrl = storageRef.downloadUrl.await().toString()
+
+            val userRef = databaseReference.reference.child("users").child(userId)
+            val updates = mapOf<String, Any>(
+                "profilePictureUrl" to downloadUrl
+            )
+            userRef.updateChildren(updates).await()
+
+            Log.d("SignUpRepository", "Profile image updated successfully for UID: $userId")
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Log.e("SignUpRepository", "Failed to update profile image: ${e.message}", e)
+            Result.failure(e)
+        }
+    }
+
 
     override suspend fun loginUserWithEmailPassword(
         email: String,
