@@ -20,12 +20,16 @@ import com.example.khajakhoj.R
 import com.example.khajakhoj.databinding.FragmentHomeBinding
 import com.example.khajakhoj.test.ImagePagerAdapter
 
+import android.widget.ProgressBar
+
 class HomeFragment : Fragment() {
     private lateinit var binding: FragmentHomeBinding
     private lateinit var viewPager: ViewPager2
     private lateinit var adapter: ImagePagerAdapter
     private val handler = Handler(Looper.getMainLooper())
-
+    private lateinit var progressBar: ProgressBar
+    private lateinit var adsViewModel: AdsViewModel
+    lateinit var cusineSearch : ImageView
 
     private val autoSwipeRunnable = object : Runnable {
         override fun run() {
@@ -34,10 +38,6 @@ class HomeFragment : Fragment() {
             handler.postDelayed(this, 5000) // Adjust the delay as needed
         }
     }
-    private lateinit var adsViewModel: AdsViewModel
-
-    lateinit var cusineSearch : ImageView
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -47,9 +47,11 @@ class HomeFragment : Fragment() {
         val view = binding.root
 
         viewPager = binding.viewPager
-
+        progressBar = binding.progressBar
         adsViewModel = ViewModelProvider(this).get(AdsViewModel::class.java)
+
         adsViewModel.adsList.observe(viewLifecycleOwner, Observer { imageUrls ->
+            progressBar.visibility = View.GONE
             if (imageUrls.isNotEmpty()) {
                 adapter = ImagePagerAdapter(imageUrls)
                 viewPager.adapter = adapter
@@ -57,21 +59,24 @@ class HomeFragment : Fragment() {
                 startAutoSwipe()
             }
         })
-        cusineSearch = view.findViewById(R.id.cuisineSearch)
 
-        adsViewModel.fetchAds()
+        cusineSearch = view.findViewById(R.id.cuisineSearch)
+        fetchAds()
 
         // Set click listener on image buttons
         setupCuisineButtons()
-
 
         cusineSearch.setOnClickListener {
             val intent = Intent(requireContext(), GlobalSearchView::class.java)
             startActivity(intent)
         }
 
-
         return view
+    }
+
+    private fun fetchAds() {
+        progressBar.visibility = View.VISIBLE
+        adsViewModel.fetchAds()
     }
 
     private fun startAutoSwipe() {
@@ -103,6 +108,4 @@ class HomeFragment : Fragment() {
         super.onDestroyView()
         stopAutoSwipe()
     }
-
-
 }

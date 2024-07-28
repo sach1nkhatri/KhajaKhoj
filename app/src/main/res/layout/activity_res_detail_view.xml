@@ -27,6 +27,18 @@
                 app:cardCornerRadius="20dp"
                 app:cardElevation="10dp">
 
+                <ProgressBar
+                    android:id="@+id/progressBar"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_marginStart="150dp"
+                    android:layout_marginTop="75dp"
+                    android:layout_centerHorizontal="true"
+                    android:visibility="gone"
+                    android:indeterminate="true"
+                    android:indeterminateDrawable="@drawable/circular_progress_bar"
+                    />
+
                 <androidx.viewpager2.widget.ViewPager2
                     android:id="@+id/viewPager"
                     android:layout_width="match_parent"
@@ -222,6 +234,16 @@
                 android:layout_marginEnd="40dp"
                 android:text="7am-9pm"
                 android:textStyle="bold" />
+
+            <ProgressBar
+                android:id="@+id/progressBar2"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_centerHorizontal="true"
+                android:layout_marginStart="35dp"
+                android:layout_marginTop="35dp"
+                android:indeterminate="true"
+                android:indeterminateDrawable="@drawable/circular_progress_bar" />
 
         </androidx.cardview.widget.CardView>
 

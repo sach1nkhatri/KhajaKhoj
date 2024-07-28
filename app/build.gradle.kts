@@ -82,6 +82,8 @@ dependencies {
     implementation ("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0") // Check for the latest version
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1") // Use the latest version
     implementation ("com.android.volley:volley:1.2.1")
+    implementation ("com.jpardogo.googleprogressbar:library:1.2.0")
+
 
 }
 

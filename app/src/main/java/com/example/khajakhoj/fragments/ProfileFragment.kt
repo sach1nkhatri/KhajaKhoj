@@ -17,6 +17,7 @@ import androidx.fragment.app.viewModels
 import com.example.khajakhoj.R
 import com.example.khajakhoj.activity.Dashboard
 import androidx.lifecycle.Observer
+import com.example.khajakhoj.activity.FavouritesActivity
 import com.example.khajakhoj.activity.LoginPage
 import com.example.khajakhoj.databinding.ActivityProfileBinding
 import com.example.khajakhoj.model.User
@@ -64,7 +65,7 @@ class ProfileFragment : Fragment() {
             }
         }
         binding.yourFavButtonProfile.setOnClickListener(){
-            replaceFragment(ProfileFragment())
+            startActivity(Intent(requireContext(),FavouritesActivity::class.java))
         }
         binding.promotionButtonProfile.setOnClickListener(){
             Utils.showPromotionsDialog(requireContext())

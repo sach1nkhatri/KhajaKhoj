@@ -8,9 +8,11 @@ import android.os.Looper
 import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
+import android.view.View
 import android.widget.Button
 import android.widget.ImageSwitcher
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.RatingBar
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -48,14 +50,21 @@ import kotlin.math.log
 
 class ResDetailView : AppCompatActivity() {
     private lateinit var binding: ActivityResDetailViewBinding
-
     private lateinit var restaurantViewModel: RestaurantViewModel
     private lateinit var reviewViewModel: ReviewViewModel
     private val userViewModel: UserViewModel by viewModels()
-
     private lateinit var viewPager: ViewPager2
     private lateinit var adapter: ImagePagerAdapter
     private val handler = Handler(Looper.getMainLooper())
+    private lateinit var adsViewModel: AdsViewModel
+    private lateinit var progressBar: ProgressBar
+    private var isBookmarked = false
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var menuViewModel: MenuViewModel
+    private lateinit var menuAdapter: MenuAdapter
+    private val menuItems = mutableListOf<MenuItem>()
+    private val filteredMenuItems = mutableListOf<MenuItem>()
+    private lateinit var restaurantId: String
 
     private val autoSwipeRunnable = object : Runnable {
         override fun run() {
@@ -64,16 +73,6 @@ class ResDetailView : AppCompatActivity() {
             handler.postDelayed(this, 5000) // Adjust the delay as needed
         }
     }
-    private lateinit var adsViewModel: AdsViewModel
-
-    private var isBookmarked = false
-
-    private lateinit var recyclerView: RecyclerView
-    private lateinit var menuViewModel: MenuViewModel
-    private lateinit var menuAdapter: MenuAdapter
-    private val menuItems = mutableListOf<MenuItem>()
-    private val filteredMenuItems = mutableListOf<MenuItem>()
-    private lateinit var restaurantId: String
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -86,11 +85,13 @@ class ResDetailView : AppCompatActivity() {
         reviewViewModel = ViewModelProvider(this)[ReviewViewModel::class.java]
         menuViewModel = ViewModelProvider(this)[MenuViewModel::class.java]
 
+        progressBar = binding.progressBar
 
         viewPager = binding.viewPager
 
         adsViewModel = ViewModelProvider(this).get(AdsViewModel::class.java)
         adsViewModel.restaurantImageUrls.observe(this, Observer { imageUrls ->
+            progressBar.visibility = View.GONE
             if (imageUrls.isNotEmpty()) {
                 adapter = ImagePagerAdapter(imageUrls)
                 viewPager.adapter = adapter
@@ -98,7 +99,6 @@ class ResDetailView : AppCompatActivity() {
                 startAutoSwipe()
             }
         })
-
 
         // Initialize RecyclerView for menu items
         recyclerView = findViewById(R.id.recyclerView)
@@ -109,67 +109,58 @@ class ResDetailView : AppCompatActivity() {
         VulgarityUtils.initialize(this)
 
         menuViewModel.menuItems.observe(this) { items ->
-            menuViewModel.menuItems.observe(this) { items ->
-                menuItems.clear()
-                menuItems.addAll(items)
-                filterMenuItems("")
-            }
+            menuItems.clear()
+            menuItems.addAll(items)
+            filterMenuItems("")
+        }
 
-            menuViewModel.error.observe(this) { errorMessage ->
-                Toast.makeText(this, "Failed to fetch data: $errorMessage", Toast.LENGTH_SHORT)
-                    .show()
+        menuViewModel.error.observe(this) { errorMessage ->
+            Toast.makeText(this, "Failed to fetch data: $errorMessage", Toast.LENGTH_SHORT).show()
+        }
+
+        val restaurant = intent.getParcelableExtra<Restaurant>("restaurant")
+        restaurant?.let {
+            restaurantId = it.id
+            updateUI(it)
+            updateBookmarkButton()
+            if (!isBookmarked) {
+                checkBookmarkStatus(it.id)
+            }
+            sendReview(it.id, LoadingUtil(this))
+            reviewViewModel.getRandomReviews(it.id)
+            menuViewModel.fetchMenuItems(it.id)
+            progressBar.visibility = View.VISIBLE
+            adsViewModel.fetchRestaurantImagesByRestaurantId(it.id)
+        }
+
+        reviewViewModel.randomReviews.observe(this, Observer { reviews ->
+            val reviewPagerAdapter = ReviewAdapter(reviews, true)
+            binding.reviewsViewPager.adapter = reviewPagerAdapter
+            binding.springDotsIndicator.attachTo(binding.reviewsViewPager)
+        })
+
+        SearchManager.setupSearchView(binding.menuSearchView) { query ->
+            if (query != null) {
+                filterMenuItems(query)
             }
         }
 
-            val restaurant = intent.getParcelableExtra<Restaurant>("restaurant")
-            if (restaurant != null) {
-                restaurantId = restaurant.id
-            }
-
-
+        binding.bookmarkBtn.setOnClickListener {
             restaurant?.let {
-                updateUI(it)
-                updateBookmarkButton() // Update button state based on isBookmarked
-                if (!isBookmarked) {
-                    checkBookmarkStatus(it.id) // Check bookmark status only if not already bookmarked
-                }
-                sendReview(it.id, LoadingUtil(this))
-                reviewViewModel.getRandomReviews(it.id)
-                menuViewModel.fetchMenuItems(it.id)
-                adsViewModel.fetchRestaurantImagesByRestaurantId(it.id)
-
-
-            }
-
-            reviewViewModel.randomReviews.observe(this, Observer { reviews ->
-                val reviewPagerAdapter = ReviewAdapter(reviews, true)
-                binding.reviewsViewPager.adapter = reviewPagerAdapter
-                binding.springDotsIndicator.attachTo(binding.reviewsViewPager)
-            })
-
-            SearchManager.setupSearchView(binding.menuSearchView) { query ->
-                filterMenuItems(query)
-            }
-
-            binding.bookmarkBtn.setOnClickListener {
-                restaurant?.let {
-                    if (isBookmarked) {
-                        restaurantViewModel.unBookmarkRestaurant(it.id)
-                        observeUnBookmarkResult()
-                    } else {
-                        restaurantViewModel.bookmarkRestaurant(it)
-                        observeBookmarkResult()
-                    }
+                if (isBookmarked) {
+                    restaurantViewModel.unBookmarkRestaurant(it.id)
+                    observeUnBookmarkResult()
+                } else {
+                    restaurantViewModel.bookmarkRestaurant(it)
+                    observeBookmarkResult()
                 }
             }
+        }
 
-            binding.seeAllReviews.setOnClickListener {
-                val bottomSheetFragment = ReviewBottomSheetDialogFragment(restaurantId)
-                bottomSheetFragment.show(supportFragmentManager, bottomSheetFragment.tag)
-            }
-
-
-
+        binding.seeAllReviews.setOnClickListener {
+            val bottomSheetFragment = ReviewBottomSheetDialogFragment(restaurantId)
+            bottomSheetFragment.show(supportFragmentManager, bottomSheetFragment.tag)
+        }
     }
 
     private fun updateUI(restaurant: Restaurant) {
@@ -182,11 +173,8 @@ class ResDetailView : AppCompatActivity() {
             ResturantCuisineDetail.text = restaurant.cuisineType
             RestaurantAddress.text = restaurant.address
 
-            visit.setOnClickListener() {
-                MapUtils.showMapsWebViewDialog(
-                    this@ResDetailView,
-                    restaurant.location
-                )
+            visit.setOnClickListener {
+                MapUtils.showMapsWebViewDialog(this@ResDetailView, restaurant.location)
             }
 
             restaurantPhone.text = restaurant.contactNumber
@@ -197,13 +185,23 @@ class ResDetailView : AppCompatActivity() {
 
             val restaurantLogo = restaurant.restaurantLogoUrl
             val restaurantImageView = binding.restuarantImageLogo
+            progressBar2.visibility = View.VISIBLE
             Picasso.get()
                 .load(restaurantLogo)
-                .into(restaurantImageView)
+                .into(restaurantImageView, object : com.squareup.picasso.Callback {
+                    override fun onSuccess() {
+                        progressBar2.visibility = View.GONE
+                    }
+
+                    override fun onError(e: Exception?) {
+                        progressBar2.visibility = View.GONE
+                        Toast.makeText(this@ResDetailView, "Failed to load image", Toast.LENGTH_SHORT).show()
+                    }
+                })
         }
     }
 
-    private fun sendReview(restaurantId: String,loadingUtil: LoadingUtil) {
+    private fun sendReview(restaurantId: String, loadingUtil: LoadingUtil) {
         binding.reviewSubmitButton.setOnClickListener {
             val reviewText = binding.reviewMessageInput.text.toString().trim()
             if (reviewText.isNotEmpty()) {
@@ -215,8 +213,7 @@ class ResDetailView : AppCompatActivity() {
                     } else {
                         loadingUtil.dismiss()
                         binding.reviewMessageInput.text.clear()
-                        Toast.makeText(this, "Your review contains inappropriate content.", Toast.LENGTH_SHORT)
-                            .show()
+                        Toast.makeText(this, "Your review contains inappropriate content.", Toast.LENGTH_SHORT).show()
                     }
                 }
             } else {
@@ -225,15 +222,12 @@ class ResDetailView : AppCompatActivity() {
         }
     }
 
-
-
     private fun showRatingDialog(restaurantId: String) {
         val dialogView = layoutInflater.inflate(R.layout.rating_dialog_layout, null)
         val dialog = AlertDialog.Builder(this)
             .setView(dialogView)
             .create()
-        val backgroundDrawable =
-            ContextCompat.getDrawable(this, R.drawable.custom_dialog_background)
+        val backgroundDrawable = ContextCompat.getDrawable(this, R.drawable.custom_dialog_background)
         dialog.window?.setBackgroundDrawable(backgroundDrawable)
 
         val ratingBar: RatingBar = dialogView.findViewById(R.id.ratingBar)
@@ -280,8 +274,6 @@ class ResDetailView : AppCompatActivity() {
                     val bottomSheetFragment = ReviewBottomSheetDialogFragment(restaurantId)
                     bottomSheetFragment.show(supportFragmentManager, bottomSheetFragment.tag)
                     Toast.makeText(this, "Review submitted", Toast.LENGTH_SHORT).show()
-
-
                 } else {
                     Toast.makeText(this, "Failed to submit review", Toast.LENGTH_SHORT).show()
                 }
@@ -300,67 +292,65 @@ class ResDetailView : AppCompatActivity() {
         if (isBookmarked) {
             binding.bookmarkBtn.setImageResource(R.drawable.redfav)
         } else {
-            binding.bookmarkBtn.setImageResource(R.drawable.favourite)
+            binding.bookmarkBtn.setImageResource(R.drawable.favourites)
         }
     }
 
     private fun observeBookmarkResult() {
         restaurantViewModel.bookmarkResult.observe(this, Observer { result ->
-            val (success, message) = result
-            if (success) {
-                Toast.makeText(this, "Added to Favourites", Toast.LENGTH_SHORT).show()
-                isBookmarked = true
-                updateBookmarkButton()
-            } else {
-                Toast.makeText(this, "Failed to add Favourites: $message", Toast.LENGTH_SHORT)
-                    .show()
+            val (success,message) = result
+            if (result != null) {
+                if (success) {
+                    isBookmarked = true
+                    updateBookmarkButton()
+                    Toast.makeText(this, "Added to Favourite", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(this, "Failed adding to favourite", Toast.LENGTH_SHORT).show()
+                }
             }
         })
     }
 
     private fun observeUnBookmarkResult() {
         restaurantViewModel.unBookmarkResult.observe(this, Observer { result ->
-            result.onSuccess {
-                Toast.makeText(this, "Removed from Favourites", Toast.LENGTH_SHORT).show()
-                isBookmarked = false
-                updateBookmarkButton()
-            }.onFailure {
+            if (result != null) {
+                result.onSuccess {
+                    isBookmarked = false
+                    updateBookmarkButton()
+                    Toast.makeText(this, "Removed from Favourites", Toast.LENGTH_SHORT).show()
+                }.onFailure {
+                    Toast.makeText(this, "Failed to remove from favourites", Toast.LENGTH_SHORT).show()
 
-                Toast.makeText(
-                    this,
-                    "Removed from Favourites failed: ${it.message}",
-                    Toast.LENGTH_SHORT
-                ).show()
+                }
             }
         })
     }
 
-
     private fun startAutoSwipe() {
-        handler.postDelayed(autoSwipeRunnable, 3000) // Adjust the delay as needed
+        handler.postDelayed(autoSwipeRunnable, 5000)
     }
 
-    private fun stopAutoSwipe() {
+    private fun filterMenuItems(query: String) {
+        filteredMenuItems.clear()
+        if (query.isBlank()) {
+            filteredMenuItems.addAll(menuItems)
+        } else {
+            val filteredList = menuItems.filter {
+                it.name.contains(query, ignoreCase = true)
+            }
+            filteredMenuItems.addAll(filteredList)
+        }
+        menuAdapter.notifyDataSetChanged()
+    }
+
+    override fun onPause() {
+        super.onPause()
         handler.removeCallbacks(autoSwipeRunnable)
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        stopAutoSwipe()
-    }
-
-    @SuppressLint("NotifyDataSetChanged")
-    private fun filterMenuItems(query: String?) {
-        val searchQuery = query?.lowercase() ?: ""
-        filteredMenuItems.clear()
-        if (searchQuery.isEmpty()) {
-            filteredMenuItems.addAll(menuItems)
-        } else {
-            filteredMenuItems.addAll(menuItems.filter {
-                it.name.lowercase().contains(searchQuery) || it.description.lowercase().contains(searchQuery) || it.price.toString().contains(searchQuery)
-            })
-        }
-        menuAdapter.notifyDataSetChanged()
+    override fun onResume() {
+        super.onResume()
+        startAutoSwipe()
     }
 }
 
