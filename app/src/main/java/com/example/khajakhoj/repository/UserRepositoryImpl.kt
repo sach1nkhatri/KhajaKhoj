@@ -22,8 +22,6 @@ class UserRepositoryImpl : UserRepository {
         const val TAG = "UserRepositoryImpl"
     }
 
-    private lateinit var currentUserId: String
-
     override suspend fun checkEmailExists(email: String): Boolean {
         Log.d(TAG, "Checking if email exists: $email")
         return try {
@@ -73,24 +71,17 @@ class UserRepositoryImpl : UserRepository {
         }
     }
 
-    override suspend fun loginUserWithEmailPassword(
-        email: String,
-        password: String
-    ): Result<Boolean> {
-        return try {
-            Log.d("LoginRepositoryImpl", "Logging in with email: $email")
-            firebaseAuth.signInWithEmailAndPassword(email, password).await()
-            val currentUser = firebaseAuth.currentUser
-            if (currentUser != null) {
-                currentUserId = currentUser.uid
-                Log.d(TAG, "logged User Id : $currentUserId")
+    override fun loginUserWithEmailPassword(email: String, password: String): LiveData<Result<Boolean>> {
+        val loginResult = MutableLiveData<Result<Boolean>>()
+        firebaseAuth.signInWithEmailAndPassword(email, password)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    loginResult.value = Result.success(true)
+                } else {
+                    loginResult.value = Result.failure(task.exception ?: Exception("Unknown error"))
+                }
             }
-            Log.d("LoginRepositoryImpl", "Login successful")
-            Result.success(true)
-        } catch (e: Exception) {
-            Log.e("LoginRepositoryImpl", "Error logging in", e)
-            Result.failure(e)
-        }
+        return loginResult
     }
 
     override suspend fun sendPasswordResetEmail(email: String): Result<Boolean> {
@@ -105,42 +96,45 @@ class UserRepositoryImpl : UserRepository {
         }
     }
 
-    override suspend fun getCurrentUser(): User? {
-        val firebaseUser = firebaseAuth.currentUser ?: return null
+    override fun getCurrentUser(callback: (User?) -> Unit) {
+        val firebaseUser = firebaseAuth.currentUser ?: run {
+            callback(null)
+            return
+        }
 
         val uid = firebaseUser.uid
 
         // Retrieve user data from Realtime Database
-        val userSnapshot = try {
-            val userReference = databaseReference.getReference("users").child(uid).get().await()
-            userReference.value as? HashMap<String, Any?>
-        } catch (e: Exception) {
-            Log.e("UserRepository", "Error retrieving user data for uid: $uid", e)
-            null
+        val userReference = databaseReference.reference.child("users").child(uid)
+        userReference.get().addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val userSnapshot = task.result.value as? HashMap<String, Any?>
+                if (userSnapshot != null) {
+                    val fullName = userSnapshot["fullName"] as? String ?: ""
+                    val email = firebaseUser.email ?: "" // Use email from FirebaseUser
+                    val phoneNumber = userSnapshot["phoneNumber"] as? String ?: ""
+                    val profilePictureUrl = userSnapshot["profilePictureUrl"] as? String ?: ""
+                    val createdAt = userSnapshot["createdAt"] as? Long ?: 0
+
+                    // Create a custom User object with fetched data
+                    val user = User(
+                        uid = uid,
+                        email = email,
+                        fullName = fullName,
+                        phoneNumber = phoneNumber,
+                        profilePictureUrl = profilePictureUrl,
+                        createdAt = createdAt
+                    )
+                    callback(user)
+                } else {
+                    Log.w("UserRepository", "User data not found for uid: $uid")
+                    callback(null)
+                }
+            } else {
+                Log.e("UserRepository", "Error retrieving user data for uid: $uid", task.exception)
+                callback(null)
+            }
         }
-
-        // Check if user data retrieved successfully
-        if (userSnapshot == null) {
-            Log.w("UserRepository", "User data not found for uid: $uid")
-            return null
-        }
-
-        // Extract user data from snapshot
-        val fullName = userSnapshot["fullName"] as? String ?: ""
-        val email = firebaseUser.email ?: "" // Use email from FirebaseUser
-        val phoneNumber = userSnapshot["phoneNumber"] as? String ?: ""
-        val profilePictureUrl = userSnapshot["profilePictureUrl"] as? String ?: ""
-        val createdAt = userSnapshot["createdAt"] as? Long ?: 0
-
-        // Create a custom User object with fetched data
-        return User(
-            uid = uid,
-            email = email,
-            fullName = fullName,
-            phoneNumber = phoneNumber,
-            profilePictureUrl = profilePictureUrl,
-            createdAt = createdAt
-        )
     }
 
     override fun changePassword(

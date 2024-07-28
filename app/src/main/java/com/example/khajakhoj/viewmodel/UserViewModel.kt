@@ -103,16 +103,14 @@ class UserViewModel : ViewModel() {
         }
     }
 
-
-
     fun loginUser(email: String, password: String) {
         Log.d(TAG, "Attempting to sign in user with email: $email")
-        viewModelScope.launch {
-            val result = repository.loginUserWithEmailPassword(email, password)
+        val resultLiveData = repository.loginUserWithEmailPassword(email, password)
+        resultLiveData.observeForever { result ->
             if (result.isSuccess) {
                 Log.d(TAG, "Sign-in successful")
             } else {
-                Log.e(TAG, "Sign-in failed for email: $email")
+                Log.e(TAG, "Sign-in failed for email: $email", result.exceptionOrNull())
             }
             _loginResult.postValue(result)
         }
@@ -219,8 +217,7 @@ class UserViewModel : ViewModel() {
     }
 
     init {
-        viewModelScope.launch {
-            val user = repository.getCurrentUser()
+        repository.getCurrentUser { user ->
             _currentUser.value = user
         }
     }
