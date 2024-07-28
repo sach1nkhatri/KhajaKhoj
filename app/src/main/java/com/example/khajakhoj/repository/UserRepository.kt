@@ -2,17 +2,18 @@ package com.example.khajakhoj.repository
 
 import android.net.Uri
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.example.khajakhoj.model.User
 import com.example.khajakhoj.utils.LoadingUtil
 
 interface UserRepository {
-    fun signUpUserWithEmailAndPassword(email: String, password: String): Result<Boolean>
-    fun saveUserInRealtimeDatabase(user: User): Result<Unit>
+    suspend fun signUpUserWithEmailAndPassword(email: String, password: String): Result<Boolean>
+    suspend fun saveUserInRealtimeDatabase(user: User): Result<Unit>
+    suspend fun loginUserWithEmailPassword(email: String, password: String): Result<Boolean>
+    suspend fun sendPasswordResetEmail(email: String): Result<Boolean>
+    suspend fun checkEmailExists(email: String): Boolean
     fun updateUserProfileImage(profileImageUri: Uri): Result<Unit>
-    fun loginUserWithEmailPassword(email: String, password: String): Result<Boolean>
-    fun sendPasswordResetEmail(email: String): Result<Boolean>
-    fun checkEmailExists(email: String): Boolean
-    fun getCurrentUser(callback: (User?) -> Unit)
+    suspend fun getCurrentUser() : User?
     fun changePassword(
         currentPassword: String,
         newPassword: String,
@@ -23,4 +24,3 @@ interface UserRepository {
     fun deleteUser(userId: String): LiveData<Result<Void?>>
 
 }
-

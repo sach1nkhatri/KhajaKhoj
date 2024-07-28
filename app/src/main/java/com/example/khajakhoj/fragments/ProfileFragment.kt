@@ -3,13 +3,16 @@ package com.example.khajakhoj.fragments
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity.RESULT_OK
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import com.example.khajakhoj.R
 import com.example.khajakhoj.activity.LoginPage
 import com.example.khajakhoj.databinding.ActivityProfileBinding
@@ -35,6 +38,17 @@ class ProfileFragment : Fragment() {
         binding.imageView3.setOnClickListener {
             openGallery()
         }
+
+        viewModel.imageUploadResult.observe(viewLifecycleOwner, Observer { result ->
+            result.fold(
+                onSuccess = {
+                    Toast.makeText(context, "Image upload successful!", Toast.LENGTH_SHORT).show()
+                },
+                onFailure = { exception ->
+                    Toast.makeText(context, "Image upload failed: ${exception.message}", Toast.LENGTH_SHORT).show()
+                }
+            )
+        })
 
         binding.logOutProfile.setOnClickListener {
             Utils.logOut(requireContext()) {
@@ -80,6 +94,7 @@ class ProfileFragment : Fragment() {
                 val data: Intent? = result.data
                 profileImageUri = data?.data
                 viewModel.updateUserProfileImage(profileImageUri!!)
+                Log.d("Profile Logo Uri", "$profileImageUri")
             }
         }
 }
