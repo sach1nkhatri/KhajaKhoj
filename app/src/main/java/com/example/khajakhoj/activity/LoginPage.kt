@@ -60,25 +60,20 @@ class LoginPage : AppCompatActivity() {
         viewModel.loginResult.observe(this, Observer { loginResult ->
             loadingUtil.dismiss() // Dismiss loading indicator
             if (loginResult.isSuccess) {
-                // Login successful
                 Log.d(TAG, "Sign-in successful from Activity")
                 val credentialManager = CredentialManager(this)
                 credentialManager.saveLoginState(true)
-                // Handle successful login, e.g., navigate to another activity
                 startActivity(Intent(this, Dashboard::class.java))
             } else {
                 // Login failed
                 Log.e(TAG, "Sign-in failed from Activity")
-                // Handle login failure, e.g., display an error message
                 Toast.makeText(this, "Invalid email or password.", Toast.LENGTH_SHORT).show()
             }
         })
 
         viewModel.resetPasswordResult.observe(this, Observer { resetResult ->
             if (resetResult.isSuccess) {
-                // Password reset email sent successfully (likely handled in toast message)
             } else {
-                // Handle any errors during password reset (already handled most likely)
             }
         })
 

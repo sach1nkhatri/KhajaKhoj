@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import com.example.khajakhoj.databinding.ActivitySignUpBinding
 import com.example.khajakhoj.utils.LoadingUtil
+import com.example.khajakhoj.utils.PasswordVisibilityToggler
 import com.example.khajakhoj.utils.Utils
 import com.example.khajakhoj.viewmodel.UserViewModel
 
@@ -26,6 +27,20 @@ class SignUpActivity : AppCompatActivity() {
         enableEdgeToEdge()
         binding = ActivitySignUpBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        binding.passwordToggle.setOnClickListener {
+            PasswordVisibilityToggler.togglePasswordVisibility(
+                binding.passwordEditText,
+                binding.passwordToggle
+            )
+        }
+
+        binding.confirmPasswordToggle.setOnClickListener {
+            PasswordVisibilityToggler.togglePasswordVisibility(
+                binding.confirmPasswordEditText,
+                binding.confirmPasswordToggle
+            )
+        }
 
         loadingUtil = LoadingUtil(this)
 

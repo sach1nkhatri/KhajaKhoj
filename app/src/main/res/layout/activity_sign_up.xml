@@ -49,27 +49,75 @@
         android:hint="Phone number"
         android:inputType="phone" />
 
-    <EditText
-        android:id="@+id/passwordEditText"
-        android:layout_width="350dp"
-        android:layout_height="50dp"
-        android:background="@drawable/signup_custom_edit_text"
-        android:drawableStart="@drawable/sharp_key_24"
-        android:drawablePadding="10dp"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:hint="Password"
-        android:inputType="textPassword" />
+        android:orientation="horizontal">
 
-    <EditText
-        android:id="@+id/confirmPasswordEditText"
-        android:layout_width="350dp"
-        android:layout_height="50dp"
-        android:background="@drawable/signup_custom_edit_text"
-        android:drawableStart="@drawable/sharp_key_24"
-        android:drawablePadding="10dp"
+        <EditText
+            android:id="@+id/passwordEditText"
+            android:layout_width="350dp"
+            android:layout_height="50dp"
+            android:background="@drawable/signup_custom_edit_text"
+            android:drawableStart="@drawable/sharp_key_24"
+            android:drawablePadding="10dp"
+            android:hint="Password"
+            android:inputType="textPassword"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageButton
+            android:id="@+id/passwordToggle"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="8dp"
+            android:src="@drawable/ic_eye_off"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/passwordEditText"
+            android:layout_width="wrap_content"/>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:hint="Confirm Password"
-        android:inputType="textPassword" />
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/confirmPasswordEditText"
+            android:layout_width="350dp"
+            android:layout_height="50dp"
+            android:background="@drawable/signup_custom_edit_text"
+            android:drawableStart="@drawable/sharp_key_24"
+            android:drawablePadding="10dp"
+            android:hint="Confirm Password"
+            android:inputType="textPassword"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageButton
+            android:id="@+id/confirmPasswordToggle"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="8dp"
+            android:src="@drawable/ic_eye_off"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/confirmPasswordEditText"
+            android:layout_width="wrap_content"/>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
 
 
     <LinearLayout

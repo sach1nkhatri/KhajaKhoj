@@ -11,15 +11,10 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.LifecycleOwner
-import androidx.security.crypto.EncryptedSharedPreferences
-import androidx.security.crypto.MasterKeys
-import com.example.khajakhoj.activity.Dashboard
-import com.example.khajakhoj.activity.LoginPage
 import com.example.khajakhoj.R
+import com.example.khajakhoj.activity.LoginPage
 import com.example.khajakhoj.viewmodel.UserViewModel
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth

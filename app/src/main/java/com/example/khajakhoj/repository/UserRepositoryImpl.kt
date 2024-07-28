@@ -1,6 +1,7 @@
 package com.example.khajakhoj.repository
 
 import android.annotation.SuppressLint
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -9,17 +10,17 @@ import com.example.khajakhoj.utils.LoadingUtil
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.tasks.await
 
 class UserRepositoryImpl : UserRepository {
     private val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private val databaseReference = FirebaseDatabase.getInstance()
+    private val storage: FirebaseStorage = FirebaseStorage.getInstance()
 
     companion object {
         const val TAG = "UserRepositoryImpl"
     }
-
-    private lateinit var currentUserId: String
 
     override suspend fun checkEmailExists(email: String): Boolean {
         Log.d(TAG, "Checking if email exists: $email")
@@ -70,24 +71,17 @@ class UserRepositoryImpl : UserRepository {
         }
     }
 
-    override suspend fun loginUserWithEmailPassword(
-        email: String,
-        password: String
-    ): Result<Boolean> {
-        return try {
-            Log.d("LoginRepositoryImpl", "Logging in with email: $email")
-            firebaseAuth.signInWithEmailAndPassword(email, password).await()
-            val currentUser = firebaseAuth.currentUser
-            if (currentUser != null) {
-                currentUserId = currentUser.uid
-                Log.d(TAG, "logged User Id : $currentUserId")
+    override fun loginUserWithEmailPassword(email: String, password: String): LiveData<Result<Boolean>> {
+        val loginResult = MutableLiveData<Result<Boolean>>()
+        firebaseAuth.signInWithEmailAndPassword(email, password)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    loginResult.value = Result.success(true)
+                } else {
+                    loginResult.value = Result.failure(task.exception ?: Exception("Unknown error"))
+                }
             }
-            Log.d("LoginRepositoryImpl", "Login successful")
-            Result.success(true)
-        } catch (e: Exception) {
-            Log.e("LoginRepositoryImpl", "Error logging in", e)
-            Result.failure(e)
-        }
+        return loginResult
     }
 
     override suspend fun sendPasswordResetEmail(email: String): Result<Boolean> {
@@ -102,42 +96,45 @@ class UserRepositoryImpl : UserRepository {
         }
     }
 
-    override suspend fun getCurrentUser(): User? {
-        val firebaseUser = firebaseAuth.currentUser ?: return null
+    override fun getCurrentUser(callback: (User?) -> Unit) {
+        val firebaseUser = firebaseAuth.currentUser ?: run {
+            callback(null)
+            return
+        }
 
         val uid = firebaseUser.uid
 
         // Retrieve user data from Realtime Database
-        val userSnapshot = try {
-            val userReference = databaseReference.getReference("users").child(uid).get().await()
-            userReference.value as? HashMap<String, Any?>
-        } catch (e: Exception) {
-            Log.e("UserRepository", "Error retrieving user data for uid: $uid", e)
-            null
+        val userReference = databaseReference.reference.child("users").child(uid)
+        userReference.get().addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val userSnapshot = task.result.value as? HashMap<String, Any?>
+                if (userSnapshot != null) {
+                    val fullName = userSnapshot["fullName"] as? String ?: ""
+                    val email = firebaseUser.email ?: "" // Use email from FirebaseUser
+                    val phoneNumber = userSnapshot["phoneNumber"] as? String ?: ""
+                    val profilePictureUrl = userSnapshot["profilePictureUrl"] as? String ?: ""
+                    val createdAt = userSnapshot["createdAt"] as? Long ?: 0
+
+                    // Create a custom User object with fetched data
+                    val user = User(
+                        uid = uid,
+                        email = email,
+                        fullName = fullName,
+                        phoneNumber = phoneNumber,
+                        profilePictureUrl = profilePictureUrl,
+                        createdAt = createdAt
+                    )
+                    callback(user)
+                } else {
+                    Log.w("UserRepository", "User data not found for uid: $uid")
+                    callback(null)
+                }
+            } else {
+                Log.e("UserRepository", "Error retrieving user data for uid: $uid", task.exception)
+                callback(null)
+            }
         }
-
-        // Check if user data retrieved successfully
-        if (userSnapshot == null) {
-            Log.w("UserRepository", "User data not found for uid: $uid")
-            return null
-        }
-
-        // Extract user data from snapshot
-        val fullName = userSnapshot["fullName"] as? String ?: ""
-        val email = firebaseUser.email ?: "" // Use email from FirebaseUser
-        val phoneNumber = userSnapshot["phoneNumber"] as? String ?: ""
-        val profilePictureUrl = userSnapshot["profilePictureUrl"] as? String ?: ""
-        val createdAt = userSnapshot["createdAt"] as? Long ?: 0
-
-        // Create a custom User object with fetched data
-        return User(
-            uid = uid,
-            email = email,
-            fullName = fullName,
-            phoneNumber = phoneNumber,
-            profilePictureUrl = profilePictureUrl,
-            createdAt = createdAt
-        )
     }
 
     override fun changePassword(
@@ -185,6 +182,48 @@ class UserRepositoryImpl : UserRepository {
         }
 
         return resultLiveData
+    }
+
+    override fun updateUserProfileImage(profileImageUri: Uri): Result<Unit> {
+        return try {
+            val userId = firebaseAuth.currentUser?.uid ?: throw Exception("User not logged in")
+            val storageRef = storage.reference.child("profileImages/$userId")
+
+            val uploadTask = storageRef.putFile(profileImageUri)
+            uploadTask.continueWithTask { task ->
+                if (!task.isSuccessful) {
+                    task.exception?.let { throw it }
+                }
+                // Continue with the task to get the download URL
+                Log.d("User download  Url", " ${storageRef.downloadUrl}")
+                storageRef.downloadUrl
+            }.addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val downloadUrl = task.result.toString()
+                    Log.d("User download  Url", " $downloadUrl")
+                    val userRef = databaseReference.reference.child("users").child(userId)
+                    val updates = mapOf<String, Any>(
+                        "profilePictureUrl" to downloadUrl
+                    )
+                    userRef.updateChildren(updates).addOnCompleteListener { updateTask ->
+                        if (updateTask.isSuccessful) {
+                            Log.d("SignUpRepository", "Profile image updated successfully for UID: $userId")
+                            Result.success(Unit)
+                        } else {
+                            Log.e("SignUpRepository", "Failed to update profile image in database: ${updateTask.exception?.message}", updateTask.exception)
+                            Result.failure<Unit>(updateTask.exception ?: Exception("Unknown error during database update"))
+                        }
+                    }
+                } else {
+                    Log.e("SignUpRepository", "Failed to get download URL: ${task.exception?.message}", task.exception)
+                    Result.failure<Unit>(task.exception ?: Exception("Unknown error during URL retrieval"))
+                }
+            }
+            Result.success(Unit) // This might need adjustment based on async handling.
+        } catch (e: Exception) {
+            Log.e("SignUpRepository", "Failed to update profile image: ${e.message}", e)
+            Result.failure<Unit>(e)
+        }
     }
 
     @SuppressLint("SuspiciousIndentation")
