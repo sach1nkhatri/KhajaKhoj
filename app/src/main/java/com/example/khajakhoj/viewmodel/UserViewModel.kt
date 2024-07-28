@@ -5,7 +5,6 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.example.khajakhoj.model.User
 import com.example.khajakhoj.repository.UserRepository
 import com.example.khajakhoj.repository.UserRepositoryImpl
@@ -13,7 +12,6 @@ import com.example.khajakhoj.utils.LoadingUtil
 import com.example.khajakhoj.utils.ValidationUtils
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
-import kotlinx.coroutines.launch
 
 class UserViewModel : ViewModel() {
     private val auth = FirebaseAuth.getInstance()
@@ -51,87 +49,82 @@ class UserViewModel : ViewModel() {
             return
         }
 
-        viewModelScope.launch {
-            try {
-                Log.d(TAG, "Checking if email exists: $email")
-                val emailExists = repository.checkEmailExists(email)
-                if (emailExists) {
-                    _signUpResult.value = Result.failure(Exception("Email already exists"))
-                } else {
-                    Log.d(TAG, "Email does not exist, proceeding with sign-up")
-                    val signUpResult = repository.signUpUserWithEmailAndPassword(email, password)
-                    if (signUpResult.isSuccess) {
-                        Log.d(TAG, "Sign-up successful")
-                        val uid = auth.currentUser!!.uid
-                        val user = User(
-                            uid = uid,
-                            fullName = fullName,
-                            email = email,
-                            phoneNumber = phoneNumber,
-                            profilePictureUrl = "",
-                            bookmarkedRestaurants = emptyMap(),
-                            reviews = emptyMap(),
-                            ratings = emptyMap(),
-                            claimedCoupons = emptyMap(),
-                            createdAt = System.currentTimeMillis()
-                        )
-                        val savedUserResult = repository.saveUserInRealtimeDatabase(user)
-                        if (savedUserResult.isSuccess) {
-                            Log.d(TAG, "User data saved successfully")
-                            _signUpResult.value = Result.success(true)
-                        } else {
-                            Log.e(TAG, "Failed to save user data after successful sign-up")
-                            _signUpResult.value = Result.failure(Exception("Sign-up successful, but failed to save user data"))
-                        }
+        try {
+            Log.d(TAG, "Checking if email exists: $email")
+            val emailExists = repository.checkEmailExists(email)
+            if (emailExists) {
+                _signUpResult.value = Result.failure(Exception("Email already exists"))
+            } else {
+                Log.d(TAG, "Email does not exist, proceeding with sign-up")
+                val signUpResult = repository.signUpUserWithEmailAndPassword(email, password)
+                if (signUpResult.isSuccess) {
+                    Log.d(TAG, "Sign-up successful")
+                    val uid = auth.currentUser!!.uid
+                    val user = User(
+                        uid = uid,
+                        fullName = fullName,
+                        email = email,
+                        phoneNumber = phoneNumber,
+                        profilePictureUrl = "",
+                        bookmarkedRestaurants = emptyMap(),
+                        reviews = emptyMap(),
+                        ratings = emptyMap(),
+                        claimedCoupons = emptyMap(),
+                        createdAt = System.currentTimeMillis()
+                    )
+                    val savedUserResult = repository.saveUserInRealtimeDatabase(user)
+                    if (savedUserResult.isSuccess) {
+                        Log.d(TAG, "User data saved successfully")
+                        _signUpResult.value = Result.success(true)
                     } else {
-                        val exception = signUpResult.exceptionOrNull()
-                        if (exception is FirebaseAuthUserCollisionException) {
-                            _signUpResult.value = Result.failure(Exception("The email address is already in use by another account"))
-                        } else {
-                            Log.e(TAG, "Sign-up failed", exception)
-                            _signUpResult.value = Result.failure(exception ?: Exception("Sign-up failed"))
-                        }
+                        Log.e(TAG, "Failed to save user data after successful sign-up")
+                        _signUpResult.value = Result.failure(Exception("Sign-up successful, but failed to save user data"))
+                    }
+                } else {
+                    val exception = signUpResult.exceptionOrNull()
+                    if (exception is FirebaseAuthUserCollisionException) {
+                        _signUpResult.value = Result.failure(Exception("The email address is already in use by another account"))
+                    } else {
+                        Log.e(TAG, "Sign-up failed", exception)
+                        _signUpResult.value = Result.failure(exception ?: Exception("Sign-up failed"))
                     }
                 }
-            } catch (e: Exception) {
-                Log.e(TAG, "Error during sign-up process", e)
-                _signUpResult.value = Result.failure(e)
             }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error during sign-up process", e)
+            _signUpResult.value = Result.failure(e)
         }
     }
 
-
     fun loginUser(email: String, password: String) {
         Log.d(TAG, "Attempting to sign in user with email: $email")
-        viewModelScope.launch {
-            val result = repository.loginUserWithEmailPassword(email, password)
-            if (result.isSuccess) {
-                Log.d(TAG, "Sign-in successful")
-            } else {
-                Log.e(TAG, "Sign-in failed for email: $email")
-            }
-            _loginResult.postValue(result)
+
+        val result = repository.loginUserWithEmailPassword(email, password)
+        if (result.isSuccess) {
+            Log.d(TAG, "Sign-in successful")
+        } else {
+            Log.e(TAG, "Sign-in failed for email: $email")
         }
+        _loginResult.postValue(result)
     }
 
     fun sendPasswordResetEmail(email: String) {
         Log.d(TAG, "Attempting to send password reset email to: $email")
-        viewModelScope.launch {
-            val emailExists = repository.checkEmailExists(email)
-            if (emailExists) {
-                try {
-                    val result = repository.sendPasswordResetEmail(email)
-                    _resetPasswordResult.postValue(result)
-                    _toastMessage.postValue("Password reset instructions sent!")
-                    Log.d(TAG, "Password reset email sent to: $email")
-                } catch (e: Exception) {
-                    _toastMessage.postValue("Error sending password reset email: ${e.message}")
-                    Log.e(TAG, "Error sending password reset email to: $email", e)
-                }
-            } else {
-                _toastMessage.postValue("Email not found. Please check the address.")
-                Log.d(TAG, "Email not found: $email")
+
+        val emailExists = repository.checkEmailExists(email)
+        if (emailExists) {
+            try {
+                val result = repository.sendPasswordResetEmail(email)
+                _resetPasswordResult.postValue(result)
+                _toastMessage.postValue("Password reset instructions sent!")
+                Log.d(TAG, "Password reset email sent to: $email")
+            } catch (e: Exception) {
+                _toastMessage.postValue("Error sending password reset email: ${e.message}")
+                Log.e(TAG, "Error sending password reset email to: $email", e)
             }
+        } else {
+            _toastMessage.postValue("Email not found. Please check the address.")
+            Log.d(TAG, "Email not found: $email")
         }
     }
 
@@ -202,14 +195,12 @@ class UserViewModel : ViewModel() {
         confirmNewPassword: String,
         loadingUtil: LoadingUtil
     ): LiveData<Result<String>> {
-        return repository.changePassword(currentPassword, newPassword, confirmNewPassword,loadingUtil)
+        return repository.changePassword(currentPassword, newPassword, confirmNewPassword, loadingUtil)
     }
 
     fun updateUserProfileImage(profileImageUri: Uri) {
-        viewModelScope.launch {
-            val result = repository.updateUserProfileImage(profileImageUri)
-            _imageUploadResult.postValue(result)
-        }
+        val result = repository.updateUserProfileImage(profileImageUri)
+        _imageUploadResult.postValue(result)
     }
 
     fun deleteUser(userId: String): LiveData<Result<Void?>> {
@@ -220,8 +211,7 @@ class UserViewModel : ViewModel() {
     val currentUser: LiveData<User?> = _currentUser
 
     init {
-        viewModelScope.launch {
-            val user = repository.getCurrentUser()
+        repository.getCurrentUser { user ->
             _currentUser.value = user
         }
     }

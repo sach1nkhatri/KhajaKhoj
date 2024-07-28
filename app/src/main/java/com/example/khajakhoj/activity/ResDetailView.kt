@@ -53,7 +53,6 @@ class ResDetailView : AppCompatActivity() {
     private lateinit var reviewViewModel: ReviewViewModel
     private val userViewModel: UserViewModel by viewModels()
 
-
     private lateinit var viewPager: ViewPager2
     private lateinit var adapter: ImagePagerAdapter
     private val handler = Handler(Looper.getMainLooper())
@@ -192,11 +191,15 @@ class ResDetailView : AppCompatActivity() {
 
             restaurantPhone.text = restaurant.contactNumber
             timing.text = "${restaurant.openTime} - ${restaurant.closeTime}"
-
             twoWheelerParking.setImageResource(if (restaurant.bikeParking) R.drawable.availabegreenicon else R.drawable.wrongicon)
             fourWheelerParking.setImageResource(if (restaurant.carParking) R.drawable.availabegreenicon else R.drawable.wrongicon)
             wifi.setImageResource(if (restaurant.wifi) R.drawable.availabegreenicon else R.drawable.wrongicon)
 
+            val restaurantLogo = restaurant.restaurantLogoUrl
+            val restaurantImageView = binding.restuarantImageLogo
+            Picasso.get()
+                .load(restaurantLogo)
+                .into(restaurantImageView)
         }
     }
 
@@ -285,7 +288,6 @@ class ResDetailView : AppCompatActivity() {
             }
         }
     }
-
 
     private fun checkBookmarkStatus(restaurantId: String) {
         restaurantViewModel.isRestaurantBookmarked(restaurantId) { isBookmarked ->
