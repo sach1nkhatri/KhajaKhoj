@@ -1,4 +1,5 @@
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
@@ -12,6 +13,8 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.khajakhoj.R
 import com.example.khajakhoj.model.Coupon
+import com.example.khajakhoj.repository.CouponRepositoryImpl
+import com.example.khajakhoj.utils.LoadingUtil
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -43,7 +46,7 @@ class CouponAdapter(
         holder.couponCodeTextView.text = coupon.code
         holder.discountTextView.text =
             "Get ${coupon.discountPercentage}% off on order above Rs.${coupon.minimumOrderPrice}"
-        holder.addressTextView.text = "at ${coupon.restaurantName}, ${coupon.location}"
+        holder.addressTextView.text = "at ${coupon.restaurantName}, ${coupon.address}"
         holder.expiryDate.text = "Valid until ${coupon.validTo}"
 
         val isRedeemedByCurrentUser = coupon.redeemedBy.containsKey(currentUserUid)
@@ -54,7 +57,7 @@ class CouponAdapter(
             holder.useCouponButton.text = "Use Coupon"
             holder.useCouponButton.isEnabled = true
             holder.useCouponButton.setOnClickListener {
-                showConfirmationDialog(holder.itemView.context, coupon.id) // Show confirmation dialog
+                showConfirmationDialog(holder.itemView.context, coupon.id, coupon.couponKey, position) // Pass position
             }
         }
     }
@@ -76,7 +79,7 @@ class CouponAdapter(
         notifyDataSetChanged()
     }
 
-    private fun showConfirmationDialog(context: Context, couponId: String) {
+    private fun showConfirmationDialog(context: Context, couponId: String, uniqueCode: String, position: Int) {
         val dialogView = LayoutInflater.from(context).inflate(R.layout.coupon_confirm_dialog, null)
         val uniqueCodeEditText: EditText = dialogView.findViewById(R.id.uniqueCodeEditText)
         val confirmButton: Button = dialogView.findViewById(R.id.confirmButton)
@@ -85,18 +88,22 @@ class CouponAdapter(
         val dialog = AlertDialog.Builder(context)
             .setView(dialogView)
             .create()
-        val backgroundDrawable =
-            ContextCompat.getDrawable(context, R.drawable.custom_dialog_background)
+        val backgroundDrawable = ContextCompat.getDrawable(context, R.drawable.custom_dialog_background)
         dialog.window?.setBackgroundDrawable(backgroundDrawable)
-
+        val loadingUtil = LoadingUtil(context as Activity)
         confirmButton.setOnClickListener {
             val enteredCode = uniqueCodeEditText.text.toString()
-            if (enteredCode == "UNIQUE_CODE") {
-                redeemCouponCallback(couponId)
-                dialog.dismiss()
-                Toast.makeText(context, "Coupon used successfully.", Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(context, "Invalid code", Toast.LENGTH_SHORT).show()
+            val couponRepository = CouponRepositoryImpl(currentUserUid)
+            loadingUtil.showLoading()
+            couponRepository.redeemCoupon(couponId, enteredCode).observeForever { result ->
+                loadingUtil.dismiss()
+                if (result.isSuccess) {
+                    notifyItemRemoved(position)
+                    Toast.makeText(context, "Coupon used successfully.", Toast.LENGTH_SHORT).show()
+                    dialog.dismiss()
+                } else {
+                    Toast.makeText(context, "Invalid code: ${result.exceptionOrNull()?.message}", Toast.LENGTH_SHORT).show()
+                }
             }
         }
 

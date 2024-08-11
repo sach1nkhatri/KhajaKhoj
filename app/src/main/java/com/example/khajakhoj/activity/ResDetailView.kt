@@ -66,13 +66,23 @@ class ResDetailView : AppCompatActivity() {
     private val filteredMenuItems = mutableListOf<MenuItem>()
     private lateinit var restaurantId: String
 
+
+
     private val autoSwipeRunnable = object : Runnable {
         override fun run() {
-            val nextItem = (viewPager.currentItem + 1) % adapter.itemCount
-            viewPager.setCurrentItem(nextItem, true)
-            handler.postDelayed(this, 5000) // Adjust the delay as needed
+            try {
+                if (::adapter.isInitialized) {
+                    val nextItem = (viewPager.currentItem + 1) % adapter.itemCount
+                    viewPager.setCurrentItem(nextItem, true)
+                }
+                handler.postDelayed(this, 5000)
+            }
+            catch (e:Exception){
+                Log.d("Auto Swipe",e.message.toString())
+            }
         }
     }
+
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -90,15 +100,18 @@ class ResDetailView : AppCompatActivity() {
         viewPager = binding.viewPager
 
         adsViewModel = ViewModelProvider(this).get(AdsViewModel::class.java)
+
         adsViewModel.restaurantImageUrls.observe(this, Observer { imageUrls ->
             progressBar.visibility = View.GONE
+            adapter = ImagePagerAdapter(imageUrls)
+            viewPager.adapter = adapter
+            binding.dotsIndicator.attachTo(viewPager)
+
             if (imageUrls.isNotEmpty()) {
-                adapter = ImagePagerAdapter(imageUrls)
-                viewPager.adapter = adapter
-                binding.dotsIndicator.attachTo(viewPager)
                 startAutoSwipe()
             }
         })
+
 
         // Initialize RecyclerView for menu items
         recyclerView = findViewById(R.id.recyclerView)
@@ -327,7 +340,11 @@ class ResDetailView : AppCompatActivity() {
     }
 
     private fun startAutoSwipe() {
-        handler.postDelayed(autoSwipeRunnable, 5000)
+        try {
+            handler.postDelayed(autoSwipeRunnable, 5000)
+        } catch (e:Exception){
+            Log.d("Empty Images","Restaurant images are not provided")
+        }
     }
 
     private fun filterMenuItems(query: String) {

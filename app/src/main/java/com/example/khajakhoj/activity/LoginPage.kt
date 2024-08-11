@@ -52,6 +52,10 @@ class LoginPage : AppCompatActivity() {
             startActivity(Intent(this, SignUpActivity::class.java))
             finish()
         }
+
+        binding.loginGoogleBtn.setOnClickListener(){
+            Toast.makeText(this,"Logging in with google is not available now.",Toast.LENGTH_SHORT).show()
+        }
     }
 
     val TAG = "Login Activity"

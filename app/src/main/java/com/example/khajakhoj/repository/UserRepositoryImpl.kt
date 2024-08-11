@@ -13,10 +13,11 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.tasks.await
 
-class UserRepositoryImpl : UserRepository {
-    private val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
-    private val databaseReference = FirebaseDatabase.getInstance()
+class UserRepositoryImpl(
+    private val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance(),
+    private val databaseReference: FirebaseDatabase = FirebaseDatabase.getInstance(),
     private val storage: FirebaseStorage = FirebaseStorage.getInstance()
+) : UserRepository {
 
     companion object {
         const val TAG = "UserRepositoryImpl"
@@ -54,14 +55,7 @@ class UserRepositoryImpl : UserRepository {
     }
 
     override suspend fun saveUserInRealtimeDatabase(user: User): Result<Unit> { // gets user  detail as parameter
-        Log.d(TAG, "Saving user in Realtime Database : $user")
         return try {
-            Log.d(TAG, "Saving uid: ${user.uid}")
-            Log.d(TAG, "Saving fullName: ${user.fullName}")
-            Log.d(TAG, "Saving email: ${user.email}")
-            Log.d(TAG, "Saving phoneNumber: ${user.phoneNumber}")
-            Log.d(TAG, "Saving profilePictureUrl: ${user.profilePictureUrl}")
-            Log.d(TAG, "Saving createdAt: ${user.createdAt}")
             databaseReference.getReference("users").child(user.uid).setValue(user).await()
             Log.d(TAG, "User saved in Realtime Database successfully")
             Result.success(Unit)

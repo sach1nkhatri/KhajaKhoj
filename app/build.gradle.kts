@@ -84,6 +84,16 @@ dependencies {
     implementation ("com.android.volley:volley:1.2.1")
     implementation ("com.jpardogo.googleprogressbar:library:1.2.0")
 
+    // For unit testing with Kotlin coroutines and Mockito
+    testImplementation ("junit:junit:4.13.2")
+    testImplementation ("org.mockito.kotlin:mockito-kotlin:5.4.0")
+    testImplementation ("org.mockito:mockito-core:5.1.1")
+    testImplementation ("androidx.arch.core:core-testing:2.1.0")
+    testImplementation ("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.2")
+    testImplementation("org.mockito:mockito-inline:3.12.4")
+
+
+
 
 }
 

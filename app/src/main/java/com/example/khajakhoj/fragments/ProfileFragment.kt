@@ -116,7 +116,6 @@ class ProfileFragment : Fragment() {
                 val data: Intent? = result.data
                 profileImageUri = data?.data
                 viewModel.updateUserProfileImage(profileImageUri!!)
-                Log.d("Profile Logo Uri", "$profileImageUri")
             }
         }
 }

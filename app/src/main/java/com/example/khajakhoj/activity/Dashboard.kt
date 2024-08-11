@@ -52,10 +52,6 @@ class Dashboard : AppCompatActivity() {
 
         viewModel.currentUser.observe(this) { user ->
             if (user != null) {
-                Log.d("Profile Fragment", "User user: $user")
-                Log.d("Profile Fragment", "email: ${user.email}")
-                Log.d("Profile Fragment", "fullName: ${user.fullName}")
-
                 val fullName = user.fullName
                 val email = user.email
                 val profileImage = user.profilePictureUrl

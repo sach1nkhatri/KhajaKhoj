@@ -14,7 +14,8 @@ class CouponViewModel(private val couponRepository: CouponRepository): ViewModel
         return couponRepository.getUnredeemedCoupons()
     }
 
-    fun redeemCoupon(currentUserUid:String,couponId: String) {
-        couponRepository.redeemCoupon(couponId)
+    fun redeemCoupon(couponId: String, enteredCode: String): LiveData<Result<Void?>> {
+        return couponRepository.redeemCoupon(couponId, enteredCode)
     }
+
 }
