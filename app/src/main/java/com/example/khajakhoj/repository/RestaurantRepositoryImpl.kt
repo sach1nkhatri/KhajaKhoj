@@ -202,4 +202,16 @@ class RestaurantRepositoryImpl : RestaurantRepository {
 //            })
     }
 
+    override fun updateRestaurantRating(restaurantId: String, newRating: Double, callback: (Boolean, String?) -> Unit) {
+        val restaurantRef = restaurantsRef.child(restaurantId)
+        restaurantRef.child("rating").setValue(newRating)
+            .addOnSuccessListener {
+                callback(true, null)
+            }
+            .addOnFailureListener { exception ->
+                callback(false, exception.message)
+            }
+    }
+
+
 }

@@ -8,4 +8,6 @@ interface RestaurantRepository {
     fun getBookmarksByUserId(callback: (List<Restaurant>?, String?) -> Unit)
     fun unBookmarkRestaurant(restaurantId: String, callback: (Boolean, String?) -> Unit)
     fun isRestaurantBookmarked(restaurantId: String, callback: (Boolean) -> Unit)
-}
+    fun updateRestaurantRating(restaurantId: String, newRating: Double, callback: (Boolean, String?) -> Unit)
+
+    }

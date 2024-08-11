@@ -28,7 +28,7 @@ class SignupPageInstrumentedTest {
     fun testSuccessfulSignup() {
         Intents.init()
         onView(withId(R.id.fullNameEditText)).perform(typeText("Test User"))
-        onView(withId(R.id.emailEditText)).perform(typeText("test10112@example.com"))
+        onView(withId(R.id.emailEditText)).perform(typeText("testuser@example.com"))
         onView(withId(R.id.phoneEditText)).perform(typeText("9841128000"))
         onView(withId(R.id.passwordEditText)).perform(replaceText("password"))
         onView(withId(R.id.confirmPasswordEditText)).perform(replaceText("password"))

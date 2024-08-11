@@ -1,5 +1,6 @@
 package com.example.khajakhoj.adapter
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
@@ -22,6 +23,7 @@ class RestaurantAdapter(private var restaurantList: List<Restaurant>) :
 
     private var filteredList: List<Restaurant> = restaurantList
 
+
     inner class RestaurantViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val restaurantImage: ShapeableImageView = itemView.findViewById(R.id.restuarantImage)
         val restaurantName: TextView = itemView.findViewById(R.id.RestaurantName)
@@ -41,6 +43,7 @@ class RestaurantAdapter(private var restaurantList: List<Restaurant>) :
         return RestaurantViewHolder(itemView)
     }
 
+    @SuppressLint("DefaultLocale")
     override fun onBindViewHolder(holder: RestaurantViewHolder, position: Int) {
         val restaurant = restaurantList[position]
         holder.imageProgressBar.visibility = View.VISIBLE
@@ -66,7 +69,7 @@ class RestaurantAdapter(private var restaurantList: List<Restaurant>) :
             holder.restaurantAddress.text = restaurant.address
         }
 
-        holder.restaurantRating.text = restaurant.rating.toString()
+        holder.restaurantRating.text = String.format("%.2f", restaurant.rating)
 
         holder.restaurantMain.setOnClickListener {
             val context = holder.itemView.context

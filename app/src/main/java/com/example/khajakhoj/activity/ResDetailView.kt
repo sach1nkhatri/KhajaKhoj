@@ -195,6 +195,8 @@ class ResDetailView : AppCompatActivity() {
             twoWheelerParking.setImageResource(if (restaurant.bikeParking) R.drawable.availabegreenicon else R.drawable.wrongicon)
             fourWheelerParking.setImageResource(if (restaurant.carParking) R.drawable.availabegreenicon else R.drawable.wrongicon)
             wifi.setImageResource(if (restaurant.wifi) R.drawable.availabegreenicon else R.drawable.wrongicon)
+            val ratingVal =  String.format("%.2f", restaurant.rating)
+            averageRating.text = if(restaurant.rating>0) ratingVal else "-"
 
             val restaurantLogo = restaurant.restaurantLogoUrl
             val restaurantImageView = binding.restuarantImageLogo
@@ -252,6 +254,7 @@ class ResDetailView : AppCompatActivity() {
             if (rating > 0) {
                 dialog.dismiss()
                 submitReviewWithRating(restaurantId, rating)
+                restaurantViewModel.updateRestaurantRatingAfterReview(restaurantId)
             } else {
                 Toast.makeText(this, "Please provide a rating", Toast.LENGTH_SHORT).show()
             }
@@ -369,5 +372,6 @@ class ResDetailView : AppCompatActivity() {
         super.onResume()
         startAutoSwipe()
     }
+
 }
 

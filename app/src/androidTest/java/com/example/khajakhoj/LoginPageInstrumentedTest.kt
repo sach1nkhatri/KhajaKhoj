@@ -29,8 +29,8 @@ class LoginPageInstrumentedTest {
     @Test
     fun testLoginSuccess() {
         Intents.init()
-        onView(withId(R.id.username_input)).perform(typeText("test@example.com"))
-        onView(withId(R.id.password_input)).perform(replaceText("password"))
+        onView(withId(R.id.username_input)).perform(typeText("binod@gmail.com"))
+        onView(withId(R.id.password_input)).perform(replaceText("111111"))
 
         closeSoftKeyboard()
 

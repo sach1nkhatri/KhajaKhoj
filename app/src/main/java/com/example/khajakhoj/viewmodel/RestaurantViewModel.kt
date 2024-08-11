@@ -8,11 +8,14 @@ import androidx.lifecycle.viewModelScope
 import com.example.khajakhoj.model.Restaurant
 import com.example.khajakhoj.repository.RestaurantRepository
 import com.example.khajakhoj.repository.RestaurantRepositoryImpl
+import com.example.khajakhoj.repository.ReviewRepository
+import com.example.khajakhoj.repository.ReviewRepositoryImpl
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class RestaurantViewModel : ViewModel() {
     private val repository: RestaurantRepository = RestaurantRepositoryImpl()
+    private val reviewRepository: ReviewRepository = ReviewRepositoryImpl()
 
     private val _restaurantList = MutableLiveData<List<Restaurant>?>()
     val restaurantList: LiveData<List<Restaurant>?>
@@ -87,5 +90,22 @@ class RestaurantViewModel : ViewModel() {
                 callback(isBookmarked)
             }
         }
+    }
+    fun updateRestaurantRatingAfterReview(restaurantId: String) {
+        reviewRepository.calculateAverageRating(
+            restaurantId,
+            onSuccess = { averageRating ->
+                repository.updateRestaurantRating(restaurantId, averageRating) { success, error ->
+                    if (success) {
+                        Log.i("RestaurantRatingUpdate", "Rating updated successfully for restaurant ID: $restaurantId. New average rating: $averageRating")
+                    } else {
+                        Log.e("RestaurantRatingUpdate", "Failed to update rating for restaurant ID: $restaurantId. Error: $error")
+                    }
+                }
+            },
+            onFailure = { error ->
+                Log.e("RestaurantRatingUpdate", "Failed to calculate average rating for restaurant ID: $restaurantId. Error: ${error.message}")
+            }
+        )
     }
 }
