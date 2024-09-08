@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SettingsActivity">
+    tools:context=".fragments.SettingsFragment">
 
     <LinearLayout
         android:layout_width="370dp"
@@ -18,14 +18,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <ImageView
-            android:id="@+id/imageView4"
-            android:layout_width="56dp"
-            android:layout_height="52dp"
-            android:layout_marginBottom="30dp"
-            app:srcCompat="@drawable/sandip_chhetri"
-            tools:layout_editor_absoluteX="31dp"
-            tools:layout_editor_absoluteY="25dp" />
+<!--        <ImageView-->
+<!--            android:id="@+id/settingImageView"-->
+<!--            android:layout_width="56dp"-->
+<!--            android:layout_height="52dp"-->
+<!--            android:layout_marginBottom="30dp"-->
+<!--            app:srcCompat="@drawable/sandip_chhetri"-->
+<!--            tools:layout_editor_absoluteX="31dp"-->
+<!--            tools:layout_editor_absoluteY="25dp" />-->
 
         <TextView
             android:id="@+id/textView3"
@@ -54,20 +54,7 @@
             tools:layout_editor_absoluteX="34dp"
             tools:layout_editor_absoluteY="149dp" />
 
-        <Button
-            android:id="@+id/editProfileButton"
-            android:layout_width="233dp"
-            android:layout_height="35dp"
-            android:layout_margin="0dp"
-            android:background="@android:color/transparent"
-            android:gravity="center_vertical"
-            android:padding="0dp"
-            android:text="Edit Profile"
-            android:textAppearance="?android:attr/textAppearanceSmallInverse"
-            android:textSize="15sp"
-            android:textColor="?attr/colorPrimary"
-            tools:layout_editor_absoluteX="34dp"
-            tools:layout_editor_absoluteY="185dp" />
+
 
         <Button
             android:id="@+id/changePasswordButton"
@@ -83,6 +70,21 @@
             android:textSize="15sp"
             tools:layout_editor_absoluteX="34dp"
             tools:layout_editor_absoluteY="224dp" />
+
+        <Button
+            android:id="@+id/deleteAccountButton"
+            android:layout_width="233dp"
+            android:layout_height="35dp"
+            android:layout_margin="0dp"
+            android:background="@android:color/transparent"
+            android:gravity="center_vertical"
+            android:padding="0dp"
+            android:text="Delete Account"
+            android:textAppearance="?android:attr/textAppearanceSmallInverse"
+            android:textColor="?attr/colorPrimary"
+            android:textSize="15sp"
+            tools:layout_editor_absoluteX="34dp"
+            tools:layout_editor_absoluteY="185dp" />
 
         <Button
             android:id="@+id/privacyButton"
@@ -202,7 +204,7 @@
                 android:layout_height="25dp"
                 android:background="@drawable/setting_custom_box"
                 android:gravity="center"
-                android:text="Pakistan"
+                android:text="Nepal"
 
                 android:textColor="#999999" />
 

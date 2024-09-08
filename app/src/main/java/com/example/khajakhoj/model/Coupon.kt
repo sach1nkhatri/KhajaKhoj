@@ -1,9 +1,15 @@
+package com.example.khajakhoj.model
+
 data class Coupon(
-    val id: Int=0,
-    val code: String="",
-    val discount: Int=0,
-    val restaurant: String="",
-    val expirationDate: String="",
-    var isUsed: Boolean = false
-) {
-}
+    val id:String = "",
+    val code: String = "",
+    val couponKey: String = "",
+    val restaurantName: String = "",
+    val address: String = "", // in case a coupon is for specific outlet
+    val discountPercentage: Int = 0,
+    val minimumOrderPrice:Int=0,
+    val validFrom: String = "",
+    val validTo: String = "",
+    val redeemedBy: MutableMap<String, Boolean> = mutableMapOf()
+)
+

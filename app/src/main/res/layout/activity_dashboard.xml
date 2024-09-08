@@ -5,7 +5,7 @@
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Dashboard">
+    tools:context=".activity.Dashboard">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/main"
@@ -58,7 +58,11 @@
         android:id="@+id/navigation_view"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
+        app:itemIconSize="30dp"
+        app:itemTextAppearanceActiveBoldEnabled="true"
         android:layout_gravity="start"
+        app:itemIconTint="@color/white"
+        android:contextClickable="true"
         app:itemTextColor="@color/cream"
         android:backgroundTint="@color/red_KK"
         app:headerLayout="@layout/slide_header"

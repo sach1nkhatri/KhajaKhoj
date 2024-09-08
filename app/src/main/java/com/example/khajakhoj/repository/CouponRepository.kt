@@ -1,21 +1,10 @@
-object CouponRepository {
-    private val coupons: MutableList<Coupon> = mutableListOf(
-        Coupon(1, "CODE123", 10,"ChiyaHub" ,"2024-06-02",false),
-        Coupon(2, "SAVE50", 50,"Himalayan Java Outlets" ,"2024-06-15",false),
-        Coupon(3, "SAVE50", 50,"Himalayan Java Outlets" ,"2024-06-15",false),
-        Coupon(4, "SAVE50", 50,"Himalayan Java Outlets" ,"2024-06-15",false),
-        Coupon(4, "SAVE50", 50,"Himalayan Java Outlets" ,"2024-06-15",false),
-        Coupon(4, "SAVE50", 50,"Himalayan Java Outlets" ,"2024-06-15",false),
-        Coupon(4, "SAVE50", 50,"Himalayan Java Outlets" ,"2024-06-15",false),
+package com.example.khajakhoj.repository
 
-    )
+import androidx.lifecycle.LiveData
+import com.google.firebase.database.DataSnapshot
 
-    fun getAvailableCoupons(): List<Coupon> {
-        return coupons.filter { !it.isUsed }
-    }
-
-    fun markCouponAsUsed(couponId: Int) {
-        val coupon = coupons.find { it.id == couponId }
-        coupon?.isUsed = true
-    }
+interface CouponRepository {
+    fun getAllCoupons(): LiveData<DataSnapshot>
+    fun redeemCoupon(couponId: String, enteredCode: String): LiveData<Result<Void?>>
+    fun getUnredeemedCoupons(): LiveData<DataSnapshot>
 }

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".AboutUsActivity">
+    tools:context=".activity.AboutUsActivity">
 
     <ImageView
         android:id="@+id/about_us_background"
@@ -26,7 +26,7 @@
         android:layout_marginBottom="34dp"
         android:fontFamily="@font/dynalite"
         android:text="A note from the Khaja Khoj team"
-        android:textColor="@color/black"
+        android:textColor="?attr/colorPrimary"
         android:textSize="31sp"
         app:layout_constraintBottom_toTopOf="@+id/about_us_description"
         app:layout_constraintEnd_toEndOf="parent"
@@ -43,8 +43,7 @@
         android:layout_marginBottom="70dp"
         android:fontFamily="@font/poppins"
         android:text="As food lovers, we understand the frustration of finding the perfect restaurant. That's why we created Khaja Khoj – your one-stop shop for discovering delicious dining experiences. Our mission is to make your restaurant search simple, enjoyable, and informative. Whether you're craving a specific cuisine or seeking hidden gems, let Khaja Khoj guide you to your next culinary adventure."
-        android:textColor="@android:color/black"
-        android:textSize="17sp"
+        android:textColor="?attr/colorPrimary"        android:textSize="17sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
